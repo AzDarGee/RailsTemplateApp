@@ -1,0 +1,18 @@
+# Template App Features
+- Rails 8.0.1
+- Ruby 3.4.2
+- Tailwind CSS
+- Stimulus
+- Turbo
+- Stimulus
+- FontAwesome
+- Devise
+
+
+# Setup
+To run rails development server:
+```
+bin/dev
+```
+
+
