@@ -1,7 +1,19 @@
 Rails.application.routes.draw do
-  devise_for :users
   root to: "pages#home"
+  # devise_for :users
+  
+  # If I need to customize devise controllers in the future
+  devise_for :users, controllers: {
+    sessions: 'users/sessions',
+    registrations: 'users/registrations',
+    passwords: 'users/passwords',
+    confirmations: 'users/confirmations',
+    unlocks: 'users/unlocks',
+    omniauth_callbacks: 'users/omniauth_callbacks'
+  }
 
+  post '/users/auth/:provider', to: 'users/omniauth_callbacks#passthru', as: :user_omniauth_authorize
+  
   get "pages/about"
   get "pages/contact"
   get "pages/pricing"
