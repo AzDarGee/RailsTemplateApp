@@ -24,6 +24,15 @@
 
   <body>
     <main class="container mx-auto mt-28 px-5 flex">
+      <p class="notice"><%= notice %></p>
+      <p class="alert"><%= alert %></p>
+
+      <% if user_signed_in? %>
+        <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "btn" %>
+      <% else %>
+        <%= link_to "Sign in", new_user_session_path, class: "btn" %>
+      <% end %>
+      
       <%= yield %>
     </main>
   </body>

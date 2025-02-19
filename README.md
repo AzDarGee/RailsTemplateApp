@@ -15,4 +15,9 @@ To run rails development server:
 bin/dev
 ```
 
+# View Emails sent in development
+```
+http://localhost:3000/letter_opener
+```
+
 
