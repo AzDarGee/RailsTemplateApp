@@ -25,14 +25,17 @@ Devise.setup do |config|
   config.omniauth :facebook, 
     Rails.application.credentials.dig(:oauth, :facebook, :app_id),
     Rails.application.credentials.dig(:oauth, :facebook, :app_secret),
-    scope: 'email'
+    {
+      scope: 'email,public_profile',
+      info_fields: 'email,first_name,last_name,picture'
+    }
 
   config.omniauth :linkedin, 
     Rails.application.credentials.dig(:oauth, :linkedin, :client_id),
     Rails.application.credentials.dig(:oauth, :linkedin, :client_secret),
     {
       scope: 'openid profile email',
-      provider_ignores_state: true,  # Add this line
+      provider_ignores_state: true,
       client_options: {
         site: 'https://api.linkedin.com',
         authorize_url: 'https://www.linkedin.com/oauth/v2/authorization',
