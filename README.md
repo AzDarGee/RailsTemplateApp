@@ -1,7 +1,7 @@
 # Template App Features
 - Rails 8.0.1
 - Ruby 3.4.2
-- Tailwind CSS
+- Bootstrap 5
 - Stimulus
 - Turbo
 - Stimulus
