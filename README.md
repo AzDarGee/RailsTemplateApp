@@ -20,4 +20,9 @@ bin/dev
 http://localhost:3000/letter_opener
 ```
 
+# Clear Rails cache
+```
+bin/rails cache:clear
+```
+
 

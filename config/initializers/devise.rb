@@ -9,7 +9,7 @@
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
 Devise.setup do |config|
-  # ... existing code ...
+
   config.omniauth :google_oauth2, 
     Rails.application.credentials.dig(:oauth, :google, :client_id), 
     Rails.application.credentials.dig(:oauth, :google, :client_secret), 
@@ -19,8 +19,7 @@ Devise.setup do |config|
       image_aspect_ratio: 'square',
       image_size: 50,
       access_type: 'offline',
-      skip_jwt: true,
-      redirect_uri: "http://localhost:3000/users/auth/google_oauth2/callback"
+      skip_jwt: true
     }
 
   config.omniauth :facebook, 
@@ -31,7 +30,15 @@ Devise.setup do |config|
   config.omniauth :linkedin, 
     Rails.application.credentials.dig(:oauth, :linkedin, :client_id),
     Rails.application.credentials.dig(:oauth, :linkedin, :client_secret),
-    scope: 'r_emailaddress r_liteprofile'
+    {
+      scope: 'openid profile email',
+      provider_ignores_state: true,  # Add this line
+      client_options: {
+        site: 'https://api.linkedin.com',
+        authorize_url: 'https://www.linkedin.com/oauth/v2/authorization',
+        token_url: 'https://www.linkedin.com/oauth/v2/accessToken'
+      }
+    }
 
   # The secret key used by Devise. Devise uses this key to generate
   # random tokens. Changing this key will render invalid all existing
