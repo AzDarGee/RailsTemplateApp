@@ -23,17 +23,46 @@
   </head>
 
   <body>
-    <main class="container mx-auto mt-28 px-5 flex">
-      <p class="notice"><%= notice %></p>
-      <p class="alert"><%= alert %></p>
+    <main class="container mx-auto mt-5">
+      <div class="bg-white flex flex-col">
+        <nav class="w-full bg-white shadow-lg">
+          <div class="mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+              <div class="flex">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center">
+                  <%= link_to root_path, class: "text-xl font-bold text-indigo-600" do %>
+                    RailsTemplateApp
+                  <% end %>
+                </div>
+              </div>
 
-      <% if user_signed_in? %>
-        <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "btn" %>
-      <% else %>
-        <%= link_to "Sign in", new_user_session_path, class: "btn" %>
-      <% end %>
-      
-      <%= yield %>
+              <!-- Navigation Links -->
+              <div class="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-8">
+                <%= link_to "Home", root_path, class: "text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium" %>
+                <%= link_to "Pricing", "#", class: "text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium" %>
+                <%= link_to "About", "#", class: "text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium" %>
+                <%= link_to "Contact", "#", class: "text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium" %>
+              </div>
+
+              <!-- Auth Links -->
+              <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                <% if user_signed_in? %>
+                  <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "ml-8 inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700" %>
+                <% else %>
+                  <%= link_to "Sign in", new_user_session_path, class: "text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium" %>
+                  <%= link_to "Sign up", new_user_registration_path, class: "ml-8 inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700" %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </nav>
+      </div>
     </main>
+
+    <div class="container mx-auto">
+      <%= yield %>
+    </div>
+
   </body>
 </html>
