@@ -30,6 +30,11 @@ Devise.setup do |config|
       info_fields: 'email,first_name,last_name,picture'
     }
 
+  config.omniauth :twitter2, 
+    Rails.application.credentials.dig(:oauth, :x, :client_id),
+    Rails.application.credentials.dig(:oauth, :x, :client_secret),
+    scope: 'tweet.read users.read'
+
   config.omniauth :linkedin, 
     Rails.application.credentials.dig(:oauth, :linkedin, :client_id),
     Rails.application.credentials.dig(:oauth, :linkedin, :client_secret),

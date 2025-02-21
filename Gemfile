@@ -13,6 +13,7 @@ gem 'omniauth'
 gem 'omniauth-google-oauth2'
 gem 'omniauth-linkedin-oauth2'
 gem 'omniauth-facebook'
+gem 'omniauth-twitter2'
 gem 'omniauth-rails_csrf_protection' # Required for security
 
 gem "tzinfo-data", platforms: %i[ windows jruby ]

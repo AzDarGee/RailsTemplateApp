@@ -33,3 +33,14 @@ bin/rails cache:clear
 yarn add <package>
 ```
 
+# To edit credentials
+```
+EDITOR="cursor --wait" bin/rails credentials:edit
+```
+* Make sure you have the correct master.key file in the /config directory
+
+# To see the routes in a browser, navigate to:
+```
+http://localhost:3000/rails/info/routes
+```
+

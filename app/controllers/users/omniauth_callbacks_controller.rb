@@ -4,6 +4,10 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
         handle_auth("Google")
     end
 
+    def twitter2
+        handle_auth("Twitter")
+    end
+
     def facebook
         handle_auth("Facebook")
     end
