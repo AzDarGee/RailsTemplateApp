@@ -7,6 +7,9 @@
 - Stimulus
 - FontAwesome
 - Devise
+- NVM for node version management (node 23.8.0)
+- esbuild for js bundling (instead of importmap)
+- Yarn (1.22.22)
 
 
 # Setup
@@ -25,4 +28,8 @@ http://localhost:3000/letter_opener
 bin/rails cache:clear
 ```
 
+# To add js/css packages
+```
+yarn add <package>
+```
 
