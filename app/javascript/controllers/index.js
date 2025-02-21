@@ -1,4 +1,6 @@
-// Import and register all your controllers from the importmap via controllers/**/*_controller
+// Import and register all your controllers
 import { application } from "./application"
-// import { eagerLoadControllersFrom } from "@hotwired/stimulus-loading"
-// eagerLoadControllersFrom("controllers", application)
+
+// Hello Controller
+import HelloController from "./hello_controller"
+application.register("hello", HelloController)
