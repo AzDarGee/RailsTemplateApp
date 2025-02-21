@@ -5,7 +5,6 @@ gem "rails", "~> 8.0.1"
 gem "propshaft"
 gem "pg", "~> 1.1"
 gem "puma", ">= 5.0"
-gem "importmap-rails"
 gem "turbo-rails"
 gem "stimulus-rails"
 gem "jbuilder"
@@ -45,3 +44,5 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem "jsbundling-rails"
