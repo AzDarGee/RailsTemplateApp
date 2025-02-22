@@ -1,0 +1,9 @@
+@import 'actiontext.css';
+@import 'trix/dist/trix.css';
+
+trix-editor {
+    &.form-control {
+        min-height: 20em;
+        height: auto;
+    }
+}
