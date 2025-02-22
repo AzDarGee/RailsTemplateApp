@@ -1,6 +1,6 @@
 <div class="container py-5">
   <div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
+    <div class="col-md-8 col-lg-8">
       <div class="card shadow-sm">
         <div class="card-header bg-white py-3">
           <h2 class="card-title text-center mb-0 fw-bold">Edit Profile</h2>
@@ -20,6 +20,12 @@
                 Currently waiting confirmation for: <%= resource.unconfirmed_email %>
               </div>
             <% end %>
+
+            <div class="mb-3" data-controller="trix">
+              <%= f.label :bio, class: "form-label" %>
+              <%= f.rich_text_area :bio, class: "form-control",
+                  data: { trix_reload_target: "field" } %>
+            </div>
 
             <div class="mb-3">
               <%= f.label :password, "New password", class: "form-label" %>

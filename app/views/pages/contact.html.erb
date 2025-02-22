@@ -1,4 +1,104 @@
-<div>
-  <h1 class="font-bold text-4xl">Pages#contact</h1>
-  <p>Find me in app/views/pages/contact.html.erb</p>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-white py-4">
+          <h1 class="display-5 fw-bold text-center mb-2">Contact Us</h1>
+          <p class="lead text-muted text-center mb-0">We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+        </div>
+
+        <div class="card-body p-4">
+          <div class="row">
+            <!-- Contact Info -->
+            <div class="col-md-5 mb-4 mb-md-0">
+              <h3 class="h5 fw-bold mb-4">Get in touch</h3>
+              
+              <div class="mb-4">
+                <h4 class="h6 fw-bold">Email</h4>
+                <p class="text-muted mb-0">
+                  <i class="fas fa-envelope me-2"></i>
+                  <a href="mailto:support@example.com" class="text-decoration-none">support@example.com</a>
+                </p>
+              </div>
+
+              <div class="mb-4">
+                <h4 class="h6 fw-bold">Phone</h4>
+                <p class="text-muted mb-0">
+                  <i class="fas fa-phone me-2"></i>
+                  <a href="tel:+1234567890" class="text-decoration-none">+1 (234) 567-890</a>
+                </p>
+              </div>
+
+              <div class="mb-4">
+                <h4 class="h6 fw-bold">Address</h4>
+                <p class="text-muted mb-0">
+                  <i class="fas fa-map-marker-alt me-2"></i>
+                  123 Main Street<br>
+                  Suite 100<br>
+                  New York, NY 10001
+                </p>
+              </div>
+
+              <div class="mb-4">
+                <h4 class="h6 fw-bold">Follow Us</h4>
+                <div class="d-flex gap-2">
+                  <a href="#" class="btn btn-outline-primary btn-sm">
+                    <i class="fab fa-twitter"></i>
+                  </a>
+                  <a href="#" class="btn btn-outline-primary btn-sm">
+                    <i class="fab fa-facebook"></i>
+                  </a>
+                  <a href="#" class="btn btn-outline-primary btn-sm">
+                    <i class="fab fa-linkedin"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="col-md-7">
+              <%= form_with(url: pages_contact_path, method: :post, local: true, class: "needs-validation") do |f| %>
+                <div class="mb-3">
+                  <%= f.label :name, "Your Name", class: "form-label" %>
+                  <%= f.text_field :name, class: "form-control", required: true %>
+                </div>
+
+                <div class="mb-3">
+                  <%= f.label :email, "Email Address", class: "form-label" %>
+                  <%= f.email_field :email, class: "form-control", required: true %>
+                </div>
+
+                <div class="mb-3">
+                  <%= f.label :subject, "Subject", class: "form-label" %>
+                  <%= f.text_field :subject, class: "form-control", required: true %>
+                </div>
+
+                <div class="mb-3">
+                  <%= f.label :message, "Message", class: "form-label" %>
+                  <%= f.text_area :message, class: "form-control", rows: 5, required: true %>
+                </div>
+
+                <div class="d-grid">
+                  <%= f.submit "Send Message", class: "btn btn-primary" %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+
+          <!-- Map -->
+          <div class="mt-5">
+            <div class="ratio ratio-16x9">
+              <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d193595.15830869428!2d-74.11976397304603!3d40.697403442292485!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2s!4v1656805997615!5m2!1sen!2s"
+                class="rounded"
+                style="border:0;"
+                allowfullscreen=""
+                loading="lazy">
+              </iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
