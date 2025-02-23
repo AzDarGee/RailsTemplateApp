@@ -42,6 +42,8 @@ group :development do
   gem "letter_opener_web"
   gem "pry"
   gem "pry-remote"
+  gem "better_errors"
+  gem "binding_of_caller"
 end
 
 group :test do
