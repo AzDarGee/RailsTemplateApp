@@ -54,6 +54,10 @@ Open a new terminal and run the below command to start the pry server
 pry-remote
 ```
 
+To use rails default debugger, type `console` anywhere in the code and refresh the page.
+
+You can also use, for example, `debug(current_user)` anywhere in the code to get more info on an object
+
 # Troubleshooting
 If javascript controllers are not loading
 ```
