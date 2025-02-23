@@ -72,13 +72,13 @@ Rails.application.configure do
 
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
   
-  # Add WebSocket allowed origins
+  # Ensure proper WebSocket handling
+  config.action_cable.mount_path = nil
   config.action_cable.url = "ws://localhost:3000/cable"
   config.action_cable.allowed_request_origins = [
-    'http://localhost:3000',
-    'ws://localhost:3000',
-    'http://127.0.0.1:3000',
-    'ws://127.0.0.1:3000'
+    "http://localhost:3000", 
+    "ws://localhost:3000",
+    /http:\/\/localhost:.*/
   ]
 
 end

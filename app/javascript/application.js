@@ -18,3 +18,40 @@ document.addEventListener("spark:reload", () => {
         })
     })
 })
+
+// Handle Turbo errors and disconnections
+document.addEventListener("turbo:load", () => {
+    // Clear any pending requests
+    if (window.Turbo) {
+        window.Turbo.session.connectStreamSource = function(source) {
+        if (source instanceof WebSocket) {
+            source.addEventListener("message", (event) => {
+            try {
+                this.receiveMessageResponse(event.data)
+            } catch (error) {
+                console.error("Turbo stream error:", error)
+            }
+            })
+        }
+        }
+    }
+})
+
+// Handle Spark reconnection
+document.addEventListener("spark:disconnect", () => {
+    console.log("Spark disconnected, attempting reconnect...")
+    setTimeout(() => {
+        window.location.reload()
+    }, 1000)
+})
+
+// Handle message channel errors
+document.addEventListener("turbo:before-fetch-response", (event) => {
+    const response = event.detail?.fetchResponse
+    if (response?.failed) {
+        console.warn("Turbo fetch failed, preventing default")
+        event.preventDefault()
+    }
+})
+
+console.log("Application.js loaded!!!!!!!")
