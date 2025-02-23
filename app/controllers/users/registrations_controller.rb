@@ -2,8 +2,9 @@
 
 class Users::RegistrationsController < Devise::RegistrationsController
   # before_action :configure_sign_up_params, only: [:create]
-  # before_action :configure_account_update_params, only: [:update]
-
+  before_action :configure_account_update_params, only: [:update]
+  before_action :is_omniauth_user?, only: [:edit]
+  
   # GET /resource/sign_up
   # def new
   #   super
@@ -38,7 +39,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   #   super
   # end
 
-  # protected
+  protected
 
   # If you have extra params to permit, append them to the sanitizer.
   # def configure_sign_up_params
@@ -46,9 +47,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # end
 
   # If you have extra params to permit, append them to the sanitizer.
-  # def configure_account_update_params
-  #   devise_parameter_sanitizer.permit(:account_update, keys: [:attribute])
-  # end
+  def configure_account_update_params
+    devise_parameter_sanitizer.permit(:account_update, keys: [:email, :bio, :password, :password_confirmation, :current_password])
+  end
 
   # The path used after sign up.
   # def after_sign_up_path_for(resource)
@@ -59,4 +60,19 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # def after_inactive_sign_up_path_for(resource)
   #   super(resource)
   # end
+
+  # Override to handle OAuth users differently
+  def update_resource(resource, params)
+    if resource.provider? # Check if OAuth user
+      # Update without password
+      resource.update_without_password(params.except(:current_password, :password, :password_confirmation))
+    else
+      # Normal password update
+      resource.update_with_password(params)
+    end
+  end
+
+  def is_omniauth_user?
+    @omniauth_user = current_user.provider.present?
+  end
 end
