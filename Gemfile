@@ -16,6 +16,8 @@ gem 'omniauth-facebook'
 gem 'omniauth-twitter2'
 gem 'omniauth-rails_csrf_protection' # Required for security
 gem "image_processing"
+gem "jsbundling-rails"
+gem "cssbundling-rails"
 
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
@@ -50,9 +52,3 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
-
-gem "jsbundling-rails"
-
-gem "cssbundling-rails", "~> 1.4"
-
-
