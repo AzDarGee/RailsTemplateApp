@@ -23,33 +23,34 @@
 
             <div class="mb-3" data-controller="trix">
               <%= f.label :bio, class: "form-label" %>
-              <%= f.rich_text_area :bio, class: "form-control",
-                  data: { trix_reload_target: "field" } %>
+              <%= f.rich_text_area :bio, class: "form-control" %>
             </div>
 
-            <div class="mb-3">
-              <%= f.label :password, "New password", class: "form-label" %>
-              <%= f.password_field :password, autocomplete: "new-password", class: "form-control" %>
-              <div class="form-text text-muted">
-                Leave blank if you don't want to change it
-                <% if @minimum_password_length %>
-                  <br />Minimum <%= @minimum_password_length %> characters
-                <% end %>
+            <% if !@omniauth_user %>
+              <div class="mb-3">
+                <%= f.label :password, "New password", class: "form-label" %>
+                <%= f.password_field :password, autocomplete: "new-password", class: "form-control" %>
+                <div class="form-text text-muted">
+                  Leave blank if you don't want to change it
+                  <% if @minimum_password_length %>
+                    <br />Minimum <%= @minimum_password_length %> characters
+                  <% end %>
+                </div>
               </div>
-            </div>
 
-            <div class="mb-3">
-              <%= f.label :password_confirmation, "Confirm new password", class: "form-label" %>
-              <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control" %>
-            </div>
-
-            <div class="mb-4">
-              <%= f.label :current_password, class: "form-label" %>
-              <%= f.password_field :current_password, autocomplete: "current-password", class: "form-control" %>
-              <div class="form-text text-muted">
-                We need your current password to confirm your changes
+              <div class="mb-3">
+                <%= f.label :password_confirmation, "Confirm new password", class: "form-label" %>
+                <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control" %>
               </div>
-            </div>
+
+              <div class="mb-4">
+                <%= f.label :current_password, class: "form-label" %>
+                <%= f.password_field :current_password, autocomplete: "current-password", class: "form-control" %>
+                <div class="form-text text-muted">
+                  We need your current password to confirm your changes
+                </div>
+              </div>
+            <% end %>
 
             <div class="d-grid gap-2">
               <%= f.submit "Update", class: "btn btn-primary" %>
