@@ -1,0 +1,13 @@
+---
+description: Working with a Ruby on Rails 8 Application
+globs: 
+---
+
+# Ruby on Rails 8
+* This is a Ruby on Rails 8 application.
+* Familiarize yourself with the MVC framework.
+* I am using esbuild for bundling javascript and css
+* I am using Postgres as the database
+
+
+
