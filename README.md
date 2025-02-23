@@ -43,4 +43,26 @@ EDITOR="cursor --wait" bin/rails credentials:edit
 ```
 http://localhost:3000/rails/info/routes
 ```
+# Debugging
+Add this line anywhere in the code to start debugging
+```
+binding.remote_pry 
+```
+
+Open a new terminal and run the below command to start the pry server
+```
+pry-remote
+```
+
+# Troubleshooting
+If javascript controllers are not loading
+```
+rails assets:clobber
+bin/dev
+```
+
+# To Fix
+* Trix editor not loading with content on hot reload in development mode, something to do with hotwire spark and trix js
+* Update user profile without a password - Devise
+* If logged in from omniauth, don't allow to change password
 
