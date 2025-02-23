@@ -6,4 +6,4 @@ export default class extends Controller {
   }
 }
 
-console.log("Hello Controller loaded")
+console.log("Hello Controller loaded now!!")
