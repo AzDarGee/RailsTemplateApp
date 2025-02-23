@@ -4,6 +4,7 @@
 trix-editor {
     &.form-control {
         min-height: 20em;
+        max-height: 20em;
         height: auto;
     }
 }
