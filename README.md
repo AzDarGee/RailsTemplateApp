@@ -66,7 +66,9 @@ bin/dev
 ```
 
 # To Fix
-* Trix editor not loading with content on hot reload in development mode, something to do with hotwire spark and trix js
-* Update user profile without a password - Devise
-* If logged in from omniauth, don't allow to change password
+* Trix editor not loading with content on hot reload or initial page visit, something to do with hotwire spark and trix js and esbuild/foreman
+* Rails logger not working correctly, check config/initializers/logger.rb 
+
+
+
 
