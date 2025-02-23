@@ -4,6 +4,8 @@ class User < ApplicationRecord
          :confirmable, :lockable, :timeoutable, :trackable,
          :omniauthable, omniauth_providers: [:google_oauth2, :linkedin, :facebook, :twitter2]
 
+  has_rich_text :bio
+
   def self.from_omniauth(auth)
     where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
       user.email = auth.info.email || "#{auth.uid}@twitter.example"
