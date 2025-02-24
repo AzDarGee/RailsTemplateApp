@@ -1,6 +1,7 @@
 ---
 description: Working with a Ruby on Rails 8 Application
 globs: 
+alwaysApply: false
 ---
 
 # Ruby on Rails 8
@@ -10,6 +11,7 @@ globs:
 * I am using Postgres as the database
 * Keep up to date with all the ruby gems that I am using
 * Keep up to date with all the node_modules that I am using
+* When styling the views with bootstrap, keep in mind accessibility issues
 
 
 

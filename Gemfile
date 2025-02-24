@@ -53,3 +53,11 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem "view_component", "~> 3.21"
+
+gem "langchainrb", "~> 0.19.4"
+
+gem "ruby-openai", "~> 7.4"
+
+gem "dry-initializer", "~> 3.2"
