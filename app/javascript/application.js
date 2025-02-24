@@ -20,22 +20,22 @@ document.addEventListener("spark:reload", () => {
 })
 
 // Handle Turbo errors and disconnections
-document.addEventListener("turbo:load", () => {
-    // Clear any pending requests
-    if (window.Turbo) {
-        window.Turbo.session.connectStreamSource = function(source) {
-        if (source instanceof WebSocket) {
-            source.addEventListener("message", (event) => {
-            try {
-                this.receiveMessageResponse(event.data)
-            } catch (error) {
-                console.error("Turbo stream error:", error)
-            }
-            })
-        }
-        }
-    }
-})
+// document.addEventListener("turbo:load", () => {
+//     // Clear any pending requests
+//     if (window.Turbo) {
+//         window.Turbo.session.connectStreamSource = function(source) {
+//         if (source instanceof WebSocket) {
+//             source.addEventListener("message", (event) => {
+//             try {
+//                 this.receiveMessageResponse(event.data)
+//             } catch (error) {
+//                 console.error("Turbo stream error:", error)
+//             }
+//             })
+//         }
+//         }
+//     }
+// })
 
 // Handle Spark reconnection
 document.addEventListener("spark:disconnect", () => {
