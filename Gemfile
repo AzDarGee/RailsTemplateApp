@@ -18,6 +18,7 @@ gem 'omniauth-rails_csrf_protection' # Required for security
 gem "image_processing"
 gem "jsbundling-rails"
 gem "cssbundling-rails"
+gem "mail"
 
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
