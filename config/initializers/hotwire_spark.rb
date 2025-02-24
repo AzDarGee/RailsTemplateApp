@@ -5,6 +5,9 @@ if Rails.env.development?
     # Configure HTML changes
     Rails.application.config.hotwire.spark.html_paths = %w[
         app/controllers
+        app/components
+        app/services
+        app/validators
         app/helpers
         app/assets/images
         app/models

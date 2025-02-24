@@ -6,7 +6,7 @@
 - Turbo
 - Stimulus
 - FontAwesome
-- Devise
+- Devise for authentication
 - NVM for node version management (node 23.8.0)
 - ESBuild for js bundling (instead of importmap)
 - Yarn (1.22.22)
@@ -14,7 +14,8 @@
 - Hotwire Flash messages
 - Dockerfile for One-Click setup 
 - ActionText - Trix Editor
-- ViewComponents 
+- ViewComponents
+    - Docs: https://viewcomponent.org/
 - Active Storage with AWS S3 or Google Cloud Storage 
 - MiniTest for testing
 - Turbo Streams 
@@ -22,6 +23,10 @@
     - SOLID Queue for background jobs (MissionControl Dashboard for jobs monitoring)
     - SOLID Cable for WebSockets / ActionCable 
     - SOLID Cache for caching
+- AI Integration (LangChainRB)
+    - Open AI
+    - Claude
+    - Google Gemini
 
 # App Name
 Change the app name in `config/application.rb` to match the folder name of your app
@@ -57,6 +62,12 @@ EDITOR="cursor --wait" bin/rails credentials:edit
 ```
 http://localhost:3000/rails/info/routes
 ```
+
+# To Generate a new View Component
+```
+rails g component <component_name>
+```
+
 # Debugging
 Add this line anywhere in the code to start debugging
 ```
