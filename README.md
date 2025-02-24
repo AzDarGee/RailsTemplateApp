@@ -10,7 +10,10 @@
 - NVM for node version management (node 23.8.0)
 - esbuild for js bundling (instead of importmap)
 - Yarn (1.22.22)
+- Letter Opener for viewing emails in development
 
+# App Name
+Change the app name in `config/application.rb`
 
 # Setup
 To run rails development server:
@@ -68,4 +71,4 @@ bin/dev
 # To Fix
 * Trix editor not loading with content on hot reload or initial page visit, something to do with hotwire spark and trix js and esbuild/foreman
 * Rails logger not working correctly, check config/initializers/logger.rb 
-* Fix disposable email validator, all the files are setup (the rake task, the service, the validator) but it's not working as expected.
+* Fix disposable email validator, all the files are setup (the rake task, the service, the validator and the user model) but it's not working as expected.
