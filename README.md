@@ -8,12 +8,23 @@
 - FontAwesome
 - Devise
 - NVM for node version management (node 23.8.0)
-- esbuild for js bundling (instead of importmap)
+- ESBuild for js bundling (instead of importmap)
 - Yarn (1.22.22)
 - Letter Opener for viewing emails in development
+- Hotwire Flash messages
+- Dockerfile for One-Click setup 
+- ActionText - Trix Editor
+- ViewComponents 
+- Active Storage with AWS S3 or Google Cloud Storage 
+- MiniTest for testing
+- Turbo Streams 
+- SOLID Trifecta 
+    - SOLID Queue for background jobs (MissionControl Dashboard for jobs monitoring)
+    - SOLID Cable for WebSockets / ActionCable 
+    - SOLID Cache for caching
 
 # App Name
-Change the app name in `config/application.rb`
+Change the app name in `config/application.rb` to match the folder name of your app
 
 # Setup
 To run rails development server:
@@ -68,7 +79,8 @@ rails assets:clobber
 bin/dev
 ```
 
-# To Fix
+# To Fix / To Do
 * Trix editor not loading with content on hot reload or initial page visit, something to do with hotwire spark and trix js and esbuild/foreman
 * Rails logger not working correctly, check config/initializers/logger.rb 
-* Fix disposable email validator, all the files are setup (the rake task, the service, the validator and the user model) but it's not working as expected.
+* Fix disposable email validator, all the files are setup (the rake task, the service, the validator and the user model) but it's not working as expected. 
+* Organize and group the Template App Features into sections
