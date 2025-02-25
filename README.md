@@ -32,6 +32,23 @@
 Change the app name in `config/application.rb` to match the folder name of your app
 
 # Setup
+To migrate the database:
+```
+rails db:migrate
+```
+
+To rollback previous migration (in reverse chronological order):
+```
+rails db:rollback
+```
+
+To rollback a specific migration
+```
+rails db:migrate:down VERSION=<version_number>
+```
+* Replace <version_number> witht the string of numbers of the migration you wish to roll back
+* Note: If that specific migration depends on later migrations, you will have to rollback the later migrations as well.
+
 To run rails development server:
 ```
 bin/dev
