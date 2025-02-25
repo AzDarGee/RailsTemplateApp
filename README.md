@@ -75,7 +75,7 @@ yarn add <package>
 ```
 EDITOR="cursor --wait" bin/rails credentials:edit
 ```
-* Make sure you have the correct master.key file in the /config directory
+* Make sure you have the correct master.key file in the `/config` directory
 
 # To see the routes in a browser, navigate to:
 ```
@@ -101,6 +101,11 @@ pry-remote
 To use rails default debugger, type `console` anywhere in the code and refresh the page.
 
 You can also use, for example, `debug(current_user)` anywhere in the code to get more info on an object
+
+To see all included files of your assets by running:
+```
+rake assets:reveal
+```
 
 # Troubleshooting
 If javascript controllers are not loading
