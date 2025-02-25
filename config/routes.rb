@@ -1,6 +1,5 @@
 Rails.application.routes.draw do
   root to: "pages#home"
-  # devise_for :users
   
   # If I need to customize devise controllers in the future
   devise_for :users, controllers: {

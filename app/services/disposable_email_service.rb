@@ -4,8 +4,6 @@ module DisposableEmailService
     def disposable?(email_address)
         email = Mail::Address.new(email_address.downcase) rescue nil
 
-        binding.remote_pry
-
         if email
             disposable_email_domains.include?(email.domain)
         else

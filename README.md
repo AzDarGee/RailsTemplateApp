@@ -16,7 +16,8 @@
 - ActionText - Trix Editor
 - ViewComponents
     - Docs: https://viewcomponent.org/
-- Active Storage with AWS S3 or Google Cloud Storage 
+- Active Storage with AWS S3 or Google Cloud Storage
+- Image and Video modifications via Background Jobs
 - MiniTest for testing
 - Turbo Streams 
 - SOLID Trifecta 
@@ -34,6 +35,20 @@
 Change the app name in `config/application.rb` to match the folder name of your app
 
 # Setup
+Install necessary libraries for some gems to work:
+```
+sudo apt-get update
+sudo apt-get install build-essential
+```
+For the mini_magick gem, you'll also need ImageMagick installed:
+```
+sudo apt-get install imagemagick
+```
+For video modifications, you need to install:
+```
+sudo apt install ffmpeg
+```
+
 To migrate the database:
 ```
 rails db:migrate
@@ -136,9 +151,20 @@ To delete a remote branch:
 git push -d <branch-name>
 ```
 
+To install all gems, navigate to the root of your app:
+```
+bundle install
+```
+
+# Docs for all the gems
+- Devise (https://github.com/heartcombo/devise)
+- mini_magick (https://github.com/minimagick/minimagick)
+
+
 # To Fix / To Do
 * Trix editor not loading with content on hot reload or initial page visit, something to do with hotwire spark and trix js and esbuild/foreman
 * Rails logger not working correctly, check config/initializers/logger.rb 
 * Fix disposable email validator, all the files are setup (the rake task, the service, the validator and the user model) but it's not working as expected. 
 * Organize and group the Template App Features into sections and Table of Contents in the Readme
 * Delete dependabot branches from remote
+* Be able to delete User Avatar on the edit page with Turbo (no page refresh)

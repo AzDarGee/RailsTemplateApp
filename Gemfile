@@ -16,6 +16,8 @@ gem 'omniauth-facebook'
 gem 'omniauth-twitter2'
 gem 'omniauth-rails_csrf_protection' # Required for security
 gem "image_processing"
+gem "mini_magick"
+gem "streamio-ffmpeg"
 gem "jsbundling-rails"
 gem "cssbundling-rails"
 gem "mail"
