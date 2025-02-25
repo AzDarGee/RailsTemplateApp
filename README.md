@@ -118,4 +118,4 @@ bin/dev
 * Trix editor not loading with content on hot reload or initial page visit, something to do with hotwire spark and trix js and esbuild/foreman
 * Rails logger not working correctly, check config/initializers/logger.rb 
 * Fix disposable email validator, all the files are setup (the rake task, the service, the validator and the user model) but it's not working as expected. 
-* Organize and group the Template App Features into sections
+* Organize and group the Template App Features into sections and Table of Contents in the Readme
