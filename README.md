@@ -168,3 +168,4 @@ bundle install
 * Organize and group the Template App Features into sections and Table of Contents in the Readme
 * Delete dependabot branches from remote
 * Be able to delete User Avatar on the edit page with Turbo (no page refresh)
+* Hot reloading going slow - hotwire spark. Happened after I added Active storage.
