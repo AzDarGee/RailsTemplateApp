@@ -27,6 +27,8 @@
     - Open AI
     - Claude
     - Google Gemini
+- Admin Dashboard
+- Tagging
 
 # App Name
 Change the app name in `config/application.rb` to match the folder name of your app
