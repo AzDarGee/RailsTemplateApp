@@ -1,12 +1,14 @@
+<%= turbo_stream_from "agent_task_#{@task.id}" %>
+
 <!-- Chat container with full height -->
 <div class="d-flex flex-column vh-100">
   <!-- Header -->
   <div class="p-3 border-bottom">
-    <h5 class="m-0">AI Agent</h5>
+    <h5 class="m-0"><%= @agent.name.humanize %></h5>
   </div>
 
   <!-- Messages area with flex-grow to take available space -->
-  <main class="flex-grow-1 p-3 overflow-auto" id="messages">
+  <main class="flex-grow-1 p-3 overflow-auto" id="agent_task_<% @task.id %>_messages">
     <!-- Sample messages - you can remove these -->
     <div class="chat-message mb-3">
       <div class="d-flex">
@@ -19,6 +21,7 @@
         </div>
       </div>
     </div>
+
   </main>
 
   <!-- Footer with input -->
