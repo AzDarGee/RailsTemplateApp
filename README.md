@@ -168,4 +168,5 @@ bundle install
 * Organize and group the Template App Features into sections and Table of Contents in the Readme
 * Delete dependabot branches from remote
 * Be able to delete User Avatar on the edit page with Turbo (no page refresh)
-* Hot reloading going slow - hotwire spark. Happened after I added Active storage.
+* Hot reloading going slow - hotwire spark. Happened after I added Active storage. Try removing and re-installing hotwire-spark. Looks like letter_opener gem is reloading all the views for letter_opener web on each reload.
+* Visualize the database models in a diagram

@@ -1,4 +1,4 @@
-<%= form_with url: agent_path, method: :post, html: { class: "d-flex gap-2", id: "message-form" } do |f| %>
+<%= form_with url: agents_path, method: :post, html: { class: "d-flex gap-2", id: "message-form" } do |f| %>
     <%= f.hidden_field :task_id, value: task.id %>
     <%= f.text_area :message, class: "form-control", placeholder: "Type your message...", "aria-label": "Message" %>
     <%= f.submit "Send", class: "btn btn-primary px-4" %>
