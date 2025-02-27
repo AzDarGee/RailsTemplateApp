@@ -170,3 +170,4 @@ bundle install
 * Be able to delete User Avatar on the edit page with Turbo (no page refresh)
 * Hot reloading going slow - hotwire spark. Happened after I added Active storage. Try removing and re-installing hotwire-spark. Looks like letter_opener gem is reloading all the views for letter_opener web on each reload.
 * Visualize the database models in a diagram
+* Add markdown for chat messages received from AI
