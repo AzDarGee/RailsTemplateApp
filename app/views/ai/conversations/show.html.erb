@@ -8,3 +8,53 @@
 
   <%= button_to "Destroy this conversation", @ai_conversation, method: :delete %>
 </div>
+
+
+<%= turbo_stream_from "agent_task_#{@task.id}" %>
+
+<!-- Chat container with full height -->
+<div class="d-flex flex-column vh-100">
+  <!-- Header -->
+  <div class="p-3 border-bottom">
+    <h5 class="m-0"><%= @agent.name.humanize %></h5>
+  </div>
+
+  <!-- Messages area with flex-grow to take available space -->
+  <main class="flex-grow-1 p-3" id="agent_task_<%= @task.id %>_messages">
+    <!-- Sample messages - you can remove these -->
+    <div class="chat-message mb-3">
+      <div class="d-flex">
+        <div class="flex-shrink-0">
+          <img src="https://via.placeholder.com/32" class="rounded-circle" alt="avatar">
+        </div>
+        <div class="flex-grow-1 ms-3">
+          <div class="small text-muted">John Doe • 2 min ago</div>
+          <div class="p-2 rounded bg-light">Hello! How can I help you today?</div>
+        </div>
+      </div>
+    </div>
+
+    <% if @old_tasks.any? %>
+      <% @old_tasks.each do |task| %>
+        <%= render partial: "ai/agents/old_task", locals: { task: task } %>
+      <% end %>
+    <% end %>
+
+  </main>
+
+  <!-- Footer with input -->
+  <footer class="border-top p-3">
+    <%= render partial: "ai/agents/form", locals: { task: @task } %>
+  </footer>
+</div>
+
+<% content_for :styles do %>
+<style>
+  #messages {
+    height: 0; /* Needed for proper scrolling */
+  }
+  .chat-message {
+    max-width: 80%;
+  }
+</style>
+<% end %>
