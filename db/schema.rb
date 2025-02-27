@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_25_001726) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_27_205301) do
   create_schema "auth"
   create_schema "extensions"
   create_schema "graphql"
@@ -102,6 +102,26 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_25_001726) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "ai_conversations", force: :cascade do |t|
+    t.string "title"
+    t.string "category"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_ai_conversations_on_user_id"
+  end
+
+  create_table "ai_messages", force: :cascade do |t|
+    t.string "role"
+    t.text "content"
+    t.jsonb "tool_calls"
+    t.string "tool_call_id"
+    t.bigint "conversation_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["conversation_id"], name: "index_ai_messages_on_conversation_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -127,6 +147,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_25_001726) do
     t.string "uid"
     t.string "name"
     t.string "image"
+    t.boolean "admin", default: false, null: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["provider", "uid"], name: "index_users_on_provider_and_uid", unique: true
@@ -141,4 +162,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_25_001726) do
   add_foreign_key "ai_agent_tasks", "ai_agent_tasks", column: "parent_task_id"
   add_foreign_key "ai_agent_tasks", "ai_agents", column: "agent_id"
   add_foreign_key "ai_agent_tasks", "users"
+  add_foreign_key "ai_conversations", "users"
+  add_foreign_key "ai_messages", "ai_conversations", column: "conversation_id"
 end

@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @ai_conversation %>
+
+<div>
+  <%= link_to "Edit this conversation", edit_ai_conversation_path(@ai_conversation) %> |
+  <%= link_to "Back to conversations", ai_conversations_path %>
+
+  <%= button_to "Destroy this conversation", @ai_conversation, method: :delete %>
+</div>

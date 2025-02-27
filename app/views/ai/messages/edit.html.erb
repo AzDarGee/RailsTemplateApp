@@ -1,0 +1,12 @@
+<% content_for :title, "Editing message" %>
+
+<h1>Editing message</h1>
+
+<%= render "form", ai_message: @ai_message %>
+
+<br>
+
+<div>
+  <%= link_to "Show this message", @ai_message %> |
+  <%= link_to "Back to messages", ai_messages_path %>
+</div>

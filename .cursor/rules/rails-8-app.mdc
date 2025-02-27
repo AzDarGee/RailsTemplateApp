@@ -11,7 +11,8 @@ alwaysApply: false
 * I am using Postgres as the database
 * Keep up to date with all the ruby gems that I am using
 * Keep up to date with all the node_modules that I am using
-* When styling the views with bootstrap, keep in mind accessibility issues
+* I am using Bootstrap 5 to style the views
+* When styling the views with bootstrap 5, keep in mind accessibility issues
 
 
 

@@ -18,11 +18,15 @@ Rails.application.routes.draw do
   get "pages/pricing"
 
   namespace :ai do
+    resources :messages
+    resources :conversations
+    
     resources :agents do
       member do
         post :create_message
       end
     end
+    
   end
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
