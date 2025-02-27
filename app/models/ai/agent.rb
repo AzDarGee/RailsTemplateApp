@@ -1,5 +1,6 @@
 class Ai::Agent < ApplicationRecord
     has_many :tasks, class_name: "Ai::AgentTask", dependent: :destroy
+    has_many :conversations, class_name: "Ai::Conversation", dependent: :destroy
     belongs_to :user
 
     before_validation do

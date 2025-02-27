@@ -1,0 +1,11 @@
+<% content_for :title, "New conversation" %>
+
+<h1>New conversation</h1>
+
+<%= render "form", ai_conversation: @ai_conversation %>
+
+<br>
+
+<div>
+  <%= link_to "Back to conversations", ai_conversations_path %>
+</div>
