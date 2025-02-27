@@ -1,5 +1,5 @@
 class Ai::Agent < ApplicationRecord
-    has_many :tasks, class_name: "Ai::Task", dependent: :destroy
+    has_many :tasks, class_name: "Ai::AgentTask", dependent: :destroy
 
     before_validation do
         self.tools = [] if tools.blank?
@@ -18,10 +18,10 @@ class Ai::Agent < ApplicationRecord
                 add_message_callback: -> (message) {
                     # Rails.logger.info("agent:#{name} message callback: #{message.role} - #{message.content}")
                     task.upsert_message(
-                    role: message.role,
-                    content: message.content,
-                    tool_calls: message.tool_calls,
-                    tool_call_id: message.tool_call_id
+                        role: message.role,
+                        content: message.content,
+                        tool_calls: message.tool_calls,
+                        tool_call_id: message.tool_call_id
                     )
                 }
             )
@@ -53,8 +53,13 @@ class Ai::Agent < ApplicationRecord
 
     def llm
         @llm ||= Langchain::LLM::OpenAI.new(
-            api_key: Rails.application.credentials.dig(:ai, :open_ai, :api_key),
-            default_options: { chat_model: "gpt-4o" }
+            api_key: Rails.application.credentials.dig(:ai, :open_ai, :api_key)
         )
+    end
+
+    def available_tools
+        {
+            web_search: Langchain::Tool::Tavily.new(api_key: Rails.application.credentials.dig(:ai, :tavily, :api_key))
+        }
     end
 end
