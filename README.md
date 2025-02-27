@@ -35,6 +35,15 @@
 Change the app name in `config/application.rb` to match the folder name of your app
 
 # Setup
+Install all gems
+```
+bundle install
+```
+
+Install yarn packages
+```
+yarn install
+```
 Install necessary libraries for some gems to work:
 ```
 sudo apt-get update
