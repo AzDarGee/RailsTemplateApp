@@ -16,6 +16,13 @@ class Ai::AgentsController < ApplicationController
   end
 
   def destroy
+    @agent.destroy
+    respond_to do |format|
+      format.turbo_stream { 
+        render turbo_stream: turbo_stream.remove("agent_#{@agent.id}"), 
+        notice: "Agent deleted successfully" 
+      }
+    end
   end
 
   def show
@@ -23,7 +30,15 @@ class Ai::AgentsController < ApplicationController
 
     @old_tasks = Ai::AgentTask.where(agent: @agent, parent_task: nil)
 
-    @task = Ai::AgentTask.create!(
+    if @old_tasks.any?
+      @old_tasks.each do |task|
+        if task.messages.empty?
+          task.destroy
+        end
+      end
+    end
+
+    @task = Ai::AgentTask.create(
       agent: @agent,
       user: current_user,
       parent_task: nil

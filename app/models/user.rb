@@ -4,6 +4,8 @@ class User < ApplicationRecord
          :confirmable, :lockable, :timeoutable, :trackable,
          :omniauthable, omniauth_providers: [:google_oauth2, :linkedin, :facebook, :twitter2]
 
+  has_many :agents, class_name: "Ai::Agent", dependent: :destroy
+
   has_rich_text :bio
   has_one_attached :avatar do |attachable|
     attachable.variant :thumb, resize_to_limit: [400, 400], preprocessed: true

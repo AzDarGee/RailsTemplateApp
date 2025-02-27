@@ -18,4 +18,5 @@ class Ai::AgentMessage < ApplicationRecord
       html: ApplicationController.renderer.render(MessageComponent.new(message: self), layout: false)
     )
   end
+
 end

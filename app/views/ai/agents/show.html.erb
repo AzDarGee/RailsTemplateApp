@@ -8,7 +8,7 @@
   </div>
 
   <!-- Messages area with flex-grow to take available space -->
-  <main class="flex-grow-1 p-3 overflow-auto" id="agent_task_<%= @task.id %>_messages">
+  <main class="flex-grow-1 p-3" id="agent_task_<%= @task.id %>_messages">
     <!-- Sample messages - you can remove these -->
     <div class="chat-message mb-3">
       <div class="d-flex">
@@ -21,6 +21,12 @@
         </div>
       </div>
     </div>
+
+    <% if @old_tasks.any? %>
+      <% @old_tasks.each do |task| %>
+        <%= render partial: "ai/agents/old_task", locals: { task: task } %>
+      <% end %>
+    <% end %>
 
   </main>
 
