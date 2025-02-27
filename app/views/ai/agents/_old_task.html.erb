@@ -1,0 +1,13 @@
+<div class="chat-message mb-3">
+    <div class="d-flex">
+        <div class="flex-shrink-0">
+            <img src="https://via.placeholder.com/32" class="rounded-circle" alt="avatar">
+        </div>
+        <div class="flex-grow-1 ms-3">
+            <% task.messages.each do |message| %>
+                <div class="small text-muted"><%= message.role %></div>
+                <div class="p-2 m-2 rounded bg-light"><%= message.content %></div>
+            <% end %>
+        </div>
+    </div>
+</div>
