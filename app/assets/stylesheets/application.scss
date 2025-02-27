@@ -1,5 +1,7 @@
+@import 'application.bootstrap';
 @import 'actiontext.css';
 @import 'trix/dist/trix.css';
+@import 'ai_agents';
 
 trix-editor {
     &.form-control {
