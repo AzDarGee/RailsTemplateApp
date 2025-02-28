@@ -1,14 +1,24 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Connects to data-controller="scroll"
 export default class extends Controller {
   connect() {
     this.scrollToBottom()
-    this.element.addEventListener("DOMNodeInserted", this.scrollToBottom)
+    
+    // Create a MutationObserver instead of using DOMNodeInserted
+    this.observer = new MutationObserver(this.scrollToBottom)
+    
+    // Start observing the target node for configured mutations
+    this.observer.observe(this.element, {
+      childList: true,  // observe direct children
+      subtree: true,    // and lower descendants too
+    })
   }
-
+  
   disconnect() {
-    this.element.removeEventListener("DOMNodeInserted", this.scrollToBottom)
+    // Clean up the observer when the controller is disconnected
+    if (this.observer) {
+      this.observer.disconnect()
+    }
   }
   
   scrollToBottom = () => {

@@ -1,8 +1,8 @@
-<div id="<%= dom_id(message) %>" class="message mb-3 <%= message.sender == 'user' ? 'text-end' : '' %>">
-  <div class="message-bubble d-inline-block p-3 rounded <%= message.sender == 'user' ? 'bg-primary text-white' : 'bg-light' %>" style="max-width: 75%;">
+<div id="<%= dom_id(message) %>" class="message mb-3 <%= message.role == 'user' ? 'text-end' : '' %>">
+  <div class="message-bubble d-inline-block p-3 rounded <%= message.role == 'user' ? 'bg-primary text-white' : 'bg-light' %>" style="max-width: 75%;">
     <%= message.content %>
   </div>
   <div class="message-meta small text-muted mt-1">
-    <%= message.sender.capitalize %>, <%= time_ago_in_words(message.created_at) %> ago
+    <%= message.role.capitalize %>, <%= time_ago_in_words(message.created_at) %> ago
   </div>
 </div>

@@ -5,10 +5,10 @@
 <h1>Conversations</h1>
 
 <div id="ai_conversations">
-  <% @ai_conversations.each do |ai_conversation| %>
-    <%= render ai_conversation %>
+  <% @conversations.each do |conversation| %>
+    <%= render conversation %>
     <p>
-      <%= link_to "Show this conversation", ai_conversation %>
+      <%= link_to "Show this conversation", conversation %>
     </p>
   <% end %>
 </div>
