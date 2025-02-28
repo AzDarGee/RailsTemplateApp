@@ -81,6 +81,9 @@ bin/dev
 ```
 
 # Figma Design to Code
+Figma-Context-MCP is not contained within this Repo, store and run it separately.
+(https://github.com/GLips/Figma-Context-MCP)
+
 To update Figma-Context-MCP:
 * Change directory into mpc_servers/Figma-Context-MCP and pull the latest code
 ```
