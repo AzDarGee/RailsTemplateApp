@@ -7,5 +7,11 @@ import { application } from "./application"
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
 
+import ResetFormController from "./reset_form_controller"
+application.register("reset-form", ResetFormController)
+
+import ScrollController from "./scroll_controller"
+application.register("scroll", ScrollController)
+
 import TrixController from "./trix_controller"
 application.register("trix", TrixController)

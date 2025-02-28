@@ -47,6 +47,7 @@ class Ai::AgentsController < ApplicationController
 
   def create
     @agent = Ai::Agent.new(agent_params)
+    @agent.user = current_user
     
     respond_to do |format|
       if @agent.save
@@ -55,23 +56,6 @@ class Ai::AgentsController < ApplicationController
         format.html { render :new, status: :unprocessable_entity, alert: "Failed to create agent" }
       end
     end
-  end
-
-  def create_message
-    task = Ai::AgentTask.find(params[:task_id])
-
-    user_message = task.messages.create!(
-      role: "user",
-      content: params[:message]
-    )
-
-    task.agent.run!(task)
-
-    render turbo_stream: turbo_stream.replace(
-      "message-form",
-      partial: "ai/agents/form",
-      locals: { task: task }
-    )
   end
 
   private
