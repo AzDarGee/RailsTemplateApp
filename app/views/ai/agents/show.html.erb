@@ -11,7 +11,7 @@
               <%= image_tag 'https://via.placeholder.com/150', class: 'img-fluid' %>
               <span><%= @agent.name.humanize %></span>
             </h5>
-            <p class="card-text" data-controller="editable">
+            <p class="card-text">
               <span><%= @agent.description %></span>
             </p>
             <div class="mb-3">
@@ -21,7 +21,7 @@
               <span><%= @agent.tools %></span>
             </div>
             <div class="mb-3">
-              <%= link_to 'Start Conversation', edit_ai_agent_path(@agent), class: 'btn btn-primary start-conversation' %>
+              <%= link_to 'Start Conversation', ai_conversations_path, class: 'btn btn-primary start-conversation' %>
             </div>
           </div>
         </div>
