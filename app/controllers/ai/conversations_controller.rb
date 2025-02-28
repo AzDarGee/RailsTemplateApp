@@ -1,13 +1,16 @@
 class Ai::ConversationsController < ApplicationController
-  before_action :set_ai_conversation, only: %i[ show destroy ]
+  before_action :set_ai_agent
+  before_action :set_ai_conversation, only: [ :show ]
 
   # GET /ai/conversations or /ai/conversations.json
   def index
-    @ai_conversations = Ai::Conversation.all
+    @ai_conversations = @agent.conversations.where(user: current_user).order(created_at: :desc)
   end
 
   # GET /ai/conversations/1 or /ai/conversations/1.json
   def show
+    @messages = @ai_conversation.messages.order(created_at: :asc)
+    @message = Ai::Message.new
   end
 
   # GET /ai/conversations/new
@@ -17,14 +20,15 @@ class Ai::ConversationsController < ApplicationController
 
   # POST /ai/conversations or /ai/conversations.json
   def create
-    @ai_conversation = Ai::Conversation.new(ai_conversation_params)
+    # @ai_conversation = Ai::Conversation.new(ai_conversation_params)
+    @ai_conversation = @ai_agent.conversations.build(user: current_user, title: "New Conversation #{Time.now.strftime('%Y-%m-%d %H:%M')}")
 
     respond_to do |format|
       if @ai_conversation.save
-        format.html { redirect_to @ai_conversation, notice: "Conversation was successfully created." }
-        format.json { render :show, status: :created, location: @ai_conversation }
+        format.html { redirect_to ai_agent_conversation_path(@ai_agent, @ai_conversation) }
+        format.turbo_stream
       else
-        format.html { render :new, status: :unprocessable_entity }
+        format.html { redirect_to ai_agent_path(@ai_agent), alert: "Failed to create conversation" }
         format.json { render json: @ai_conversation.errors, status: :unprocessable_entity }
       end
     end
@@ -43,11 +47,17 @@ class Ai::ConversationsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_ai_conversation
-      @ai_conversation = Ai::Conversation.find(params.expect(:id))
+      # @ai_conversation = Ai::Conversation.find(params.expect(:id))
+      @ai_conversation = @ai_agent.conversations.where(user: current_user).find(params[:id])
+    end
+
+    def set_ai_agent
+      # @ai_agent = Ai::Agent.find(params.expect(:agent_id))
+      @ai_agent = current_user.ai_agents.find(params[:agent_id])
     end
 
     # Only allow a list of trusted parameters through.
     def ai_conversation_params
-      params.expect(ai_conversation: [ :title, :category, :user_id ])
+      params.expect(ai_conversation: [ :title, :category, :user_id, :agent_id ])
     end
 end

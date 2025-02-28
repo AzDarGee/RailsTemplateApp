@@ -1,27 +1,8 @@
-<div id="<%= dom_id message %>">
-  <p>
-    <strong>Role:</strong>
-    <%= message.role %>
-  </p>
-
-  <p>
-    <strong>Content:</strong>
+<div id="<%= dom_id(message) %>" class="message mb-3 <%= message.sender == 'user' ? 'text-end' : '' %>">
+  <div class="message-bubble d-inline-block p-3 rounded <%= message.sender == 'user' ? 'bg-primary text-white' : 'bg-light' %>" style="max-width: 75%;">
     <%= message.content %>
-  </p>
-
-  <p>
-    <strong>Tool calls:</strong>
-    <%= message.tool_calls %>
-  </p>
-
-  <p>
-    <strong>Tool call:</strong>
-    <%= message.tool_call_id %>
-  </p>
-
-  <p>
-    <strong>Conversation:</strong>
-    <%= message.conversation_id %>
-  </p>
-
+  </div>
+  <div class="message-meta small text-muted mt-1">
+    <%= message.sender.capitalize %>, <%= time_ago_in_words(message.created_at) %> ago
+  </div>
 </div>

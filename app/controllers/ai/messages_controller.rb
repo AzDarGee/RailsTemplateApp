@@ -1,4 +1,5 @@
 class Ai::MessagesController < ApplicationController
+  before_action :set_ai_conversation
   before_action :set_ai_message, only: %i[ show edit update destroy ]
 
   # GET /ai/messages or /ai/messages.json
@@ -63,8 +64,24 @@ class Ai::MessagesController < ApplicationController
       @ai_message = Ai::Message.find(params.expect(:id))
     end
 
+    def set_ai_conversation
+      @ai_conversation = current_user.conversations.find(params[:conversation_id])
+    end
+
     # Only allow a list of trusted parameters through.
     def ai_message_params
       params.expect(ai_message: [ :role, :content, :tool_calls, :tool_call_id, :conversation_id ])
+    end
+
+    def generate_ai_response
+      # Create a placeholder message immediately
+      @ai_message = @ai_conversation.messages.create(
+        content: "Thinking...",
+        sender: "agent"
+      )
+  
+      # In a real app, you'd use a background job here
+      # For demo purposes, we'll simulate a delay and update the message
+      AiResponseJob.perform_later(@ai_message.id, @ai_conversation.id)
     end
 end

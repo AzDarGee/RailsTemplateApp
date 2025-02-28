@@ -7,9 +7,9 @@ class Ai::Agent < ApplicationRecord
         self.tools = [] if tools.blank?
     end
 
-    normalizes :tools, with: -> (value) {
-        value.is_a?(String) ? JSON.parse(value) : value
-    }
+    # normalizes :tools, with: -> (value) {
+    #     value.is_a?(String) ? JSON.parse(value) : value
+    # }
 
     def run!(task)
         begin
