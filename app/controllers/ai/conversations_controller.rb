@@ -1,5 +1,5 @@
 class Ai::ConversationsController < ApplicationController
-  before_action :set_ai_conversation, only: %i[ show edit update destroy ]
+  before_action :set_ai_conversation, only: %i[ show destroy ]
 
   # GET /ai/conversations or /ai/conversations.json
   def index
@@ -15,10 +15,6 @@ class Ai::ConversationsController < ApplicationController
     @ai_conversation = Ai::Conversation.new
   end
 
-  # GET /ai/conversations/1/edit
-  def edit
-  end
-
   # POST /ai/conversations or /ai/conversations.json
   def create
     @ai_conversation = Ai::Conversation.new(ai_conversation_params)
@@ -29,19 +25,6 @@ class Ai::ConversationsController < ApplicationController
         format.json { render :show, status: :created, location: @ai_conversation }
       else
         format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @ai_conversation.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # PATCH/PUT /ai/conversations/1 or /ai/conversations/1.json
-  def update
-    respond_to do |format|
-      if @ai_conversation.update(ai_conversation_params)
-        format.html { redirect_to @ai_conversation, notice: "Conversation was successfully updated." }
-        format.json { render :show, status: :ok, location: @ai_conversation }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @ai_conversation.errors, status: :unprocessable_entity }
       end
     end

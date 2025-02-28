@@ -80,6 +80,36 @@ To run rails development server:
 bin/dev
 ```
 
+# Figma Design to Code
+To update Figma-Context-MCP:
+* Change directory into mpc_servers/Figma-Context-MCP and pull the latest code
+```
+git pull origin main
+```
+
+Install the dependencies (must have pnpm installed - `sudo npm install -g pnpm`):
+```
+pnpm install
+```
+
+Figma API Key:
+* Go to Figma and generate an API key and place it in the .env file within Figma-Context-MCP
+
+In a new terminal, `cd` into mcp_servers/Figma-Context-MCP and run:
+```
+pnpm run dev
+```
+
+Copy a link of your design from Figma and paste it in chat. Give chat some instructions to implement the design into code and make sure to specify to use the get_node directive.
+
+For example:
+```
+<link_to_figma_design>
+
+Implement this in ruby on rails (.html.erb, scss and js) and make sure to use the get_node
+```
+
+
 # View Emails sent in development
 ```
 http://localhost:3000/letter_opener
