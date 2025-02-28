@@ -1,19 +1,21 @@
-<%= form_with url: ai_messages_path, method: :post do |form| %>
-  <% if ai_conversation.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(ai_conversation.errors.count, "error") %> prohibited this ai_conversation from being saved:</h2>
+<footer class="border-top p-3">
+  <%= form_with url: ai_conversation_messages_path(ai_conversation), method: :post, html: { class: "d-flex gap-2", id: "message-form" } do |form| %>
+    <% if ai_conversation.errors.any? %>
+      <div style="color: red">
+        <h2><%= pluralize(ai_conversation.errors.count, "error") %> prohibited this ai_conversation from being saved:</h2>
 
-      <ul>
-        <% ai_conversation.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
+        <ul>
+          <% ai_conversation.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= form.text_area :message, class: "form-control", placeholder: "Type your message...", "aria-label": "Message" %>
+
+    <div>
+      <%= form.submit "Send", class: "btn btn-primary px-4" %>
     </div>
   <% end %>
-
-  <%= form.text_area :message, class: "form-control", placeholder: "Type your message...", "aria-label": "Message" %>
-
-  <div>
-    <%= form.submit, class: "btn btn-primary px-4" %>
-  </div>
-<% end %>
+</footer>
