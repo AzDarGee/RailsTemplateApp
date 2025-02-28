@@ -2,8 +2,8 @@ class AiResponseJob < ApplicationJob
   queue_as :default
 
   def perform(ai_message_id, ai_conversation_id)
-    message = Message.find(ai_message_id)
-    conversation = Conversation.find(ai_conversation_id)
+    message = Ai::Message.find(ai_message_id)
+    conversation = Ai::Conversation.find(ai_conversation_id)
     
     # Simulate AI processing time
     sleep(1)

@@ -46,8 +46,7 @@ class Ai::AgentsController < ApplicationController
   end
 
   def create
-    @agent = Ai::Agent.new(agent_params)
-    @agent.user = current_user
+    @agent = current_user.agents.create(agent_params)
     
     respond_to do |format|
       if @agent.save
@@ -61,10 +60,10 @@ class Ai::AgentsController < ApplicationController
   private
 
   def set_agent
-    @agent = Ai::Agent.find(params[:id])
+    @agent = current_user.agents.find(params[:id])
   end
 
   def agent_params
-    params.require(:ai_agent).permit(:name, :description, :instructions, :tools)
+    params.require(:agent).permit(:name, :description, :instructions, :tools)
   end
 end

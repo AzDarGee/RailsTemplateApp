@@ -1,10 +1,10 @@
 <p style="color: green"><%= notice %></p>
 
-<%= render @ai_message %>
+<%= render @message %>
 
 <div>
-  <%= link_to "Edit this message", edit_ai_message_path(@ai_message) %> |
+  <%= link_to "Edit this message", edit_ai_message_path(@message) %> |
   <%= link_to "Back to messages", ai_messages_path %>
 
-  <%= button_to "Destroy this message", @ai_message, method: :delete %>
+  <%= button_to "Destroy this message", @message, method: :delete %>
 </div>

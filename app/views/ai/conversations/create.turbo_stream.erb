@@ -1,5 +1,5 @@
 <%= turbo_stream.prepend "conversations-list" do %>
-    <%= render "ai/conversations/conversation", conversation: @ai_conversation %>
+    <%= render "ai/conversations/conversation", conversation: @conversation %>
 <% end %>
   
 <%= turbo_stream.replace "flash" do %>

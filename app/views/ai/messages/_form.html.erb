@@ -1,16 +1,4 @@
-<%= form_with(url: ai_agent_conversation_messages_path(agent, conversation), class: "d-flex", data: { controller: "reset-form", action: "turbo:submit-end->reset-form#reset" }) do |form| %>
-  <% if message.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(message.errors.count, "error") %> prohibited this message from being saved:</h2>
-
-      <ul>
-        <% message.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
-
+<%= form_with scope: :ai, url: ai_agent_conversation_messages_path(agent, conversation), class: "d-flex", data: { controller: "reset-form", action: "turbo:submit-end->reset-form#reset" } do |form| %>
   <%= form.text_field :content, class: "form-control me-2", placeholder: "Type your message...", required: true, autofocus: true %>
   <%= form.submit "Send", class: "btn btn-primary" %>
 <% end %>

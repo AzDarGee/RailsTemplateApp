@@ -5,10 +5,10 @@
 <h1>Messages</h1>
 
 <div id="ai_messages">
-  <% @ai_messages.each do |ai_message| %>
-    <%= render ai_message %>
+  <% @messages.each do |message| %>
+    <%= render message %>
     <p>
-      <%= link_to "Show this message", ai_message %>
+      <%= link_to "Show this message", message %>
     </p>
   <% end %>
 </div>

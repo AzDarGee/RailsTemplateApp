@@ -4,7 +4,7 @@ class User < ApplicationRecord
          :confirmable, :lockable, :timeoutable, :trackable,
          :omniauthable, omniauth_providers: [:google_oauth2, :linkedin, :facebook, :twitter2]
 
-  has_many :ai_agents, class_name: "Ai::Agent", dependent: :destroy
+  has_many :agents, class_name: "Ai::Agent", dependent: :destroy
   has_many :conversations, class_name: "Ai::Conversation", dependent: :destroy
 
   has_rich_text :bio
