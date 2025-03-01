@@ -21,7 +21,11 @@ class Ai::ConversationsController < ApplicationController
   # POST /ai/conversations or /ai/conversations.json
   def create
     # @ai_conversation = Ai::Conversation.new(ai_conversation_params)
-    @conversation = @agent.conversations.build(user: current_user, title: "New Conversation #{Time.now.strftime('%Y-%m-%d %H:%M')}")
+    @conversation = @agent.conversations.build(
+      user: current_user, 
+      title: "New Conversation #{Time.now.strftime('%Y-%m-%d %H:%M')}",
+      category: "AI Conversation"
+    )
 
     respond_to do |format|
       if @conversation.save

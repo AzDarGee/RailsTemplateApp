@@ -25,18 +25,18 @@ class Ai::MessagesController < ApplicationController
     @message = @conversation.messages.build(message_params)
     @message.role = "user"
 
+    puts "Generating AI response..."
+    binding.remote_pry
+
     respond_to do |format|
       if @message.save
         # Trigger AI response after user message is saved
         generate_ai_response
         
         format.turbo_stream
-        format.html { redirect_to agent_conversation_path(@conversation.agent, @conversation) }
-      
-        format.json { render :show, status: :created, location: @message }
+        format.html { redirect_to ai_agent_conversation_path(@conversation.agent, @conversation) }
       else
-        format.html { redirect_to agent_conversation_path(@conversation.agent, @conversation), alert: "Failed to send message" }
-        format.json { render json: @message.errors, status: :unprocessable_entity }
+        format.html { redirect_to ai_agent_conversation_path(@conversation.agent, @conversation), alert: "Failed to send message" }
       end
     end
   end
@@ -46,10 +46,8 @@ class Ai::MessagesController < ApplicationController
     respond_to do |format|
       if @message.update(message_params)
         format.html { redirect_to @message, notice: "Message was successfully updated." }
-        format.json { render :show, status: :ok, location: @message }
       else
         format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @message.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -60,7 +58,6 @@ class Ai::MessagesController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to ai_messages_path, status: :see_other, notice: "Message was successfully destroyed." }
-      format.json { head :no_content }
     end
   end
 
@@ -81,9 +78,18 @@ class Ai::MessagesController < ApplicationController
 
     def generate_ai_response
       # Create a placeholder message immediately
+      
       @ai_message = @conversation.messages.create!(
         content: "Thinking...",
         role: "agent"
+      )
+
+      # Broadcast the placeholder message
+      Turbo::StreamsChannel.broadcast_append_to(
+        "conversation_#{@conversation.id}",
+        target: "message-list",
+        partial: "ai/messages/message",
+        locals: { message: @ai_message }
       )
   
       # In a real app, you'd use a background job here
