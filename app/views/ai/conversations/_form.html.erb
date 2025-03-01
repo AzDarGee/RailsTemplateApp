@@ -1,21 +1,9 @@
 <footer class="border-top p-3">
-  <%= form_with url: new_ai_agent_conversation_path(agent), method: :post, html: { class: "d-flex gap-2", id: "message-form" } do |form| %>
-    <% if conversation.errors.any? %>
-      <div style="color: red">
-        <h2><%= pluralize(conversation.errors.count, "error") %> prohibited this conversation from being saved:</h2>
-
-        <ul>
-          <% conversation.errors.each do |error| %>
-            <li><%= error.full_message %></li>
-          <% end %>
-        </ul>
-      </div>
-    <% end %>
-
-    <%= form.text_area :message, class: "form-control", placeholder: "Type your message...", "aria-label": "Message" %>
-
-    <div>
-      <%= form.submit "Send", class: "btn btn-primary px-4" %>
-    </div>
+  <%= form_with(model: [:ai, @conversation, @message], 
+                url: ai_conversation_messages_path(@conversation), 
+                class: "d-flex", 
+                data: { controller: "reset-form", action: "turbo:submit-end->reset-form#reset", turbo_method: :post }) do |form| %>
+    <%= form.text_field :content, class: "form-control me-2", placeholder: "Type your message...", required: true, autofocus: true %>
+    <%= form.submit "Send", class: "btn btn-primary" %>
   <% end %>
 </footer>

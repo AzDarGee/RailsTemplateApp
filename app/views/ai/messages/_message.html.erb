@@ -3,6 +3,6 @@
     <%= message.content %>
   </div>
   <div class="message-meta small text-muted mt-1">
-    <%= message.role.capitalize %>, <%= time_ago_in_words(message.created_at) %> ago
+    <%= message.role == 'user' ? 'You' : @agent&.name || 'AI' %>, <%= time_ago_in_words(message.created_at) %> ago
   </div>
 </div>

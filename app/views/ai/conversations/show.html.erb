@@ -25,7 +25,7 @@
           <div class="chat-messages p-3" style="height: 400px; overflow-y: auto;" id="messages" data-controller="scroll">
             <%= turbo_stream_from "conversation_#{@conversation.id}" %>
             <div id="message-list">
-              <%= render @messages %>
+              <%= render partial: "ai/messages/message", collection: @messages %>
             </div>
           </div>
         </div>
