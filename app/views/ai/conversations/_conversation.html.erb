@@ -1,20 +1,7 @@
-<div id="<%= dom_id conversation %>" class="p-2">
+<div id="<%= dom_id conversation %>" class="p-2 card m-2">
   <p>
-    <strong>Title:</strong>
-    <%= conversation.title %>
+    <strong><%= conversation.title %></strong>
   </p>
-
-  <p>
-    <strong>Category:</strong>
-    <%= conversation.category %>
-  </p>
-
-  <p>
-    <strong>User:</strong>
-    <%= conversation.user.email %>
-  </p>
-
-
 
   <%= link_to ai_agent_conversation_path(conversation.agent, conversation), class: "list-group-item list-group-item-action #{'active' if local_assigns[:active]}" do %>
     <div class="d-flex w-100 justify-content-between">
