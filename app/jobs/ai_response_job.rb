@@ -11,14 +11,11 @@ class AiResponseJob < ApplicationJob
         instructions: agent.instructions,
         tools: agent.tools
       )
-
+      
       # Add conversation history to the assistant
       conversation_messages.each do |msg|
         assistant.add_message(
-          role: msg.role,
-          content: msg.content,
-          tool_calls: msg.tool_calls.presence || [],
-          tool_call_id: msg.tool_call_id
+          content: msg.content
         )
       end
       
@@ -36,7 +33,7 @@ class AiResponseJob < ApplicationJob
 
       # Broadcast the updated message to all clients
       Turbo::StreamsChannel.broadcast_replace_to(
-        "ai_conversation_#{conversation.id}",
+        "conversation_#{conversation.id}",
         target: dom_id(ai_message),
         partial: "ai/messages/message",
         locals: { message: ai_message, agent: agent }
