@@ -31,7 +31,7 @@
         </div>
         
         <div class="card-footer">
-          <%= render "ai/messages/form", agent: @agent, conversation: @conversation, message: @message %>
+          <%= render "ai/messages/form", agent: @agent, conversation: @conversation, message: Ai::Message.new %>
         </div>
       </div>
     </div>

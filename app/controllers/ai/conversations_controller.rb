@@ -44,8 +44,6 @@ class Ai::ConversationsController < ApplicationController
 
     respond_to do |format|
       format.turbo_stream { render turbo_stream: turbo_stream.remove("ai_conversation_#{@conversation.id}") }
-      format.html { redirect_to ai_conversations_path, status: :see_other, notice: "Conversation was successfully destroyed." }
-      format.json { head :no_content }
     end
   end
 

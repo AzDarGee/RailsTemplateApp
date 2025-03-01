@@ -22,15 +22,10 @@ class Ai::MessagesController < ApplicationController
     @message = @conversation.messages.build(message_params)
     @message.role = "user"
 
-    puts "Generating AI response..."
-
     respond_to do |format|
       if @message.save
-        # Trigger AI response after user message is saved
-        generate_ai_response
-        
-        format.turbo_stream
-        # format.html { redirect_to ai_agent_conversation_path(@conversation.agent, @conversation) }
+        format.turbo_stream     
+        generate_ai_response(@message)
       else
         format.html { redirect_to ai_agent_conversation_path(@conversation.agent, @conversation), alert: "Failed to send message" }
       end
@@ -41,7 +36,7 @@ class Ai::MessagesController < ApplicationController
   def update
     respond_to do |format|
       if @message.update(message_params)
-        format.html { redirect_to @message, notice: "Message was successfully updated." }
+        format.turbo_stream
       else
         format.html { render :edit, status: :unprocessable_entity }
       end
@@ -60,7 +55,7 @@ class Ai::MessagesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_message
-      @message = Ai::Message.find(params.expect(:id))
+      @message = Ai::Message.find(params[:id])
     end
 
     def set_conversation
@@ -76,24 +71,25 @@ class Ai::MessagesController < ApplicationController
       params.expect(ai_message: [ :role, :content, :tool_calls, :tool_call_id, :conversation_id ])
     end
 
-    def generate_ai_response
-      # Create a placeholder message immediately
-      
-      @ai_message = @conversation.messages.create!(
+    def generate_ai_response(message)
+        # Create a placeholder message immediately
+      @ai_message = @conversation.messages.create(
         content: "Thinking...",
         role: "agent"
       )
-
+      
       # Broadcast the placeholder message
       Turbo::StreamsChannel.broadcast_append_to(
         "conversation_#{@conversation.id}",
         target: "message-list",
         partial: "ai/messages/message",
-        locals: { message: @ai_message }
+        locals: { message: @ai_message, agent: @agent }
       )
-  
-      # In a real app, you'd use a background job here
-      # For demo purposes, we'll simulate a delay and update the message
-      AiResponseJob.perform_later(@ai_message.id, @conversation.id)
+
+      AiResponseJob.perform_later(@ai_message, @conversation, @agent)
+    end
+
+    def dom_id(message)
+      ActionView::RecordIdentifier.dom_id(message)
     end
 end
