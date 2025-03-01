@@ -1,4 +1,4 @@
-<div id="<%= dom_id conversation %>">
+<div id="<%= dom_id conversation %>" class="p-2">
   <p>
     <strong>Title:</strong>
     <%= conversation.title %>
@@ -14,16 +14,19 @@
     <%= conversation.user.email %>
   </p>
 
-</div>
 
-<%= link_to ai_agent_conversation_path(conversation.agent, conversation), class: "list-group-item list-group-item-action #{'active' if local_assigns[:active]}" do %>
-  <div class="d-flex w-100 justify-content-between">
-    <h6 class="mb-1"><%= conversation.title %></h6>
-    <small><%= time_ago_in_words(conversation.updated_at) %> ago</small>
-  </div>
-  <% if conversation.messages.any? %>
-    <p class="mb-1 text-truncate"><%= conversation.messages.last.content %></p>
-  <% else %>
-    <p class="mb-1 text-muted">No messages yet</p>
+
+  <%= link_to ai_agent_conversation_path(conversation.agent, conversation), class: "list-group-item list-group-item-action #{'active' if local_assigns[:active]}" do %>
+    <div class="d-flex w-100 justify-content-between">
+      <h6 class="mb-1"><%= conversation.title %></h6>
+      <small><%= time_ago_in_words(conversation.updated_at) %> ago</small>
+    </div>
+    <% if conversation.messages.any? %>
+      <p class="mb-1 text-truncate"><%= conversation.messages.last.content %></p>
+    <% else %>
+      <p class="mb-1 text-muted">No messages yet</p>
+    <% end %>
   <% end %>
-<% end %>
+
+  <%= link_to "Delete", ai_agent_conversation_path(conversation.agent, conversation), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %>
+</div>
