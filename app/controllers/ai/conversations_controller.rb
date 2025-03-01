@@ -1,6 +1,6 @@
 class Ai::ConversationsController < ApplicationController
   before_action :set_agent
-  before_action :set_conversation, only: [ :show ]
+  before_action :set_conversation, only: [ :show, :destroy ]
 
   # GET /ai/conversations or /ai/conversations.json
   def index
@@ -43,6 +43,7 @@ class Ai::ConversationsController < ApplicationController
     @conversation.destroy!
 
     respond_to do |format|
+      format.turbo_stream { render turbo_stream: turbo_stream.remove("ai_conversation_#{@conversation.id}") }
       format.html { redirect_to ai_conversations_path, status: :see_other, notice: "Conversation was successfully destroyed." }
       format.json { head :no_content }
     end
