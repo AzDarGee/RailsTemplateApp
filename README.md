@@ -16,7 +16,7 @@
 - ActionText - Trix Editor
 - ViewComponents
     - Docs: https://viewcomponent.org/
-- Active Storage with AWS S3 or Google Cloud Storage
+- Active Storage with AWS S3
 - Image and Video modifications via Background Jobs
 - MiniTest for testing
 - Turbo Streams 
