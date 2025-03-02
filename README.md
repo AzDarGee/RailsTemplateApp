@@ -30,7 +30,7 @@
     - Google Gemini
 - Admin Dashboard
 - Tagging
-- Pay gem to manage payments
+- Pay gem to manage payments (Stripe and PayPal)
 
 # App Name
 Change the app name in `config/application.rb` to match the folder name of your app
