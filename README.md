@@ -5,7 +5,7 @@
 - Stimulus
 - Turbo
 - Stimulus
-- FontAwesome
+- FontAwesome 5
 - Devise for authentication
 - NVM for node version management (node 23.8.0)
 - ESBuild for js bundling (instead of importmap)
@@ -30,6 +30,7 @@
     - Google Gemini
 - Admin Dashboard
 - Tagging
+- Pay gem to manage payments
 
 # App Name
 Change the app name in `config/application.rb` to match the folder name of your app
