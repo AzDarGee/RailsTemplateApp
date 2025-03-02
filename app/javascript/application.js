@@ -8,4 +8,7 @@ import * as bootstrap from "bootstrap"
 import "trix"
 import "@rails/actiontext"
 
+// Custom JavaScript
+import "./pricing"
+
 console.log("Application.js loaded!!!!!!!")

@@ -1,0 +1,31 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow">
+        <div class="card-header">
+          <h3 class="mb-0">Subscribe to <%= @subscription_options[:name] %></h3>
+        </div>
+        <div class="card-body">
+          <div class="mb-4">
+            <h5>Plan Details:</h5>
+            <p><strong>Price:</strong> $<%= sprintf('%.2f', @subscription_options[:price]) %> / <%= @subscription_options[:interval] %></p>
+          </div>
+
+          <%= form_with url: subscriptions_path, method: :post, data: { turbo: false } do |form| %>
+            <%= form.hidden_field :plan, value: @plan %>
+            <%= form.hidden_field :processor, value: @payment_processor %>
+            
+            <div class="alert alert-info">
+              <p class="mb-0">You'll be redirected to Stripe to complete your payment securely.</p>
+            </div>
+            
+            <div class="d-grid gap-2">
+              <%= form.submit "Proceed to Payment", class: "btn btn-primary btn-lg" %>
+              <%= link_to "Cancel", pricing_path, class: "btn btn-outline-secondary" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

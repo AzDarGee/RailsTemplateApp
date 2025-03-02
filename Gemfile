@@ -35,6 +35,10 @@ gem "kamal", require: false
 
 gem "thruster", require: false
 
+# Payment processing
+gem "pay", "~> 8.3.0"
+gem "stripe", "~> 13.0"
+
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "brakeman", require: false

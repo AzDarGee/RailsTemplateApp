@@ -316,6 +316,8 @@ GEM
     parser (3.3.7.1)
       ast (~> 2.4.1)
       racc
+    pay (8.3.0)
+      rails (>= 6.0.0)
     pg (1.5.9)
     pp (0.6.2)
       prettyprint
@@ -476,6 +478,7 @@ GEM
     streamio-ffmpeg (3.0.2)
       multi_json (~> 1.8)
     stringio (3.1.3)
+    stripe (13.5.0)
     thor (1.3.2)
     thruster (0.1.11)
     thruster (0.1.11-aarch64-linux)
@@ -551,6 +554,7 @@ DEPENDENCIES
   omniauth-linkedin-oauth2
   omniauth-rails_csrf_protection
   omniauth-twitter2
+  pay (~> 8.3.0)
   pg (~> 1.1)
   propshaft
   pry
@@ -565,6 +569,7 @@ DEPENDENCIES
   solid_queue
   stimulus-rails
   streamio-ffmpeg
+  stripe (~> 13.0)
   thruster
   turbo-rails
   tzinfo-data

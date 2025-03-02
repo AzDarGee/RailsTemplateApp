@@ -21,7 +21,7 @@
           <%= link_to "AI Agent", ai_agents_path, class: "nav-link #{current_page?(ai_agents_path) ? 'active' : ''}" %>
         </li>
         <li class="nav-item">
-          <%= link_to "Pricing", pages_pricing_path, class: "nav-link #{current_page?(pages_pricing_path) ? 'active' : ''}" %>
+          <%= link_to "Pricing", pricing_path, class: "nav-link #{current_page?(pricing_path) ? 'active' : ''}" %>
         </li>
         <li class="nav-item">
           <%= link_to "About", pages_about_path, class: "nav-link #{current_page?(pages_about_path) ? 'active' : ''}" %>
@@ -42,6 +42,15 @@
             <ul class="dropdown-menu dropdown-menu-end">
               <li>
                 <%= link_to "Profile", edit_user_registration_path, class: "dropdown-item" %>
+              </li>
+              <li>
+                <%= link_to "Dashboard", pages_dashboard_path, class: "dropdown-item" %>
+              </li>
+              <li>
+                <%= link_to "My Subscriptions", subscriptions_path, class: "dropdown-item" %>
+              </li>
+              <li>
+                <%= link_to "Payment History", payments_path, class: "dropdown-item" %>
               </li>
               <li><hr class="dropdown-divider"></li>
               <li>
