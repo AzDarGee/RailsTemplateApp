@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Ai::AgentTaskTest < ActiveSupport::TestCase
+class Ai::MessageTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

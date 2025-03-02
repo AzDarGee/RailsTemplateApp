@@ -26,27 +26,10 @@ class Ai::AgentsController < ApplicationController
   end
 
   def show
-    @agent = Ai::Agent.find(params[:id])
-
-    @old_tasks = Ai::AgentTask.where(agent: @agent, parent_task: nil)
-
-    if @old_tasks.any?
-      @old_tasks.each do |task|
-        if task.messages.empty?
-          task.destroy
-        end
-      end
-    end
-
-    @task = Ai::AgentTask.create(
-      agent: @agent,
-      user: current_user,
-      parent_task: nil
-    )
   end
 
   def create
-    @agent = Ai::Agent.new(agent_params)
+    @agent = current_user.agents.create(agent_params)
     
     respond_to do |format|
       if @agent.save
@@ -57,30 +40,13 @@ class Ai::AgentsController < ApplicationController
     end
   end
 
-  def create_message
-    task = Ai::AgentTask.find(params[:task_id])
-
-    user_message = task.messages.create!(
-      role: "user",
-      content: params[:message]
-    )
-
-    task.agent.run!(task)
-
-    render turbo_stream: turbo_stream.replace(
-      "message-form",
-      partial: "ai/agents/form",
-      locals: { task: task }
-    )
-  end
-
   private
 
   def set_agent
-    @agent = Ai::Agent.find(params[:id])
+    @agent = current_user.agents.find(params[:id])
   end
 
   def agent_params
-    params.require(:ai_agent).permit(:name, :description, :instructions, :tools)
+    params.require(:agent).permit(:name, :description, :instructions, :tools)
   end
 end

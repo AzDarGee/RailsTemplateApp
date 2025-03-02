@@ -17,10 +17,10 @@ Rails.application.routes.draw do
   get "pages/contact"
   get "pages/pricing"
 
-  namespace :ai do
+  namespace :ai do   
     resources :agents do
-      member do
-        post :create_message
+      resources :conversations do
+        resources :messages
       end
     end
   end

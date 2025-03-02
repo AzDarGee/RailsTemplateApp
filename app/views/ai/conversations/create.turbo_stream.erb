@@ -1,0 +1,12 @@
+<%= turbo_stream.prepend "conversations-list" do %>
+    <%= render "ai/conversations/conversation", conversation: @conversation %>
+<% end %>
+  
+<%= turbo_stream.replace "flash" do %>
+    <div id="flash" class="flash">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        Conversation created successfully!
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+<% end %>

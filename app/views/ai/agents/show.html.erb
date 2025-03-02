@@ -1,48 +1,60 @@
-<%= turbo_stream_from "agent_task_#{@task.id}" %>
-
-<!-- Chat container with full height -->
-<div class="d-flex flex-column vh-100">
-  <!-- Header -->
-  <div class="p-3 border-bottom">
-    <h5 class="m-0"><%= @agent.name.humanize %></h5>
-  </div>
-
-  <!-- Messages area with flex-grow to take available space -->
-  <main class="flex-grow-1 p-3" id="agent_task_<%= @task.id %>_messages">
-    <!-- Sample messages - you can remove these -->
-    <div class="chat-message mb-3">
-      <div class="d-flex">
-        <div class="flex-shrink-0">
-          <img src="https://via.placeholder.com/32" class="rounded-circle" alt="avatar">
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="m-0">Agent Details</h5>
         </div>
-        <div class="flex-grow-1 ms-3">
-          <div class="small text-muted">John Doe • 2 min ago</div>
-          <div class="p-2 rounded bg-light">Hello! How can I help you today?</div>
+        <div class="card-body">
+          <div id="agent-details">
+            <h5 class="card-title">
+              <%= image_tag 'https://via.placeholder.com/150', class: 'img-fluid' %>
+              <span><%= @agent.name.humanize %></span>
+            </h5>
+            <p class="card-text">
+              <span><%= @agent.description %></span>
+            </p>
+            <div class="mb-3">
+              <span><%= @agent.instructions %></span>
+            </div>
+            <div class="mb-3">
+              <span><%= @agent.tools %></span>
+            </div>
+            <div class="mb-3">
+              <%= link_to 'Start Conversation', new_ai_agent_conversation_path(@agent), class: 'btn btn-primary start-conversation' %>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-
-    <% if @old_tasks.any? %>
-      <% @old_tasks.each do |task| %>
-        <%= render partial: "ai/agents/old_task", locals: { task: task } %>
-      <% end %>
-    <% end %>
-
-  </main>
-
-  <!-- Footer with input -->
-  <footer class="border-top p-3">
-    <%= render partial: "ai/agents/form", locals: { task: @task } %>
-  </footer>
+  </div>
 </div>
 
-<% content_for :styles do %>
-<style>
-  #messages {
-    height: 0; /* Needed for proper scrolling */
-  }
-  .chat-message {
-    max-width: 80%;
-  }
-</style>
-<% end %>
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Conversations</h5>
+          <%= link_to "New Chat", ai_agent_conversations_path(@agent), method: :post, class: "btn btn-sm btn-primary", data: { turbo_method: :post } %>
+        </div>
+        <div class="card-body p-0">
+          <div class="list-group list-group-flush" id="conversations-list">
+            <%= render partial: "ai/conversations/conversation", collection: @agent.conversations.where(user: current_user).order(created_at: :desc) %>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Select or start a conversation</h5>
+        </div>
+        <div class="card-body d-flex align-items-center justify-content-center text-muted" style="height: 400px;">
+          <p>Choose a conversation from the list or create a new one to start chatting with <%= @agent.name %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
