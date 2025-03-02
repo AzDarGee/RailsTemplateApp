@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="h-100">
   <head>
     <title><%= content_for(:title) || "Rails Template App" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -23,14 +23,15 @@
     <%# stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   </head>
 
-  <body>
+  <body class="d-flex flex-column h-100">
     <%= render "shared/navbar" %>
     
     <%= render partial: "shared/flash_messages" %>
 
-    <div class="container-fluid">
+    <main class="flex-shrink-0">
       <%= yield %>
-    </div>
-
+    </main>
+    
+    <%= render "shared/footer" %>
   </body>
 </html>

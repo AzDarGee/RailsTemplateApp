@@ -1,0 +1,83 @@
+<div class="container mt-5">
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <h1>Your Subscriptions</h1>
+    </div>
+    <div class="col-md-4 text-end">
+      <%= link_to "Manage Billing", billing_subscriptions_path, class: "btn btn-outline-primary" %>
+      <%= link_to "View Plans", pricing_path, class: "btn btn-primary ms-2" %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <% if @subscriptions.any? %>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Plan</th>
+                    <th>Status</th>
+                    <th>Started</th>
+                    <th>Next Billing</th>
+                    <th>Amount</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @subscriptions.each do |subscription| %>
+                    <tr>
+                      <td><%= subscription.processor_plan %></td>
+                      <td>
+                        <% if subscription.active? %>
+                          <span class="badge bg-success">Active</span>
+                        <% elsif subscription.canceled? %>
+                          <span class="badge bg-danger">Canceled</span>
+                        <% elsif subscription.paused? %>
+                          <span class="badge bg-warning">Paused</span>
+                        <% elsif subscription.past_due? %>
+                          <span class="badge bg-warning">Past Due</span>
+                        <% else %>
+                          <span class="badge bg-secondary">Inactive</span>
+                        <% end %>
+                      </td>
+                      <td><%= subscription.created_at.strftime("%b %d, %Y") %></td>
+                      <td>
+                        <% if subscription.active? %>
+                          <%= subscription.current_period_end&.strftime("%b %d, %Y") %>
+                        <% else %>
+                          -
+                        <% end %>
+                      </td>
+                      <td>
+                        <% if subscription.active? %>
+                          $<%= sprintf('%.2f', subscription.data.dig("latest_invoice", "amount_due").to_f / 100) %>
+                        <% else %>
+                          -
+                        <% end %>
+                      </td>
+                      <td>
+                        <%= link_to "View", subscription_path(subscription), class: "btn btn-sm btn-outline-primary" %>
+                        <% if subscription.active? && !subscription.canceled? %>
+                          <%= link_to "Cancel", subscription_path(subscription), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to cancel this subscription?" }, class: "btn btn-sm btn-outline-danger ms-1" %>
+                        <% end %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% else %>
+            <div class="text-center py-5">
+              <h4>You don't have any subscriptions yet</h4>
+              <p class="text-muted">Subscribe to a plan to get started</p>
+              <%= link_to "View Plans", pricing_path, class: "btn btn-primary mt-3" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

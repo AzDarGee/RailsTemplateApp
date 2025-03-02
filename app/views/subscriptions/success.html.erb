@@ -1,0 +1,24 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-body text-center p-5">
+          <div class="mb-4">
+            <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+          </div>
+          <h1 class="card-title mb-4">Subscription Successful!</h1>
+          <p class="card-text lead mb-4">
+            Thank you for subscribing to our <%= @subscription.name %> plan. Your subscription is now active.
+          </p>
+          <p class="mb-4">
+            Your subscription will renew automatically on <%= @subscription.ends_at&.strftime('%B %d, %Y') || 'the next billing cycle' %>.
+          </p>
+          <div class="d-grid gap-3 d-sm-flex justify-content-sm-center mt-4">
+            <%= link_to "View Subscription Details", subscription_path(@subscription), class: "btn btn-primary btn-lg px-4" %>
+            <%= link_to "Back to Dashboard", root_path, class: "btn btn-outline-secondary btn-lg px-4" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

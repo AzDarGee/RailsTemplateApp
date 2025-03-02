@@ -1,0 +1,27 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-body text-center p-5">
+          <div class="mb-4">
+            <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+          </div>
+          <h1 class="card-title mb-4">Payment Successful!</h1>
+          <p class="card-text lead mb-4">
+            Thank you for your payment of <%= number_to_currency(@payment.amount / 100.0) %>.
+          </p>
+          <p class="mb-4">
+            Your transaction ID is: <strong><%= @payment.id %></strong>
+          </p>
+          <p class="mb-4">
+            A receipt has been sent to your email address.
+          </p>
+          <div class="d-grid gap-3 d-sm-flex justify-content-sm-center mt-4">
+            <%= link_to "View Payment History", payments_path, class: "btn btn-primary btn-lg px-4" %>
+            <%= link_to "Back to Dashboard", root_path, class: "btn btn-outline-secondary btn-lg px-4" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

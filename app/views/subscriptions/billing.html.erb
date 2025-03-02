@@ -1,0 +1,165 @@
+<div class="container py-5">
+  <div class="row">
+    <div class="col-lg-3">
+      <div class="card mb-4">
+        <div class="card-header">
+          Billing Management
+        </div>
+        <div class="list-group list-group-flush">
+          <%= link_to "Subscriptions", subscriptions_path, class: "list-group-item list-group-item-action" %>
+          <%= link_to "Payment Methods", billing_subscriptions_path, class: "list-group-item list-group-item-action active" %>
+          <%= link_to "Payment History", payments_path, class: "list-group-item list-group-item-action" %>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-9">
+      <div class="card shadow-sm mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Payment Methods</h5>
+          <button class="btn btn-sm btn-primary" id="add-payment-method">
+            <i class="bi bi-plus"></i> Add Payment Method
+          </button>
+        </div>
+        <div class="card-body">
+          <% if current_user.payment_methods.any? %>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Card</th>
+                    <th>Expires</th>
+                    <th>Default</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% current_user.payment_methods.each do |method| %>
+                    <tr>
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <% if method.card_type == "visa" %>
+                            <i class="bi bi-credit-card me-2"></i>
+                          <% elsif method.card_type == "mastercard" %>
+                            <i class="bi bi-credit-card-2-front me-2"></i>
+                          <% else %>
+                            <i class="bi bi-credit-card-2-back me-2"></i>
+                          <% end %>
+                          <%= method.card_type.capitalize %> ending in <%= method.last4 %>
+                        </div>
+                      </td>
+                      <td><%= method.exp_month %>/<%= method.exp_year %></td>
+                      <td>
+                        <% if method.default? %>
+                          <span class="badge bg-success">Default</span>
+                        <% else %>
+                          <%= button_to "Make Default", set_default_payment_method_path(method), method: :patch, class: "btn btn-sm btn-outline-primary" %>
+                        <% end %>
+                      </td>
+                      <td>
+                        <%= button_to "Remove", delete_payment_method_path(method), method: :delete, class: "btn btn-sm btn-outline-danger", data: { confirm: "Are you sure you want to remove this payment method?" } %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% else %>
+            <div class="text-center py-5">
+              <i class="bi bi-credit-card mb-3" style="font-size: 3rem;"></i>
+              <h5>No Payment Methods Added</h5>
+              <p class="text-muted">You haven't added any payment methods yet.</p>
+              <button class="btn btn-primary mt-2" id="add-first-payment-method">
+                Add Payment Method
+              </button>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h5 class="mb-0">Billing Address</h5>
+        </div>
+        <div class="card-body">
+          <%= form_with model: current_user, url: update_billing_address_path, method: :patch, class: "row g-3" do |f| %>
+            <div class="col-md-6">
+              <%= f.label :billing_name, "Full Name", class: "form-label" %>
+              <%= f.text_field :billing_name, class: "form-control" %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :billing_email, "Email", class: "form-label" %>
+              <%= f.email_field :billing_email, class: "form-control" %>
+            </div>
+            <div class="col-12">
+              <%= f.label :billing_address, "Address", class: "form-label" %>
+              <%= f.text_field :billing_address, class: "form-control" %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :billing_city, "City", class: "form-label" %>
+              <%= f.text_field :billing_city, class: "form-control" %>
+            </div>
+            <div class="col-md-4">
+              <%= f.label :billing_state, "State/Province", class: "form-label" %>
+              <%= f.text_field :billing_state, class: "form-control" %>
+            </div>
+            <div class="col-md-2">
+              <%= f.label :billing_zip, "Zip/Postal", class: "form-label" %>
+              <%= f.text_field :billing_zip, class: "form-control" %>
+            </div>
+            <div class="col-12">
+              <%= f.label :billing_country, "Country", class: "form-label" %>
+              <%= f.country_select :billing_country, { priority_countries: ["US", "CA", "GB"] }, class: "form-select" %>
+            </div>
+            <div class="col-12 mt-4">
+              <%= f.submit "Update Billing Address", class: "btn btn-primary" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="payment-method-modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Payment Method</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="card-element" class="mb-3">
+          <!-- Stripe Elements will be inserted here -->
+        </div>
+        <div id="card-errors" class="text-danger mb-3"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="save-payment-method">Save Payment Method</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('turbo:load', function() {
+    const addPaymentMethodBtn = document.getElementById('add-payment-method');
+    const addFirstPaymentMethodBtn = document.getElementById('add-first-payment-method');
+    const paymentMethodModal = new bootstrap.Modal(document.getElementById('payment-method-modal'));
+    
+    if (addPaymentMethodBtn) {
+      addPaymentMethodBtn.addEventListener('click', function() {
+        paymentMethodModal.show();
+      });
+    }
+    
+    if (addFirstPaymentMethodBtn) {
+      addFirstPaymentMethodBtn.addEventListener('click', function() {
+        paymentMethodModal.show();
+      });
+    }
+    
+    // Stripe integration would go here in a real implementation
+  });
+</script> 

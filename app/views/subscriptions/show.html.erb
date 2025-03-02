@@ -1,0 +1,127 @@
+<div class="container mt-5">
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <h1>Subscription Details</h1>
+    </div>
+    <div class="col-md-4 text-end">
+      <%= link_to "Back to Subscriptions", subscriptions_path, class: "btn btn-outline-secondary" %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card shadow-sm mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Subscription Information</h5>
+        </div>
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="col-md-4 fw-bold">Plan:</div>
+            <div class="col-md-8"><%= @subscription.processor_plan %></div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-4 fw-bold">Status:</div>
+            <div class="col-md-8">
+              <% if @subscription.active? %>
+                <span class="badge bg-success">Active</span>
+              <% elsif @subscription.canceled? %>
+                <span class="badge bg-danger">Canceled</span>
+              <% elsif @subscription.paused? %>
+                <span class="badge bg-warning">Paused</span>
+              <% elsif @subscription.past_due? %>
+                <span class="badge bg-warning">Past Due</span>
+              <% else %>
+                <span class="badge bg-secondary">Inactive</span>
+              <% end %>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-4 fw-bold">Started:</div>
+            <div class="col-md-8"><%= @subscription.created_at.strftime("%B %d, %Y") %></div>
+          </div>
+          <% if @subscription.active? %>
+            <div class="row mb-3">
+              <div class="col-md-4 fw-bold">Current Period:</div>
+              <div class="col-md-8">
+                <%= @subscription.current_period_start&.strftime("%b %d, %Y") %> to 
+                <%= @subscription.current_period_end&.strftime("%b %d, %Y") %>
+              </div>
+            </div>
+          <% end %>
+          <% if @subscription.trial_ends_at.present? %>
+            <div class="row mb-3">
+              <div class="col-md-4 fw-bold">Trial Ends:</div>
+              <div class="col-md-8"><%= @subscription.trial_ends_at.strftime("%B %d, %Y") %></div>
+            </div>
+          <% end %>
+          <% if @subscription.ends_at.present? %>
+            <div class="row mb-3">
+              <div class="col-md-4 fw-bold">Ends At:</div>
+              <div class="col-md-8"><%= @subscription.ends_at.strftime("%B %d, %Y") %></div>
+            </div>
+          <% end %>
+          <div class="row mb-3">
+            <div class="col-md-4 fw-bold">Quantity:</div>
+            <div class="col-md-8"><%= @subscription.quantity %></div>
+          </div>
+        </div>
+      </div>
+
+      <% if @subscription.active? && !@subscription.canceled? %>
+        <div class="card shadow-sm mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Subscription Management</h5>
+          </div>
+          <div class="card-body">
+            <div class="d-grid gap-2">
+              <%= link_to "Manage Billing", billing_subscriptions_path, class: "btn btn-primary" %>
+              <%= link_to "Cancel Subscription", subscription_path(@subscription), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to cancel this subscription? You'll still have access until the end of your current billing period." }, class: "btn btn-outline-danger mt-2" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Payment Information</h5>
+        </div>
+        <div class="card-body">
+          <% if @subscription.active? %>
+            <div class="row mb-3">
+              <div class="col-5 fw-bold">Amount:</div>
+              <div class="col-7">$<%= sprintf('%.2f', @subscription.data.dig("latest_invoice", "amount_due").to_f / 100) %></div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-5 fw-bold">Next Billing:</div>
+              <div class="col-7"><%= @subscription.current_period_end&.strftime("%b %d, %Y") %></div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-5 fw-bold">Payment Method:</div>
+              <div class="col-7">
+                <% if @subscription.payment_method_id.present? %>
+                  <%= @subscription.payment_method_id %>
+                <% else %>
+                  <span class="text-muted">Not available</span>
+                <% end %>
+              </div>
+            </div>
+          <% else %>
+            <p class="text-muted">No active payment information</p>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h5 class="mb-0">Need Help?</h5>
+        </div>
+        <div class="card-body">
+          <p>If you have any questions about your subscription, please contact our support team.</p>
+          <%= link_to "Contact Support", "pages/contact", class: "btn btn-outline-primary w-100" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 
