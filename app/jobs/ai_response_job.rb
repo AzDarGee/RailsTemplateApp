@@ -27,6 +27,7 @@ class AiResponseJob < ApplicationJob
       # Update the placeholder message with the real response
       ai_message.update(
         content: last_message.content,
+        role: "agent",
         tool_calls: last_message.tool_calls,
         tool_call_id: last_message.tool_call_id
       )
@@ -38,6 +39,7 @@ class AiResponseJob < ApplicationJob
         partial: "ai/messages/message",
         locals: { message: ai_message, agent: agent }
       )
+
     rescue => e
       Rails.logger.error("Error generating AI response: #{e.message}")
       ai_message.update(content: "Sorry, I encountered an error while processing your request.")

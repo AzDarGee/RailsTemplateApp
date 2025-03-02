@@ -24,3 +24,19 @@
 #conversations-list .active p {
     color: rgba(255,255,255,0.8);
 }
+
+.message {
+    margin-bottom: 1rem;
+}
+
+.message[data-role="user"] {
+    align-self: flex-end;
+}
+
+.message[data-role="agent"] {
+    align-self: flex-start;
+}
+
+#message-list {
+    margin-top: auto;
+}

@@ -1,4 +1,4 @@
-<div id="<%= dom_id(message) %>" class="message mb-3 <%= message.role == 'user' ? 'text-end' : '' %>">
+<div id="<%= dom_id(message) %>" class="message mb-3 <%= message.role == 'user' ? 'text-end' : '' %>" data-role="<%= message.role %>">
   <div class="message-bubble d-inline-block p-3 rounded <%= message.role == 'user' ? 'bg-primary text-white' : 'bg-light' %>" style="max-width: 75%;">
     <%= message.content %>
   </div>

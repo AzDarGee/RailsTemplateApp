@@ -26,23 +26,6 @@ class Ai::AgentsController < ApplicationController
   end
 
   def show
-    @agent = Ai::Agent.find(params[:id])
-
-    @old_tasks = Ai::AgentTask.where(agent: @agent, parent_task: nil)
-
-    if @old_tasks.any?
-      @old_tasks.each do |task|
-        if task.messages.empty?
-          task.destroy
-        end
-      end
-    end
-
-    @task = Ai::AgentTask.create(
-      agent: @agent,
-      user: current_user,
-      parent_task: nil
-    )
   end
 
   def create
