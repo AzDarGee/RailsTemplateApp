@@ -21,6 +21,7 @@ gem "streamio-ffmpeg"
 gem "jsbundling-rails"
 gem "cssbundling-rails"
 gem "mail"
+gem "aws-sdk-s3", require: false
 
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
