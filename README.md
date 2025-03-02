@@ -193,6 +193,11 @@ To delete a remote branch:
 git push -d <branch-name>
 ```
 
+To fetch all branches from remote:
+```
+git fetch --prune
+```
+
 To install all gems, navigate to the root of your app:
 ```
 bundle install
