@@ -110,44 +110,7 @@ class SubscriptionsController < ApplicationController
   end
 
   def pricing
-    # Define subscription options
-    @subscription_options = {
-      basic: {
-        name: "Basic",
-        monthly_price: 9.99,
-        annual_price: 99,
-        features: [
-          "Limited conversations",
-          "Basic AI responses",
-          "Email support",
-          "1 user"
-        ]
-      },
-      pro: {
-        name: "Pro",
-        monthly_price: 19.99,
-        annual_price: 199,
-        features: [
-          "Unlimited conversations",
-          "Advanced AI responses",
-          "Priority email support",
-          "5 users"
-        ],
-        popular: true
-      },
-      enterprise: {
-        name: "Enterprise",
-        monthly_price: 29.99,
-        annual_price: 299,
-        features: [
-          "Unlimited conversations",
-          "Premium AI responses",
-          "24/7 phone support",
-          "Unlimited users",
-          "Custom integrations"
-        ]
-      }
-    }
+    @plans = Plan.all.order(:price)
   end
 
   def billing

@@ -14,24 +14,28 @@
   </div>
 
   <div class="row" id="monthly-plans">
-    <% [:basic, :pro, :enterprise].each do |plan_key| %>
-      <% plan = @plans[plan_key] %>
+    <% @plans.each do |plan| %>
       <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-sm">
-          <div class="card-header text-center">
-            <h4 class="my-0 font-weight-bold"><%= plan[:name] %></h4>
+        <div class="card h-100 shadow-sm <%= 'border-primary' if plan.popular %>">
+          <% if plan.popular %>
+            <div class="card-header text-center bg-primary text-white">
+              <h4 class="my-0 font-weight-bold">Most Popular</h4>
+            </div>
+          <% end %>
+          <div class="card-header text-center <%= plan.popular ? 'border-primary' : '' %>">
+            <h4 class="my-0 font-weight-bold"><%= plan.name %></h4>
           </div>
           <div class="card-body d-flex flex-column">
             <h1 class="card-title pricing-card-title text-center">
-              $<%= sprintf('%.2f', plan[:price]) %> <small class="text-muted">/ <%= plan[:interval] %></small>
+              $<%= sprintf('%.2f', plan.price) %> <small class="text-muted">/ <%= plan.billing_frequency %></small>
             </h1>
             <ul class="list-unstyled mt-3 mb-4">
-              <% plan[:features].each do |feature| %>
+              <% plan.features.split(', ').each do |feature| %>
                 <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> <%= feature %></li>
               <% end %>
             </ul>
             <div class="mt-auto text-center">
-              <%= link_to "Subscribe", new_subscription_path(plan: plan_key), class: "btn btn-lg btn-primary w-100" %>
+              <%= link_to "Subscribe", new_subscription_path(plan: plan.name.downcase), class: "btn btn-lg btn-primary w-100" %>
             </div>
           </div>
         </div>
@@ -40,24 +44,29 @@
   </div>
 
   <div class="row d-none" id="annual-plans">
-    <% [:basic_annual, :pro_annual, :enterprise_annual].each do |plan_key| %>
-      <% plan = @plans[plan_key] %>
+    <% @plans.each do |plan| %>
       <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-sm">
-          <div class="card-header text-center">
-            <h4 class="my-0 font-weight-bold"><%= plan[:name] %></h4>
+        <div class="card h-100 shadow-sm <%= 'border-primary' if plan.popular %>">
+          <% if plan.popular %>
+            <div class="card-header text-center bg-primary text-white">
+              <h4 class="my-0 font-weight-bold">Most Popular</h4>
+            </div>
+          <% end %>
+          <div class="card-header text-center <%= plan.popular ? 'border-primary' : '' %>">
+            <h4 class="my-0 font-weight-bold"><%= plan.name %></h4>
           </div>
           <div class="card-body d-flex flex-column">
             <h1 class="card-title pricing-card-title text-center">
-              $<%= sprintf('%.2f', plan[:price]) %> <small class="text-muted">/ <%= plan[:interval] %></small>
+              $<%= sprintf('%.2f', plan.price * 10) %> <small class="text-muted">/ year</small>
             </h1>
+            <p class="text-success text-center">Save 16% compared to monthly</p>
             <ul class="list-unstyled mt-3 mb-4">
-              <% plan[:features].each do |feature| %>
+              <% plan.features.split(', ').each do |feature| %>
                 <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> <%= feature %></li>
               <% end %>
             </ul>
             <div class="mt-auto text-center">
-              <%= link_to "Subscribe", new_subscription_path(plan: plan_key), class: "btn btn-lg btn-primary w-100" %>
+              <%= link_to "Subscribe", new_subscription_path(plan: "#{plan.name.downcase}_annual", interval: 'year'), class: "btn btn-lg btn-primary w-100" %>
             </div>
           </div>
         </div>

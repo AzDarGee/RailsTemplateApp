@@ -11,6 +11,13 @@ class PagesController < ApplicationController
   end
 
   def pricing
+    @plans = Plan.all.order(:price)
+    # If you're using a specific structure, you might need something like:
+    # @plans = {
+    #   basic: Plan.find_by(name: 'Basic'),
+    #   pro: Plan.find_by(name: 'Pro'),
+    #   enterprise: Plan.find_by(name: 'Enterprise')
+    # }
   end
   
   def dashboard
