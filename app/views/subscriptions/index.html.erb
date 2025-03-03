@@ -29,15 +29,16 @@
                 <tbody>
                   <% @subscriptions.each do |subscription| %>
                     <tr>
-                      <td><%= subscription.processor_plan %></td>
+                      <td><%= subscription.name %></td>
                       <td>
-                        <% if subscription.active? %>
+                        <% case subscription.status %>
+                        <% when 'active' %>
                           <span class="badge bg-success">Active</span>
-                        <% elsif subscription.canceled? %>
+                        <% when 'canceled' %>
                           <span class="badge bg-danger">Canceled</span>
-                        <% elsif subscription.paused? %>
+                        <% when 'paused' %>
                           <span class="badge bg-warning">Paused</span>
-                        <% elsif subscription.past_due? %>
+                        <% when 'past_due' %>
                           <span class="badge bg-warning">Past Due</span>
                         <% else %>
                           <span class="badge bg-secondary">Inactive</span>
@@ -45,22 +46,22 @@
                       </td>
                       <td><%= subscription.created_at.strftime("%b %d, %Y") %></td>
                       <td>
-                        <% if subscription.active? %>
-                          <%= subscription.current_period_end&.strftime("%b %d, %Y") %>
+                        <% if subscription.status == 'active' %>
+                          <%= Time.at(subscription.current_period_end).strftime("%b %d, %Y") %>
                         <% else %>
                           -
                         <% end %>
                       </td>
                       <td>
-                        <% if subscription.active? %>
-                          $<%= sprintf('%.2f', subscription.data.dig("latest_invoice", "amount_due").to_f / 100) %>
+                        <% if subscription.status == 'active' %>
+                          $<%= sprintf('%.2f', subscription.data["amount"].to_f / 100) %>
                         <% else %>
                           -
                         <% end %>
                       </td>
                       <td>
                         <%= link_to "View", subscription_path(subscription), class: "btn btn-sm btn-outline-primary" %>
-                        <% if subscription.active? && !subscription.canceled? %>
+                        <% if subscription.status == 'active' && !subscription.canceled? %>
                           <%= link_to "Cancel", subscription_path(subscription), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to cancel this subscription?" }, class: "btn btn-sm btn-outline-danger ms-1" %>
                         <% end %>
                       </td>

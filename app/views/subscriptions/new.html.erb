@@ -13,6 +13,7 @@
 
           <%= form_with url: subscriptions_path, method: :post, data: { turbo: false } do |form| %>
             <%= form.hidden_field :plan, value: @plan %>
+            <%= form.hidden_field :interval, value: @interval %>
             <%= form.hidden_field :processor, value: @payment_processor %>
             
             <div class="alert alert-info">

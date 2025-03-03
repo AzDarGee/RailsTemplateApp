@@ -1,11 +1,11 @@
 Pay.setup do |config|
   # For use in the receipt/refund/renewal mailers
-  config.business_name = "Your App Name"
-  config.business_address = "123 Business Street"
-  config.application_name = "Your App Name"
-  config.support_email = "support@example.com"
+  config.business_name = "Saanskara Studios"
+  config.business_address = "Ottawa, Ontario, Canada"
+  config.application_name = "RailsTemplateApp"
+  config.support_email = "saanskarastudios@gmail.com"
 
-  config.default_product_name = "Your App Name"
+  config.default_product_name = "RailsTemplateApp"
   config.default_plan_name = "Monthly"
 
   config.automount_routes = true
@@ -18,14 +18,18 @@ end
 # Stripe configuration
 Rails.application.reloader.to_prepare do
   Pay::Stripe.setup do |stripe|
-    stripe.public_key = Rails.application.credentials.dig(:stripe, :public_key)
-    stripe.private_key = Rails.application.credentials.dig(:stripe, :private_key)
-    stripe.signing_secret = Rails.application.credentials.dig(:stripe, :signing_secret)
+    # Load Stripe API keys
+    stripe.public_key = Rails.application.credentials.dig(:stripe, :test, :public_key)
+    stripe.private_key = Rails.application.credentials.dig(:stripe, :test, :private_key)
+    stripe.signing_secret = Rails.application.credentials.dig(:stripe, :test, :signing_secret)
     
-    # To use Stripe Elements for card payments, you'll need to enable it in the initializer:
+    # Configure Stripe directly as well
+    Stripe.api_key = Rails.application.credentials.dig(:stripe, :test, :private_key)
+    
+    # To use Stripe Elements for card payments
     stripe.elements = true
     
-    # For more options, see the documentation:
-    # https://github.com/pay-rails/pay/blob/master/docs/stripe/1_overview.md
+    # Set default currency
+    stripe.currency = 'usd'
   end
 end 

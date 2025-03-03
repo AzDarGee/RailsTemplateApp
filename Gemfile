@@ -68,3 +68,4 @@ gem "langchainrb", "~> 0.19.4"
 gem "ruby-openai", "~> 7.4"
 
 gem "dry-initializer", "~> 3.2"
+gem 'country_select', '~> 8.0'

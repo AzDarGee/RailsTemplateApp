@@ -64,6 +64,11 @@ To migrate the database:
 rails db:migrate
 ```
 
+To seed the database:
+```
+rails db:seed
+```
+
 To rollback previous migration (in reverse chronological order):
 ```
 rails db:rollback
@@ -202,6 +207,11 @@ git fetch --prune
 To install all gems, navigate to the root of your app:
 ```
 bundle install
+```
+
+Stripe local webhooks, run this command:
+```
+stripe listen --forward-to localhost:3000/webhooks/stripe
 ```
 
 # Docs for all the gems
