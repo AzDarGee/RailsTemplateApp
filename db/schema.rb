@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_02_233658) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_03_010920) do
   create_schema "auth"
   create_schema "extensions"
   create_schema "graphql"
@@ -220,6 +220,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_02_233658) do
     t.jsonb "event"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "plans", force: :cascade do |t|
+    t.string "name", null: false
+    t.decimal "price", precision: 10, scale: 2, null: false
+    t.text "description", null: false
+    t.text "features", null: false
+    t.boolean "popular", default: false
+    t.string "billing_frequency", default: "monthly"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_plans_on_name", unique: true
   end
 
   create_table "users", force: :cascade do |t|
