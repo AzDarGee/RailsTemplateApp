@@ -9,6 +9,7 @@ class User < ApplicationRecord
 
   has_many :agents, class_name: "Ai::Agent", dependent: :destroy
   has_many :conversations, class_name: "Ai::Conversation", dependent: :destroy
+  has_many :subscriptions, dependent: :destroy
 
   has_rich_text :bio
   has_one_attached :avatar do |attachable|

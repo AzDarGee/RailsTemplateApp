@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_03_010920) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_03_020920) do
   create_schema "auth"
   create_schema "extensions"
   create_schema "graphql"
@@ -234,6 +234,22 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_03_010920) do
     t.index ["name"], name: "index_plans_on_name", unique: true
   end
 
+  create_table "subscriptions", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "plan_id", null: false
+    t.string "status", default: "active"
+    t.string "processor"
+    t.string "processor_id"
+    t.string "processor_plan"
+    t.datetime "trial_ends_at"
+    t.datetime "ends_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["plan_id"], name: "index_subscriptions_on_plan_id"
+    t.index ["processor_id"], name: "index_subscriptions_on_processor_id", unique: true
+    t.index ["user_id"], name: "index_subscriptions_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -289,4 +305,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_03_010920) do
   add_foreign_key "pay_charges", "pay_subscriptions", column: "subscription_id"
   add_foreign_key "pay_payment_methods", "pay_customers", column: "customer_id"
   add_foreign_key "pay_subscriptions", "pay_customers", column: "customer_id"
+  add_foreign_key "subscriptions", "plans"
+  add_foreign_key "subscriptions", "users"
 end
