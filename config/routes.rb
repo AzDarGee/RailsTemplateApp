@@ -37,9 +37,9 @@ Rails.application.routes.draw do
   end
 
   # AI routes
-  resources :ai_agents, controller: 'ai/agents' do
-    resources :conversations, controller: 'ai/conversations'
-  end
+  # resources :ai_agents, controller: 'ai/agents' do
+  #   resources :conversations, controller: 'ai/conversations'
+  # end
   
   namespace :ai do   
     resources :agents do
@@ -80,4 +80,7 @@ Rails.application.routes.draw do
     
     root to: "users#index"
   end
+
+  # Mount Pay routes
+  mount Pay::Engine, at: '/'
 end

@@ -1,3 +1,5 @@
+require 'ostruct'
+
 class SubscriptionsController < ApplicationController
   before_action :authenticate_user!, except: [:pricing]
   before_action :set_subscription, only: [:show, :edit, :update, :destroy]
@@ -10,49 +12,84 @@ class SubscriptionsController < ApplicationController
   end
 
   def new
-    @plan = params[:plan]
+    @plan = params[:plan]&.gsub('_annual', '') # Remove _annual suffix if present
     @interval = params[:interval] || 'month'
     
     # Set price based on plan and interval
     @price = case @plan
              when 'basic'
-               @interval == 'year' ? 99 : 9.99
+               @interval.in?(['year', 'annual']) ? 99 : 9.99
              when 'pro'
-               @interval == 'year' ? 199 : 19.99
+               @interval.in?(['year', 'annual']) ? 199 : 19.99
              when 'enterprise'
-               @interval == 'year' ? 299 : 29.99
+               @interval.in?(['year', 'annual']) ? 499 : 49.99
              else
                0
              end
+
+    # Set subscription options
+    @subscription_options = {
+      name: @plan&.titleize,
+      price: @price,
+      interval: @interval
+    }
   end
 
   def create
-    # This would typically integrate with Stripe to create a subscription
-    # For demonstration purposes, we'll simulate creating a subscription
+    # Find or create the plan
+    plan_name = params[:plan].to_s.gsub('_annual', '').titleize
+    plan_price = calculate_price(params[:plan], params[:interval])
+    
+    plan = Plan.find_by!(name: plan_name)
     
     begin
-      # In a real implementation, you would use the Stripe token to create a subscription
-      # subscription = current_user.subscribe(
-      #   name: params[:plan],
-      #   plan: params[:plan],
-      #   payment_method_token: params[:payment_method_token]
-      # )
+      # Configure Stripe API key
+      Stripe.api_key = Rails.application.credentials.dig(:stripe, :test, :private_key)
       
-      # For demo purposes, we'll just create a dummy subscription
-      @subscription = OpenStruct.new(
-        id: SecureRandom.uuid,
-        name: params[:plan],
-        processor: 'stripe',
-        processor_id: "sub_#{SecureRandom.hex(10)}",
-        processor_plan: params[:plan],
-        quantity: 1,
-        status: 'active',
-        trial_ends_at: nil,
-        ends_at: 1.month.from_now
-      )
+      # Ensure user has a Pay customer record
+      customer = current_user.payment_processor
       
-      # Redirect to success page
-      redirect_to subscription_success_path(@subscription.id), notice: "Subscription created successfully."
+      # Calculate the correct price based on interval
+      price_amount = calculate_price(params[:plan], params[:interval])
+      
+      # Create a Stripe product first
+      product = Stripe::Product.create({
+        name: "#{plan.name} (#{params[:interval].in?(['year', 'annual']) ? 'Annual' : 'Monthly'})",
+        metadata: {
+          plan_id: plan.id,
+          features: plan.features
+        }
+      })
+      
+      # Create a Stripe price for the plan
+      price = Stripe::Price.create({
+        unit_amount: (price_amount * 100).to_i,
+        currency: 'usd',
+        recurring: {
+          interval: params[:interval].in?(['year', 'annual']) ? 'year' : 'month'
+        },
+        product: product.id
+      })
+      
+      # Create a Stripe Checkout Session
+      session = Stripe::Checkout::Session.create({
+        customer: customer.processor_id,
+        payment_method_types: ['card'],
+        line_items: [{
+          price: price.id,
+          quantity: 1
+        }],
+        mode: 'subscription',
+        success_url: success_subscriptions_url + "?session_id={CHECKOUT_SESSION_ID}",
+        cancel_url: pricing_url,
+        automatic_tax: { enabled: true },
+        customer_update: {
+          address: 'auto'
+        }
+      })
+
+      # Redirect to Stripe Checkout
+      redirect_to session.url, allow_other_host: true, status: :see_other
     rescue => e
       redirect_to new_subscription_path(plan: params[:plan]), alert: "Failed to create subscription: #{e.message}"
     end
@@ -62,14 +99,8 @@ class SubscriptionsController < ApplicationController
   end
 
   def update
-    # This would typically integrate with Stripe to update a subscription
-    # For demonstration purposes, we'll simulate updating a subscription
-    
     begin
-      # In a real implementation, you would update the subscription in Stripe
-      # @subscription.swap(params[:plan])
-      
-      # For demo purposes, we'll just redirect with a success message
+      @subscription.swap(subscription_params[:plan])
       redirect_to subscription_path(@subscription), notice: "Subscription updated successfully."
     rescue => e
       redirect_to edit_subscription_path(@subscription), alert: "Failed to update subscription: #{e.message}"
@@ -77,14 +108,8 @@ class SubscriptionsController < ApplicationController
   end
 
   def destroy
-    # This would typically integrate with Stripe to cancel a subscription
-    # For demonstration purposes, we'll simulate cancelling a subscription
-    
     begin
-      # In a real implementation, you would cancel the subscription in Stripe
-      # @subscription.cancel
-      
-      # For demo purposes, we'll just redirect with a success message
+      @subscription.cancel
       redirect_to subscriptions_path, notice: "Subscription cancelled successfully."
     rescue => e
       redirect_to subscription_path(@subscription), alert: "Failed to cancel subscription: #{e.message}"
@@ -92,21 +117,49 @@ class SubscriptionsController < ApplicationController
   end
 
   def success
-    # In a real implementation, you would fetch the subscription from your database
-    # @subscription = current_user.subscriptions.find(params[:id])
-    
-    # For demo purposes, we'll just create a dummy subscription
-    @subscription = OpenStruct.new(
-      id: params[:id],
-      name: ['Basic', 'Pro', 'Enterprise'].sample,
-      processor: 'stripe',
-      processor_id: "sub_#{SecureRandom.hex(10)}",
-      processor_plan: ['basic', 'pro', 'enterprise'].sample,
-      quantity: 1,
-      status: 'active',
-      trial_ends_at: nil,
-      ends_at: 1.month.from_now
-    )
+    begin
+      # Configure Stripe API key
+      Stripe.api_key = Rails.application.credentials.dig(:stripe, :test, :private_key)
+      
+      # Get the checkout session with expanded subscription data
+      session = Stripe::Checkout::Session.retrieve({
+        id: params[:session_id],
+        expand: ['subscription', 'subscription.default_payment_method']
+      })
+      
+      # Get the subscription with expanded price and product data
+      stripe_subscription = Stripe::Subscription.retrieve({
+        id: session.subscription.id,
+        expand: ['items.data.price.product']
+      })
+      
+      # Get the price and product data
+      price_data = stripe_subscription.items.data[0].price
+      product_data = price_data.product
+      
+      # Create the subscription in our database
+      @subscription = current_user.payment_processor.subscriptions.create!(
+        name: product_data.name,
+        processor_id: stripe_subscription.id,
+        processor_plan: price_data.id,
+        status: stripe_subscription.status,
+        current_period_start: Time.at(stripe_subscription.current_period_start),
+        current_period_end: Time.at(stripe_subscription.current_period_end),
+        data: {
+          stripe_id: stripe_subscription.id,
+          stripe_status: stripe_subscription.status,
+          stripe_price: price_data.id,
+          stripe_product: product_data.id,
+          amount: price_data.unit_amount,
+          interval: price_data.recurring.interval
+        }
+      )
+      
+      redirect_to subscription_path(@subscription), notice: "Successfully subscribed!"
+    rescue => e
+      Rails.logger.error("Subscription Error: #{e.message}\n#{e.backtrace.join("\n")}")
+      redirect_to pricing_path, alert: "Error processing subscription: #{e.message}"
+    end
   end
 
   def pricing
@@ -114,7 +167,7 @@ class SubscriptionsController < ApplicationController
   end
 
   def billing
-    # This action will render the billing.html.erb view
+    # This action just renders the billing view
   end
 
   def update_billing_address
@@ -128,24 +181,25 @@ class SubscriptionsController < ApplicationController
   private
 
   def set_subscription
-    # In a real implementation, you would fetch the subscription from your database
-    # @subscription = current_user.subscriptions.find(params[:id])
-    
-    # For demo purposes, we'll just create a dummy subscription
-    @subscription = OpenStruct.new(
-      id: params[:id],
-      name: ['Basic', 'Pro', 'Enterprise'].sample,
-      processor: 'stripe',
-      processor_id: "sub_#{SecureRandom.hex(10)}",
-      processor_plan: ['basic', 'pro', 'enterprise'].sample,
-      quantity: 1,
-      status: 'active',
-      trial_ends_at: nil,
-      ends_at: 1.month.from_now
-    )
+    @subscription = current_user.subscriptions.find(params[:id])
   end
 
   def subscription_params
     params.require(:subscription).permit(:plan, :interval, :payment_method_token)
+  end
+
+  def calculate_price(plan, interval)
+    is_annual = interval.to_s.in?(['year', 'annual'])
+    
+    case plan.to_s
+    when 'basic'
+      is_annual ? 99 : 9.99
+    when 'pro'
+      is_annual ? 199 : 19.99
+    when 'enterprise'
+      is_annual ? 499 : 49.99
+    else
+      0
+    end
   end
 end 

@@ -17,18 +17,19 @@
         <div class="card-body">
           <div class="row mb-3">
             <div class="col-md-4 fw-bold">Plan:</div>
-            <div class="col-md-8"><%= @subscription.processor_plan %></div>
+            <div class="col-md-8"><%= @subscription.name %></div>
           </div>
           <div class="row mb-3">
             <div class="col-md-4 fw-bold">Status:</div>
             <div class="col-md-8">
-              <% if @subscription.active? %>
+              <% case @subscription.status %>
+              <% when 'active' %>
                 <span class="badge bg-success">Active</span>
-              <% elsif @subscription.canceled? %>
+              <% when 'canceled' %>
                 <span class="badge bg-danger">Canceled</span>
-              <% elsif @subscription.paused? %>
+              <% when 'paused' %>
                 <span class="badge bg-warning">Paused</span>
-              <% elsif @subscription.past_due? %>
+              <% when 'past_due' %>
                 <span class="badge bg-warning">Past Due</span>
               <% else %>
                 <span class="badge bg-secondary">Inactive</span>
@@ -39,12 +40,12 @@
             <div class="col-md-4 fw-bold">Started:</div>
             <div class="col-md-8"><%= @subscription.created_at.strftime("%B %d, %Y") %></div>
           </div>
-          <% if @subscription.active? %>
+          <% if @subscription.status == 'active' %>
             <div class="row mb-3">
               <div class="col-md-4 fw-bold">Current Period:</div>
               <div class="col-md-8">
-                <%= @subscription.current_period_start&.strftime("%b %d, %Y") %> to 
-                <%= @subscription.current_period_end&.strftime("%b %d, %Y") %>
+                <%= Time.at(@subscription.current_period_start).strftime("%b %d, %Y") %> to 
+                <%= Time.at(@subscription.current_period_end).strftime("%b %d, %Y") %>
               </div>
             </div>
           <% end %>
@@ -67,7 +68,7 @@
         </div>
       </div>
 
-      <% if @subscription.active? && !@subscription.canceled? %>
+      <% if @subscription.status == 'active' && !@subscription.canceled? %>
         <div class="card shadow-sm mb-4">
           <div class="card-header">
             <h5 class="mb-0">Subscription Management</h5>
@@ -88,14 +89,14 @@
           <h5 class="mb-0">Payment Information</h5>
         </div>
         <div class="card-body">
-          <% if @subscription.active? %>
+          <% if @subscription.status == 'active' %>
             <div class="row mb-3">
               <div class="col-5 fw-bold">Amount:</div>
-              <div class="col-7">$<%= sprintf('%.2f', @subscription.data.dig("latest_invoice", "amount_due").to_f / 100) %></div>
+              <div class="col-7">$<%= sprintf('%.2f', @subscription.data["amount"].to_f / 100) %></div>
             </div>
             <div class="row mb-3">
               <div class="col-5 fw-bold">Next Billing:</div>
-              <div class="col-7"><%= @subscription.current_period_end&.strftime("%b %d, %Y") %></div>
+              <div class="col-7"><%= Time.at(@subscription.current_period_end).strftime("%b %d, %Y") %></div>
             </div>
             <div class="row mb-3">
               <div class="col-5 fw-bold">Payment Method:</div>

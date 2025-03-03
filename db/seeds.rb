@@ -8,36 +8,38 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
-# Create initial plans
-Plan.destroy_all
-
+# Create default plans
 plans = [
   {
     name: 'Basic',
     price: 9.99,
-    description: 'Perfect for individuals and small projects',
-    features: 'Up to 3 projects, Basic support, 5GB storage',
+    description: 'Perfect for getting started',
+    features: 'Basic features, Email support, 1 project',
+    popular: false,
     billing_frequency: 'monthly'
   },
   {
     name: 'Pro',
     price: 19.99,
-    description: 'Great for professionals and growing teams',
-    features: 'Unlimited projects, Priority support, 20GB storage, Advanced analytics',
+    description: 'Best for growing businesses',
+    features: 'All Basic features, Priority support, 5 projects, Advanced analytics',
     popular: true,
     billing_frequency: 'monthly'
   },
   {
     name: 'Enterprise',
     price: 49.99,
-    description: 'For large organizations with advanced needs',
-    features: 'Unlimited everything, 24/7 support, 100GB storage, Custom integrations, Dedicated account manager',
+    description: 'For large scale operations',
+    features: 'All Pro features, 24/7 support, Unlimited projects, Custom integrations',
+    popular: false,
     billing_frequency: 'monthly'
   }
 ]
 
-plans.each do |plan|
-  Plan.create!(plan)
+plans.each do |plan_attrs|
+  Plan.find_or_create_by!(name: plan_attrs[:name]) do |plan|
+    plan.attributes = plan_attrs
+  end
 end
 
 puts "Created #{Plan.count} plans"

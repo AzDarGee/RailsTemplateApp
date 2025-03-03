@@ -22,7 +22,7 @@
           </button>
         </div>
         <div class="card-body">
-          <% if current_user.payment_methods.any? %>
+          <% if current_user.payment_processor&.payment_methods&.any? %>
             <div class="table-responsive">
               <table class="table table-hover">
                 <thead>
@@ -34,30 +34,30 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <% current_user.payment_methods.each do |method| %>
+                  <% current_user.payment_processor.payment_methods.each do |method| %>
                     <tr>
                       <td>
                         <div class="d-flex align-items-center">
-                          <% if method.card_type == "visa" %>
+                          <% if method.card_brand == "visa" %>
                             <i class="bi bi-credit-card me-2"></i>
-                          <% elsif method.card_type == "mastercard" %>
+                          <% elsif method.card_brand == "mastercard" %>
                             <i class="bi bi-credit-card-2-front me-2"></i>
                           <% else %>
                             <i class="bi bi-credit-card-2-back me-2"></i>
                           <% end %>
-                          <%= method.card_type.capitalize %> ending in <%= method.last4 %>
+                          <%= method.card_brand.capitalize %> ending in <%= method.card_last4 %>
                         </div>
                       </td>
-                      <td><%= method.exp_month %>/<%= method.exp_year %></td>
+                      <td><%= method.card_exp_month %>/<%= method.card_exp_year %></td>
                       <td>
-                        <% if method.default? %>
+                        <% if method == current_user.payment_processor.default_payment_method %>
                           <span class="badge bg-success">Default</span>
                         <% else %>
-                          <%= button_to "Make Default", set_default_payment_method_path(method), method: :patch, class: "btn btn-sm btn-outline-primary" %>
+                          <%= button_to "Make Default", set_default_payment_method_path(method.id), method: :patch, class: "btn btn-sm btn-outline-primary" %>
                         <% end %>
                       </td>
                       <td>
-                        <%= button_to "Remove", delete_payment_method_path(method), method: :delete, class: "btn btn-sm btn-outline-danger", data: { confirm: "Are you sure you want to remove this payment method?" } %>
+                        <%= button_to "Remove", delete_payment_method_path(method.id), method: :delete, class: "btn btn-sm btn-outline-danger", data: { turbo_confirm: "Are you sure you want to remove this payment method?" } %>
                       </td>
                     </tr>
                   <% end %>
@@ -82,7 +82,7 @@
           <h5 class="mb-0">Billing Address</h5>
         </div>
         <div class="card-body">
-          <%= form_with model: current_user, url: update_billing_address_path, method: :patch, class: "row g-3" do |f| %>
+          <%= form_with model: current_user, url: update_billing_address_subscriptions_path, method: :patch, class: "row g-3" do |f| %>
             <div class="col-md-6">
               <%= f.label :billing_name, "Full Name", class: "form-label" %>
               <%= f.text_field :billing_name, class: "form-control" %>
@@ -142,24 +142,76 @@
   </div>
 </div>
 
-<script>
-  document.addEventListener('turbo:load', function() {
-    const addPaymentMethodBtn = document.getElementById('add-payment-method');
-    const addFirstPaymentMethodBtn = document.getElementById('add-first-payment-method');
-    const paymentMethodModal = new bootstrap.Modal(document.getElementById('payment-method-modal'));
-    
-    if (addPaymentMethodBtn) {
-      addPaymentMethodBtn.addEventListener('click', function() {
-        paymentMethodModal.show();
-      });
-    }
-    
-    if (addFirstPaymentMethodBtn) {
-      addFirstPaymentMethodBtn.addEventListener('click', function() {
-        paymentMethodModal.show();
-      });
-    }
-    
-    // Stripe integration would go here in a real implementation
-  });
-</script> 
+<%= content_for :head do %>
+  <script src="https://js.stripe.com/v3/"></script>
+<% end %>
+
+<%= content_for :javascript do %>
+  <script>
+    document.addEventListener('turbo:load', function() {
+      const stripe = Stripe('<%= Rails.application.credentials.dig(:stripe, :test, :public_key) %>');
+      const elements = stripe.elements();
+      const cardElement = elements.create('card');
+      cardElement.mount('#card-element');
+
+      const addPaymentMethodBtn = document.getElementById('add-payment-method');
+      const addFirstPaymentMethodBtn = document.getElementById('add-first-payment-method');
+      const paymentMethodModal = new bootstrap.Modal(document.getElementById('payment-method-modal'));
+      const savePaymentMethodBtn = document.getElementById('save-payment-method');
+      const cardErrors = document.getElementById('card-errors');
+      
+      if (addPaymentMethodBtn) {
+        addPaymentMethodBtn.addEventListener('click', function() {
+          paymentMethodModal.show();
+        });
+      }
+      
+      if (addFirstPaymentMethodBtn) {
+        addFirstPaymentMethodBtn.addEventListener('click', function() {
+          paymentMethodModal.show();
+        });
+      }
+      
+      if (savePaymentMethodBtn) {
+        savePaymentMethodBtn.addEventListener('click', async function() {
+          savePaymentMethodBtn.disabled = true;
+          
+          try {
+            const result = await stripe.createPaymentMethod({
+              type: 'card',
+              card: cardElement
+            });
+            
+            if (result.error) {
+              cardErrors.textContent = result.error.message;
+              savePaymentMethodBtn.disabled = false;
+            } else {
+              const form = document.createElement('form');
+              form.method = 'POST';
+              form.action = '<%= create_payment_method_path %>';
+              
+              const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+              const csrfInput = document.createElement('input');
+              csrfInput.type = 'hidden';
+              csrfInput.name = 'authenticity_token';
+              csrfInput.value = csrfToken;
+              
+              const methodInput = document.createElement('input');
+              methodInput.type = 'hidden';
+              methodInput.name = 'payment_method_id';
+              methodInput.value = result.paymentMethod.id;
+              
+              form.appendChild(csrfInput);
+              form.appendChild(methodInput);
+              document.body.appendChild(form);
+              form.submit();
+            }
+          } catch (error) {
+            cardErrors.textContent = error.message;
+            savePaymentMethodBtn.disabled = false;
+          }
+        });
+      }
+    });
+  </script>
+<% end %> 

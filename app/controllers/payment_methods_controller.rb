@@ -3,14 +3,14 @@ class PaymentMethodsController < ApplicationController
   before_action :set_payment_method, only: [:set_default, :destroy]
 
   def create
-    # This would typically integrate with Stripe to create a payment method
-    # For demonstration purposes, we'll simulate creating a payment method
-    
     begin
-      # In a real implementation, you would use the Stripe token to create a payment method
-      # payment_method = current_user.create_payment_method(params[:stripe_token])
+      payment_method = current_user.payment_processor.add_payment_method(params[:payment_method_id])
       
-      # For demo purposes, we'll just redirect with a success message
+      # Set as default if it's the first payment method
+      if current_user.payment_processor.payment_methods.count == 1
+        current_user.payment_processor.default_payment_method = payment_method
+      end
+
       redirect_to billing_subscriptions_path, notice: "Payment method added successfully."
     rescue => e
       redirect_to billing_subscriptions_path, alert: "Failed to add payment method: #{e.message}"
@@ -19,10 +19,7 @@ class PaymentMethodsController < ApplicationController
 
   def set_default
     begin
-      # In a real implementation, you would update the default payment method in Stripe
-      # @payment_method.set_as_default
-      
-      # For demo purposes, we'll just redirect with a success message
+      current_user.payment_processor.default_payment_method = @payment_method
       redirect_to billing_subscriptions_path, notice: "Default payment method updated."
     rescue => e
       redirect_to billing_subscriptions_path, alert: "Failed to update default payment method: #{e.message}"
@@ -31,10 +28,7 @@ class PaymentMethodsController < ApplicationController
 
   def destroy
     begin
-      # In a real implementation, you would delete the payment method in Stripe
-      # @payment_method.delete
-      
-      # For demo purposes, we'll just redirect with a success message
+      @payment_method.delete
       redirect_to billing_subscriptions_path, notice: "Payment method removed."
     rescue => e
       redirect_to billing_subscriptions_path, alert: "Failed to remove payment method: #{e.message}"
@@ -44,10 +38,10 @@ class PaymentMethodsController < ApplicationController
   private
 
   def set_payment_method
-    # In a real implementation, you would fetch the payment method from your database or Stripe
-    # @payment_method = current_user.payment_methods.find(params[:id])
-    
-    # For demo purposes, we'll just set a dummy payment method
-    @payment_method = OpenStruct.new(id: params[:id])
+    @payment_method = current_user.payment_processor.payment_methods.find { |m| m.id == params[:id] }
+    unless @payment_method
+      redirect_to billing_subscriptions_path, alert: "Payment method not found."
+      return
+    end
   end
 end 
