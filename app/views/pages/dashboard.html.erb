@@ -101,7 +101,13 @@
                     <tbody>
                       <% current_user.charges.order(created_at: :desc).limit(5).each do |charge| %>
                         <tr>
-                          <td><%= charge.created_at.strftime('%b %d, %Y') %></td>
+                          <td>
+                            <% if charge.data && charge.data["created_at"] %>
+                              <%= Time.at(charge.data["created_at"]).strftime('%b %d, %Y') %>
+                            <% else %>
+                              <%= charge.created_at.strftime('%b %d, %Y') %>
+                            <% end %>
+                          </td>
                           <td><%= number_to_currency(charge.amount / 100.0) %></td>
                           <td><span class="badge bg-success">Paid</span></td>
                         </tr>
