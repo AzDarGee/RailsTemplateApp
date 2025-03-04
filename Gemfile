@@ -22,6 +22,11 @@ gem "jsbundling-rails"
 gem "cssbundling-rails"
 gem "mail"
 gem "aws-sdk-s3", require: false
+gem "view_component", "~> 3.21"
+gem "langchainrb", "~> 0.19.4"
+gem "ruby-openai", "~> 7.4"
+gem "dry-initializer", "~> 3.2"
+gem "mission_control-jobs"
 
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
@@ -30,9 +35,7 @@ gem "solid_queue"
 gem "solid_cable"
 
 gem "bootsnap", require: false
-
 gem "kamal", require: false
-
 gem "thruster", require: false
 
 group :development, :test do
@@ -56,11 +59,3 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
-
-gem "view_component", "~> 3.21"
-
-gem "langchainrb", "~> 0.19.4"
-
-gem "ruby-openai", "~> 7.4"
-
-gem "dry-initializer", "~> 3.2"
