@@ -4,17 +4,52 @@ default: &default
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
 development:
-  <<: *default
-  username: <%= Rails.application.credentials.dig(:supabase_database, :dev, :username) %>
-  password: <%= Rails.application.credentials.dig(:supabase_database, :dev, :password) %>
-  host: <%= Rails.application.credentials.dig(:supabase_database, :dev, :host) %>
-  port: <%= Rails.application.credentials.dig(:supabase_database, :dev, :port) %>
-  database: <%= Rails.application.credentials.dig(:supabase_database, :dev, :database) %>
-  sslmode: require
+  primary: &primary_development
+    <<: *default
+    username: <%= Rails.application.credentials.dig(:supabase_database, :dev, :username) %>
+    password: <%= Rails.application.credentials.dig(:supabase_database, :dev, :password) %>
+    host: <%= Rails.application.credentials.dig(:supabase_database, :dev, :host) %>
+    port: <%= Rails.application.credentials.dig(:supabase_database, :dev, :port) %>
+    database: <%= Rails.application.credentials.dig(:supabase_database, :dev, :database) %>
+    sslmode: require
+  # cache:
+  #   <<: *primary_development
+  #   database: rails_template_app_development_cache
+  #   migrations_paths: db/cache_migrate
+  # queue:
+  #   <<: *primary_development
+  #   migrations_paths: db/queue_migrate
+  #   username: <%= Rails.application.credentials.dig(:supabase_database, :dev, :solid_queue, :username) %>
+  #   password: <%= Rails.application.credentials.dig(:supabase_database, :dev, :solid_queue, :password) %>
+  #   host: <%= Rails.application.credentials.dig(:supabase_database, :dev, :solid_queue, :host) %>
+  #   port: <%= Rails.application.credentials.dig(:supabase_database, :dev, :solid_queue, :port) %>
+  #   database: <%= Rails.application.credentials.dig(:supabase_database, :dev, :solid_queue, :database) %>
+  # cable:
+  #   <<: *primary_development
+  #   database: rails_template_app_development_cable
+  #   migrations_paths: db/cable_migrate
 
 test:
-  <<: *default
-  database: RailsTemplateApp_test
+  primary: &primary_test
+    <<: *default
+    username: <%= Rails.application.credentials.dig(:supabase_database, :test, :username) %>
+    password: <%= Rails.application.credentials.dig(:supabase_database, :test, :password) %>
+    host: <%= Rails.application.credentials.dig(:supabase_database, :test, :host) %>
+    port: <%= Rails.application.credentials.dig(:supabase_database, :test, :port) %>
+    database: <%= Rails.application.credentials.dig(:supabase_database, :test, :database) %>
+    sslmode: require
+  # cache:
+  #   <<: *primary_test
+  #   database: rails_template_app_test_cache
+  #   migrations_paths: db/cache_migrate
+  # queue:
+  #   <<: *primary_test
+  #   database: rails_template_app_test_queue
+  #   migrations_paths: db/queue_migrate
+  # cable:
+  #   <<: *primary_test
+  #   database: rails_template_app_test_cable
+  #   migrations_paths: db/cable_migrate
 
 production:
   primary: &primary_production
@@ -25,15 +60,15 @@ production:
     port: <%= Rails.application.credentials.dig(:supabase_database, :prod, :port) %>
     database: <%= Rails.application.credentials.dig(:supabase_database, :prod, :database) %>
     sslmode: require
-  cache:
-    <<: *primary_production
-    database: solos_production_cache
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *primary_production
-    database: solos_production_queue
-    migrations_paths: db/queue_migrate
-  cable:
-    <<: *primary_production
-    database: solos_production_cable
-    migrations_paths: db/cable_migrate
+  # cache:
+  #   <<: *primary_production
+  #   database: rails_template_app_production_cache
+  #   migrations_paths: db/cache_migrate
+  # queue:
+  #   <<: *primary_production
+  #   database: rails_template_app_production_queue
+  #   migrations_paths: db/queue_migrate
+  # cable:
+  #   <<: *primary_production
+  #   database: rails_template_app_production_cable
+  #   migrations_paths: db/cable_migrate
