@@ -36,7 +36,7 @@
                   <span><%= current_user.subscription.name %> Plan</span>
                 </div>
                 <p><strong>Next Billing Date:</strong> <%= current_user.subscription.ends_at&.strftime('%B %d, %Y') || 'N/A' %></p>
-                <p><strong>Amount:</strong> <%= number_to_currency(current_user.subscription.processor_plan == 'basic' ? 9.99 : (current_user.subscription.processor_plan == 'pro' ? 19.99 : 29.99)) %></p>
+                <p><strong>Amount:</strong> <%= number_to_currency(current_user.subscription.data&.dig('amount').to_f / 100) %> / <%= current_user.subscription.data&.dig('interval') == 'year' ? 'year' : 'month' %></p>
                 <%= link_to "Manage Subscription", subscription_path(current_user.subscription), class: "btn btn-sm btn-outline-primary" %>
               <% else %>
                 <div class="d-flex align-items-center mb-3">
