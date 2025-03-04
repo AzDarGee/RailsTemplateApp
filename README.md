@@ -217,7 +217,7 @@ stripe listen --forward-to localhost:3000/webhooks/stripe
 # Docs for all the gems
 - Devise (https://github.com/heartcombo/devise)
 - mini_magick (https://github.com/minimagick/minimagick)
-
+- pay (https://github.com/pay-rails/pay)
 
 # To Fix / To Do
 * Trix editor not loading with content on hot reload or initial page visit, something to do with hotwire spark and trix js and esbuild/foreman
