@@ -4,6 +4,9 @@ class PaymentMethodsController < ApplicationController
 
   def create
     begin
+      # Configure Stripe API key
+      Stripe.api_key = Rails.application.credentials.dig(:stripe, :test, :private_key)
+      
       payment_method = current_user.payment_processor.add_payment_method(params[:payment_method_id])
       
       # Set as default if it's the first payment method

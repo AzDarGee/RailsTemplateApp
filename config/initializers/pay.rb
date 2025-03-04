@@ -18,13 +18,22 @@ end
 # Stripe configuration
 Rails.application.reloader.to_prepare do
   Pay::Stripe.setup do |stripe|
-    # Load Stripe API keys
-    stripe.public_key = Rails.application.credentials.dig(:stripe, :test, :public_key)
-    stripe.private_key = Rails.application.credentials.dig(:stripe, :test, :private_key)
-    stripe.signing_secret = Rails.application.credentials.dig(:stripe, :test, :signing_secret)
-    
-    # Configure Stripe directly as well
-    Stripe.api_key = Rails.application.credentials.dig(:stripe, :test, :private_key)
+    # Load Stripe API keys - use live keys in production, test keys otherwise
+    if Rails.env.production?
+      stripe.public_key = Rails.application.credentials.dig(:stripe, :live, :public_key)
+      stripe.private_key = Rails.application.credentials.dig(:stripe, :live, :private_key)
+      stripe.signing_secret = Rails.application.credentials.dig(:stripe, :live, :signing_secret)
+      
+      # Configure Stripe directly as well
+      Stripe.api_key = Rails.application.credentials.dig(:stripe, :live, :private_key)
+    elsif Rails.env.development?
+      stripe.public_key = Rails.application.credentials.dig(:stripe, :test, :public_key)
+      stripe.private_key = Rails.application.credentials.dig(:stripe, :test, :private_key)
+      stripe.signing_secret = Rails.application.credentials.dig(:stripe, :test, :signing_secret)
+      
+      # Configure Stripe directly as well
+      Stripe.api_key = Rails.application.credentials.dig(:stripe, :test, :private_key)
+    end
     
     # To use Stripe Elements for card payments
     stripe.elements = true
