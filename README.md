@@ -214,7 +214,7 @@ To install all gems, navigate to the root of your app:
 bundle install
 ```
 
-Stripe local webhooks, run this command:
+Install the Stripe CLI for Stripe local webhooks, run this command:
 ```
 stripe listen --forward-to localhost:3000/webhooks/stripe
 ```
