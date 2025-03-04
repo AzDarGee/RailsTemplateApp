@@ -45,15 +45,18 @@ Install yarn packages
 ```
 yarn install
 ```
+
 Install necessary libraries for some gems to work:
 ```
 sudo apt-get update
 sudo apt-get install build-essential
 ```
+
 For the mini_magick gem, you'll also need ImageMagick installed:
 ```
 sudo apt-get install imagemagick
 ```
+
 For video modifications, you need to install:
 ```
 sudo apt install ffmpeg
@@ -79,6 +82,11 @@ rails db:migrate:down VERSION=<version_number>
 To run rails development server:
 ```
 bin/dev
+```
+
+Setup credentials for Mission Control Jobs:
+```
+bin/rails mission_control:jobs:authentication:configure
 ```
 
 # Figma Design to Code
