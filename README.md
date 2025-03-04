@@ -204,6 +204,11 @@ To fetch all branches from remote:
 git fetch --prune
 ```
 
+To switch to a different branch:
+```
+git switch <branch_name>
+```
+
 To install all gems, navigate to the root of your app:
 ```
 bundle install

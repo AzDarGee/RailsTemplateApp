@@ -1,7 +1,6 @@
 ---
 description: Working with a Ruby on Rails 8 Application
 globs: 
-alwaysApply: false
 ---
 
 # Use Ruby on Rails 8
@@ -13,6 +12,7 @@ alwaysApply: false
 * Keep up to date with all the node_modules that I am using
 * I am using Bootstrap 5 to style the views
 * When styling the views with bootstrap 5, keep in mind accessibility issues
+* Think along the lines of a Chief Technology Officer (CTO) when designing the models, views and controllers
 
 
 
