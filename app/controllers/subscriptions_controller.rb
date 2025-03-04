@@ -36,25 +36,21 @@ class SubscriptionsController < ApplicationController
   end
 
   def create
-    # Find or create the plan
+    # Find the plan
     plan_name = params[:plan].to_s.gsub('_annual', '').titleize
-    plan_price = calculate_price(params[:plan], params[:interval])
-    
     plan = Plan.find_by!(name: plan_name)
     
     begin
       # Configure Stripe API key
       Stripe.api_key = Rails.application.credentials.dig(:stripe, :test, :private_key)
       
-      # Ensure user has a Pay customer record
-      customer = current_user.payment_processor
-      
       # Calculate the correct price based on interval
       price_amount = calculate_price(params[:plan], params[:interval])
+      interval = params[:interval].in?(['year', 'annual']) ? 'year' : 'month'
       
-      # Create a Stripe product first
+      # Create a Stripe product if it doesn't exist
       product = Stripe::Product.create({
-        name: "#{plan.name} (#{params[:interval].in?(['year', 'annual']) ? 'Annual' : 'Monthly'})",
+        name: "#{plan.name} (#{interval.capitalize})",
         metadata: {
           plan_id: plan.id,
           features: plan.features
@@ -66,32 +62,23 @@ class SubscriptionsController < ApplicationController
         unit_amount: (price_amount * 100).to_i,
         currency: 'usd',
         recurring: {
-          interval: params[:interval].in?(['year', 'annual']) ? 'year' : 'month'
+          interval: interval
         },
         product: product.id
       })
       
-      # Create a Stripe Checkout Session
-      session = Stripe::Checkout::Session.create({
-        customer: customer.processor_id,
-        payment_method_types: ['card'],
-        line_items: [{
-          price: price.id,
-          quantity: 1
-        }],
-        mode: 'subscription',
-        success_url: success_subscriptions_url + "?session_id={CHECKOUT_SESSION_ID}",
-        cancel_url: pricing_url,
-        automatic_tax: { enabled: true },
-        customer_update: {
-          address: 'auto'
+      # Create the subscription using Pay
+      subscription = current_user.payment_processor.subscribe(
+        name: plan.name,
+        plan: price.id,
+        metadata: {
+          plan_id: plan.id
         }
-      })
-
-      # Redirect to Stripe Checkout
-      redirect_to session.url, allow_other_host: true, status: :see_other
+      )
+      
+      redirect_to subscription_path(subscription.id), notice: "Successfully subscribed to #{plan.name} plan!"
     rescue => e
-      redirect_to new_subscription_path(plan: params[:plan]), alert: "Failed to create subscription: #{e.message}"
+      redirect_to pricing_path, alert: "Failed to create subscription: #{e.message}"
     end
   end
 

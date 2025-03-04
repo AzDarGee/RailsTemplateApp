@@ -83,4 +83,8 @@ Rails.application.routes.draw do
 
   # Mount Pay routes
   mount Pay::Engine, at: '/'
+
+  resources :payment_methods, only: [:new, :create, :update, :destroy]
+
+  post 'webhooks/stripe', to: 'webhooks#stripe'
 end
