@@ -18,19 +18,40 @@ class User < ApplicationRecord
 
   # Subscription methods
   def subscribed?
-    subscription.present? && subscription.active?
+    payment_processor&.subscriptions&.active&.any?
   end
 
   def subscription
-    subscriptions.active.first
+    payment_processor&.subscriptions&.active&.first
   end
 
   def subscription_name
-    subscription&.name || 'No Subscription'
+    return 'No Subscription' unless subscription
+    
+    # Use Pay's data attribute which contains the plan information
+    subscription.name || 'Unknown Plan'
   end
 
   def subscription_price
-    subscription&.processor_plan || 0
+    return 0 unless subscription
+    
+    # Use Pay's data attribute which contains the price information
+    begin
+      # The amount is stored in cents, so divide by 100 to get dollars
+      subscription.data.dig('amount', 'amount') / 100.0
+    rescue
+      # Fallback to getting it from Stripe directly if needed
+      Stripe.api_key = Rails.application.credentials.dig(:stripe, :test, :private_key)
+      stripe_sub = Stripe::Subscription.retrieve({
+        id: subscription.processor_id,
+        expand: ['items.data.price']
+      })
+      
+      stripe_sub.items.data.first.price.unit_amount / 100.0
+    rescue => e
+      Rails.logger.error("Error retrieving subscription price: #{e.message}")
+      0
+    end
   end
 
   # Validations
