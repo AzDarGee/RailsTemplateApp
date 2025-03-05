@@ -1,4 +1,7 @@
 class Avo::Resources::Agent < Avo::BaseResource
+  self.title = -> {
+    [ record.id, record.name ].compact.join(" - ")
+  }
   # self.includes = []
   # self.attachments = []
   self.model_class = Ai::Agent
@@ -26,7 +29,6 @@ class Avo::Resources::Agent < Avo::BaseResource
     field :instructions, as: :textarea
     field :tools, as: :text
     field :user_id, as: :number
-    field :tasks, as: :has_many
     field :conversations, as: :has_many
     field :user, as: :belongs_to
   end
