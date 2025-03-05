@@ -55,7 +55,12 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   mount ActionCable.server => '/cable'
-
+  mount MissionControl::Jobs::Engine, at: "/jobs"
+  
+  authenticate :user, -> user { user.admin?} do
+    mount_avo
+  end
+  
   if Rails.env.development?
     mount LetterOpenerWeb::Engine, at: "/letter_opener"
     mount Hotwire::Spark::Engine => '/hotwire-spark'

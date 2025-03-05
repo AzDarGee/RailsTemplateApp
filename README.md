@@ -28,7 +28,8 @@
     - Open AI
     - Claude
     - Google Gemini
-- Admin Dashboard
+- Admin Dashboard (Avo)
+- Search (ransack)
 - Tagging
 - Pay gem to manage payments (Stripe and PayPal)
 
@@ -45,15 +46,18 @@ Install yarn packages
 ```
 yarn install
 ```
+
 Install necessary libraries for some gems to work:
 ```
 sudo apt-get update
 sudo apt-get install build-essential
 ```
+
 For the mini_magick gem, you'll also need ImageMagick installed:
 ```
 sudo apt-get install imagemagick
 ```
+
 For video modifications, you need to install:
 ```
 sudo apt install ffmpeg
@@ -84,6 +88,11 @@ rails db:migrate:down VERSION=<version_number>
 To run rails development server:
 ```
 bin/dev
+```
+
+Setup credentials for Mission Control Jobs:
+```
+bin/rails mission_control:jobs:authentication:configure
 ```
 
 # Figma Design to Code
@@ -176,6 +185,13 @@ If javascript controllers are not loading
 rails assets:clobber
 bin/dev
 ```
+
+If the server is still running and `bin/dev` won't work:
+```
+lsof -wni tcp:3000
+kill -9 <pid_number>
+```
+* Replace <pid_number> with the number you got from the first command
 
 # Useful Commands
 
