@@ -28,7 +28,8 @@
     - Open AI
     - Claude
     - Google Gemini
-- Admin Dashboard
+- Admin Dashboard (Avo)
+- Search (ransack)
 - Tagging
 - Pay gem to manage payments (Stripe and PayPal)
 
@@ -179,6 +180,13 @@ If javascript controllers are not loading
 rails assets:clobber
 bin/dev
 ```
+
+If the server is still running and `bin/dev` won't work:
+```
+lsof -wni tcp:3000
+kill -9 <pid_number>
+```
+* Replace <pid_number> with the number you got from the first command
 
 # Useful Commands
 
