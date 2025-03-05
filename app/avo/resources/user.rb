@@ -26,14 +26,14 @@ class Avo::Resources::User < Avo::BaseResource
     field :last_sign_in_at, as: :date_time, hide_on: :index
     field :current_sign_in_ip, as: :text, hide_on: :index
     field :last_sign_in_ip, as: :text, hide_on: :index
-    field :confirmation_token, as: :text, hide_on: :index
+    field :confirmation_token, as: :text, hide_on: :index, help: "A unique token should be used"
     field :confirmed_at, as: :date_time, hide_on: :index
     field :confirmation_sent_at, as: :date_time, hide_on: :index
     field :unconfirmed_email, as: :text, hide_on: :index
     field :failed_attempts, as: :number, hide_on: :index
-    field :unlock_token, as: :text, hide_on: :index
+    field :unlock_token, as: :text, hide_on: :index, help: "A unique token should be used"
     field :locked_at, as: :date_time, hide_on: :index
-    field :username, as: :text
+    field :username, as: :text, help: "A unique username should be used"
     field :provider, as: :text
     field :uid, as: :text, hide_on: :index
     field :name, as: :text
