@@ -27,6 +27,8 @@ gem "langchainrb", "~> 0.19.4"
 gem "ruby-openai", "~> 7.4"
 gem "dry-initializer", "~> 3.2"
 gem "mission_control-jobs"
+gem "avo", ">= 3.17"
+gem "ransack"
 
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
@@ -59,3 +61,4 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+

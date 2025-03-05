@@ -33,6 +33,10 @@ Rails.application.routes.draw do
   mount ActionCable.server => '/cable'
   mount MissionControl::Jobs::Engine, at: "/jobs"
   
+  authenticate :user, -> user { user.admin?} do
+    mount_avo
+  end
+  
   if Rails.env.development?
     mount LetterOpenerWeb::Engine, at: "/letter_opener"
     mount Hotwire::Spark::Engine => '/hotwire-spark'
