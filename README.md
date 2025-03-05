@@ -180,6 +180,13 @@ rails assets:clobber
 bin/dev
 ```
 
+If the server is still running and `bin/dev` won't work:
+```
+lsof -wni tcp:3000
+kill -9 <pid_number>
+```
+* Replace <pid_number> with the number you got from the first command
+
 # Useful Commands
 
 To view local branches:
