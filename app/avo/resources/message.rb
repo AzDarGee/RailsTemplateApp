@@ -1,4 +1,7 @@
 class Avo::Resources::Message < Avo::BaseResource
+  self.title = -> {
+    [ record.id, record.content.truncate(50) ].compact.join(" - ")
+  }
   # self.includes = []
   # self.attachments = []
   self.model_class = Ai::Message

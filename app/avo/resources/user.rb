@@ -1,4 +1,8 @@
 class Avo::Resources::User < Avo::BaseResource
+  self.title = -> {
+    [ record.id, record.email ].compact.join(" - ")
+  }
+  
   # self.includes = []
   # self.attachments = []
   self.search = {

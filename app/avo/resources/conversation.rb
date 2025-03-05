@@ -1,6 +1,10 @@
 class Avo::Resources::Conversation < Avo::BaseResource
+  self.title = -> {
+    [ record.id, record.title ].compact.join(" - ")
+  }
   # self.includes = []
   # self.attachments = []
+
   self.model_class = Ai::Conversation
   self.search = {
     query: -> { 
