@@ -234,3 +234,4 @@ stripe listen --forward-to localhost:3000/webhooks/stripe
 * Hot reloading going slow - hotwire spark. Happened after I added Active storage. Try removing and re-installing hotwire-spark. Looks like letter_opener gem is reloading all the views for letter_opener web on each reload.
 * Visualize the database models in a diagram
 * Add markdown for chat messages received from AI
+* Rails server going slow / not working at all after adding AVO admin dashboard. I thought it might be the solid_queue plugin with puma, but even after removing the plugin, still not working. This is the commit to go back to to rollback avo changes (2e68951b6fbcc9fa63761220681dec6e71a1e7d6)
