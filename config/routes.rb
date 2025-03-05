@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  mount_avo
   root to: "pages#home"
   
   # If I need to customize devise controllers in the future

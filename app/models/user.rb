@@ -26,4 +26,12 @@ class User < ApplicationRecord
       user.skip_confirmation! if user.respond_to?(:skip_confirmation!)
     end
   end
+
+  def self.ransackable_attributes(auth_object = nil)
+    ["id", "email", "name", "username"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["agents", "conversations"]
+  end
 end

@@ -28,7 +28,8 @@
     - Open AI
     - Claude
     - Google Gemini
-- Admin Dashboard
+- Admin Dashboard (Avo)
+- Search (ransack)
 - Tagging
 - Pay gem to manage payments (Stripe and PayPal)
 
