@@ -35,7 +35,7 @@
                   <span class="badge bg-success me-2">Active</span>
                   <span><%= current_user.subscription.name %> Plan</span>
                 </div>
-                <p><strong>Next Billing Date:</strong> <%= current_user.subscription.ends_at&.strftime('%B %d, %Y') || 'N/A' %></p>
+                <p><strong>Next Billing Date:</strong> <%= Time.at(current_user.subscription.current_period_end).strftime("%b %d, %Y") || 'N/A' %></p>
                 <p><strong>Amount:</strong> <%= number_to_currency(current_user.subscription.data&.dig('amount').to_f / 100) %> / <%= current_user.subscription.data&.dig('interval') == 'year' ? 'year' : 'month' %></p>
                 <%= link_to "Manage Subscription", subscription_path(current_user.subscription), class: "btn btn-sm btn-outline-primary" %>
               <% else %>
