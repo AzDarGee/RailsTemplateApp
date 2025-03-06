@@ -127,6 +127,9 @@ GEM
       debug_inspector (>= 1.2.0)
     bootsnap (1.18.4)
       msgpack (~> 1.2)
+    braintree (4.26.0)
+      builder (>= 3.2.4)
+      rexml (>= 3.1.9)
     brakeman (7.0.0)
       racc
     builder (3.3.0)
@@ -587,6 +590,7 @@ DEPENDENCIES
   better_errors
   binding_of_caller
   bootsnap
+  braintree
   brakeman
   capybara
   country_select (~> 8.0)

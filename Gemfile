@@ -29,6 +29,7 @@ gem "dry-initializer", "~> 3.2"
 gem "mission_control-jobs"
 gem "avo", ">= 3.17"
 gem "ransack"
+gem 'country_select', '~> 8.0'
 
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
@@ -43,6 +44,7 @@ gem "thruster", require: false
 # Payment processing
 gem "pay", "~> 8.3.0"
 gem "stripe", "~> 13.0"
+gem "braintree"
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
@@ -65,12 +67,3 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
-
-gem "view_component", "~> 3.21"
-
-gem "langchainrb", "~> 0.19.4"
-
-gem "ruby-openai", "~> 7.4"
-
-gem "dry-initializer", "~> 3.2"
-gem 'country_select', '~> 8.0'
