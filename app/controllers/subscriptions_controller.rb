@@ -67,16 +67,27 @@ class SubscriptionsController < ApplicationController
         product: product.id
       })
       
-      # Create the subscription using Pay
-      subscription = current_user.payment_processor.subscribe(
-        name: plan.name,
-        plan: price.id,
+      # Create a checkout session for the subscription
+      session = Stripe::Checkout::Session.create({
+        payment_method_types: ['card'],
+        customer: current_user.payment_processor.processor_id,
+        line_items: [{
+          price: price.id,
+          quantity: 1,
+        }],
+        mode: 'subscription',
+        success_url: success_subscriptions_url + "?session_id={CHECKOUT_SESSION_ID}",
+        cancel_url: pricing_url,
         metadata: {
-          plan_id: plan.id
+          plan_id: plan.id,
+          plan_name: plan.name,
+          interval: interval,
+          user_id: current_user.id
         }
-      )
+      })
       
-      redirect_to subscription_path(subscription.id), notice: "Successfully subscribed to #{plan.name} plan!"
+      # Redirect to Stripe Checkout
+      redirect_to session.url, allow_other_host: true
     rescue => e
       redirect_to pricing_path, alert: "Failed to create subscription: #{e.message}"
     end
@@ -108,41 +119,77 @@ class SubscriptionsController < ApplicationController
       # Configure Stripe API key
       Stripe.api_key = Rails.application.credentials.dig(:stripe, :test, :private_key)
       
-      # Get the checkout session with expanded subscription data
+      # Get the checkout session
       session = Stripe::Checkout::Session.retrieve({
-        id: params[:session_id],
-        expand: ['subscription', 'subscription.default_payment_method']
+        id: params[:session_id]
       })
       
       # Get the subscription with expanded price and product data
       stripe_subscription = Stripe::Subscription.retrieve({
-        id: session.subscription.id,
-        expand: ['items.data.price.product']
+        id: session.subscription,
+        expand: ['items.data.price.product', 'default_payment_method']
       })
       
       # Get the price and product data
       price_data = stripe_subscription.items.data[0].price
       product_data = price_data.product
       
-      # Create the subscription in our database
-      @subscription = current_user.payment_processor.subscriptions.create!(
-        name: product_data.name,
-        processor_id: stripe_subscription.id,
-        processor_plan: price_data.id,
-        status: stripe_subscription.status,
-        current_period_start: Time.at(stripe_subscription.current_period_start),
-        current_period_end: Time.at(stripe_subscription.current_period_end),
-        data: {
-          stripe_id: stripe_subscription.id,
-          stripe_status: stripe_subscription.status,
-          stripe_price: price_data.id,
-          stripe_product: product_data.id,
-          amount: price_data.unit_amount,
-          interval: price_data.recurring.interval
-        }
-      )
+      # Check if subscription already exists
+      existing_subscription = current_user.payment_processor.subscriptions.find_by(processor_id: stripe_subscription.id)
       
-      redirect_to subscription_path(@subscription), notice: "Successfully subscribed!"
+      if existing_subscription
+        # Update existing subscription
+        existing_subscription.update!(
+          status: stripe_subscription.status,
+          current_period_start: Time.at(stripe_subscription.current_period_start),
+          current_period_end: Time.at(stripe_subscription.current_period_end),
+          data: {
+            stripe_id: stripe_subscription.id,
+            stripe_status: stripe_subscription.status,
+            stripe_price: price_data.id,
+            stripe_product: product_data.id,
+            amount: price_data.unit_amount,
+            interval: price_data.recurring.interval
+          }
+        )
+        @subscription = existing_subscription
+      else
+        # Deactivate all other active subscriptions
+        current_user.payment_processor.subscriptions.active.where.not(processor_id: stripe_subscription.id).each do |sub|
+          begin
+            # Cancel the subscription in Stripe
+            Stripe::Subscription.update(
+              sub.processor_id,
+              { cancel_at_period_end: true }
+            )
+            
+            # Mark as canceled in our database
+            sub.update(status: 'canceled', ends_at: Time.at(sub.current_period_end))
+          rescue => e
+            Rails.logger.error("Failed to cancel subscription #{sub.id}: #{e.message}")
+          end
+        end
+        
+        # Create new subscription
+        @subscription = current_user.payment_processor.subscriptions.create!(
+          name: product_data.name,
+          processor_id: stripe_subscription.id,
+          processor_plan: price_data.id,
+          status: stripe_subscription.status,
+          current_period_start: Time.at(stripe_subscription.current_period_start),
+          current_period_end: Time.at(stripe_subscription.current_period_end),
+          data: {
+            stripe_id: stripe_subscription.id,
+            stripe_status: stripe_subscription.status,
+            stripe_price: price_data.id,
+            stripe_product: product_data.id,
+            amount: price_data.unit_amount,
+            interval: price_data.recurring.interval
+          }
+        )
+      end
+      
+      redirect_to subscription_path(@subscription), notice: "Successfully subscribed to #{product_data.name}!"
     rescue => e
       Rails.logger.error("Subscription Error: #{e.message}\n#{e.backtrace.join("\n")}")
       redirect_to pricing_path, alert: "Error processing subscription: #{e.message}"

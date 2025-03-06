@@ -53,8 +53,11 @@
                         <% end %>
                       </td>
                       <td>
-                        <% if subscription.status == 'active' %>
+                        <% if subscription.data && subscription.data["amount"] %>
                           $<%= sprintf('%.2f', subscription.data["amount"].to_f / 100) %>
+                          <% if subscription.data["interval"] %>
+                            / <%= subscription.data["interval"] %>
+                          <% end %>
                         <% else %>
                           -
                         <% end %>

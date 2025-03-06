@@ -89,15 +89,27 @@
           <h5 class="mb-0">Payment Information</h5>
         </div>
         <div class="card-body">
-          <% if @subscription.status == 'active' %>
+          <% if @subscription.data && @subscription.data["amount"] %>
             <div class="row mb-3">
               <div class="col-5 fw-bold">Amount:</div>
-              <div class="col-7">$<%= sprintf('%.2f', @subscription.data["amount"].to_f / 100) %></div>
+              <div class="col-7">
+                $<%= sprintf('%.2f', @subscription.data["amount"].to_f / 100) %>
+                <% if @subscription.data["interval"] %>
+                  / <%= @subscription.data["interval"] %>
+                <% end %>
+              </div>
             </div>
-            <div class="row mb-3">
-              <div class="col-5 fw-bold">Next Billing:</div>
-              <div class="col-7"><%= Time.at(@subscription.current_period_end).strftime("%b %d, %Y") %></div>
-            </div>
+            <% if @subscription.status == 'active' %>
+              <div class="row mb-3">
+                <div class="col-5 fw-bold">Next Billing:</div>
+                <div class="col-7"><%= Time.at(@subscription.current_period_end).strftime("%b %d, %Y") %></div>
+              </div>
+            <% elsif @subscription.ends_at.present? %>
+              <div class="row mb-3">
+                <div class="col-5 fw-bold">Access Until:</div>
+                <div class="col-7"><%= @subscription.ends_at.strftime("%b %d, %Y") %></div>
+              </div>
+            <% end %>
             <div class="row mb-3">
               <div class="col-5 fw-bold">Payment Method:</div>
               <div class="col-7">
@@ -109,7 +121,7 @@
               </div>
             </div>
           <% else %>
-            <p class="text-muted">No active payment information</p>
+            <p class="text-muted">No payment information available</p>
           <% end %>
         </div>
       </div>
