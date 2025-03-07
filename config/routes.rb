@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   get "pages/terms"
   get "pages/privacy"
   get "pages/dashboard"
+  get "dashboard/:section", to: "pages#dashboard_section", as: :dashboard_section
   
   # Payment and subscription routes
   get "pricing", to: "subscriptions#pricing", as: :pricing

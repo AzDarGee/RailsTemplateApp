@@ -1,0 +1,148 @@
+<div class="modal fade" id="payment-method-modal" tabindex="-1" aria-labelledby="payment-method-modal-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="payment-method-modal-label">Add Payment Method</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <%= form_with url: payment_methods_path, method: :post, id: "payment-method-form" do |f| %>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="cardholder-name" class="form-label">Cardholder Name</label>
+            <input type="text" class="form-control" id="cardholder-name" value="<%= current_user.billing_name || current_user.name || current_user.email.split('@').first %>" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="card-element" class="form-label">Card Information</label>
+            <div id="card-element" class="form-control p-3">
+              <!-- Stripe Elements will be inserted here -->
+            </div>
+            <div class="form-text">Your card information is secured by Stripe.</div>
+          </div>
+          
+          <div id="card-errors" class="alert alert-danger d-none"></div>
+          <%= f.hidden_field :payment_method_id %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="save-payment-method">Save Payment Method</button>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<% content_for :head do %>
+  <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    /* Stripe Elements custom styling */
+    .StripeElement {
+      background-color: white;
+      padding: 10px 12px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      box-shadow: 0 1px 3px 0 #e6ebf1;
+      -webkit-transition: box-shadow 150ms ease;
+      transition: box-shadow 150ms ease;
+    }
+    .StripeElement--focus {
+      box-shadow: 0 1px 3px 0 #cfd7df;
+    }
+    .StripeElement--invalid {
+      border-color: #fa755a;
+    }
+    .StripeElement--webkit-autofill {
+      background-color: #fefde5 !important;
+    }
+  </style>
+<% end %>
+
+<% content_for :javascript do %>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize Stripe
+      const stripe = Stripe('<%= Rails.application.credentials.dig(:stripe, :test, :public_key) %>');
+      
+      // Create an instance of Elements
+      const elements = stripe.elements();
+      
+      // Custom styling for the card Element
+      const style = {
+        base: {
+          color: '#32325d',
+          fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+          fontSmoothing: 'antialiased',
+          fontSize: '16px',
+          '::placeholder': {
+            color: '#aab7c4'
+          }
+        },
+        invalid: {
+          color: '#fa755a',
+          iconColor: '#fa755a'
+        }
+      };
+      
+      // Create a card Element and mount it
+      const cardElement = elements.create('card', {style: style});
+      
+      // Mount the card element when the modal is shown
+      const paymentMethodModal = document.getElementById('payment-method-modal');
+      paymentMethodModal.addEventListener('shown.bs.modal', function() {
+        cardElement.mount('#card-element');
+      });
+      
+      // Clear the card element when the modal is hidden
+      paymentMethodModal.addEventListener('hidden.bs.modal', function() {
+        cardElement.clear();
+      });
+      
+      // Handle form submission
+      const form = document.getElementById('payment-method-form');
+      const cardErrors = document.getElementById('card-errors');
+      const submitButton = document.getElementById('save-payment-method');
+      const cardholderName = document.getElementById('cardholder-name');
+      
+      form.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        
+        if (!cardholderName.value.trim()) {
+          cardErrors.textContent = 'Cardholder name is required';
+          cardErrors.classList.remove('d-none');
+          return;
+        }
+        
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+        cardErrors.classList.add('d-none');
+        
+        try {
+          const result = await stripe.createPaymentMethod({
+            type: 'card',
+            card: cardElement,
+            billing_details: {
+              name: cardholderName.value,
+              email: '<%= current_user.billing_email || current_user.email %>'
+            }
+          });
+          
+          if (result.error) {
+            cardErrors.textContent = result.error.message;
+            cardErrors.classList.remove('d-none');
+            submitButton.disabled = false;
+            submitButton.innerHTML = 'Save Payment Method';
+          } else {
+            document.querySelector('input[name="payment_method_id"]').value = result.paymentMethod.id;
+            form.submit();
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          cardErrors.textContent = error.message || 'An error occurred while processing your payment method.';
+          cardErrors.classList.remove('d-none');
+          submitButton.disabled = false;
+          submitButton.innerHTML = 'Save Payment Method';
+        }
+      });
+    });
+  </script>
+<% end %> 

@@ -1,0 +1,41 @@
+<%= turbo_frame_tag "dashboard_content" do %>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Your AI Agents</h5>
+      <%= link_to "Create New Agent", "/ai/agents/new", class: "btn btn-sm btn-primary" %>
+    </div>
+    <div class="card-body">
+      <% if @agents.any? %>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+          <% @agents.each do |agent| %>
+            <div class="col">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h5 class="card-title"><%= agent.name %></h5>
+                  <p class="card-text text-muted small"><%= agent.description.truncate(100) if agent.description %></p>
+                  <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="badge bg-success">
+                      Active
+                    </span>
+                    <small class="text-muted"><%= agent.conversations.count %> conversations</small>
+                  </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                  <%= link_to "Chat", "/ai/agents/#{agent.id}", class: "btn btn-sm btn-outline-primary" %>
+                  <%= link_to "Edit", "/ai/agents/#{agent.id}/edit", class: "btn btn-sm btn-outline-secondary" %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-center py-5">
+          <i class="bi bi-robot mb-3" style="font-size: 2rem;"></i>
+          <h5>You don't have any AI agents yet</h5>
+          <p class="text-muted">Create your first AI agent to start chatting</p>
+          <%= link_to "Create New Agent", "/ai/agents/new", class: "btn btn-primary mt-2" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
