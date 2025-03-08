@@ -35,15 +35,14 @@
                   <% end %>
                 </td>
                 <td>
-                  <% if payment.is_a?(Pay::Subscription) %>
+                  <% if payment.is_a?(Pay::Charge) %>
+                    <% if payment.metadata.present? && payment.metadata["description"].present? %>
+                      <%= payment.metadata["description"] %>
+                    <% else %>
+                      Payment
+                    <% end %>
+                  <% elsif payment.is_a?(Pay::Subscription) %>
                     <%= payment.name || "Subscription" %>
-                  <% elsif payment.respond_to?(:description) && payment.description.present? %>
-                    <%= payment.description %>
-                  <% elsif payment.data && payment.data["description"].present? %>
-                    <%= payment.data["description"] %>
-                  <% else %>
-                    <% charge_id = payment.id.to_s %>
-                    <%= charge_id.present? ? "Charge #{charge_id.include?('_') ? charge_id.split('_').last : charge_id}" : "Payment" %>
                   <% end %>
                 </td>
                 <td>
