@@ -1,112 +1,110 @@
-<%= turbo_frame_tag "dashboard_content" do %>
-    <div class="card shadow-sm mb-4">
-        <div class="card-header">
-        <h5 class="mb-0">Account Overview</h5>
-        </div>
-        <div class="card-body">
-        <div class="row">
-            <div class="col-md-6">
-            <h6 class="text-muted mb-3">Account Information</h6>
-            <p><strong>Name:</strong> <%= current_user.name || current_user.email.split('@').first %></p>
-            <p><strong>Email:</strong> <%= current_user.email %></p>
-            <p><strong>Member Since:</strong> <%= current_user.created_at.strftime('%B %d, %Y') %></p>
-            </div>
-            <div class="col-md-6">
-            <h6 class="text-muted mb-3">Subscription Status</h6>
-            <% if current_user.subscribed? %>
-                <div class="d-flex align-items-center mb-2">
-                <span class="badge bg-success me-2">Active</span>
-                <span><%= current_user.subscription.name %> Plan</span>
-                </div>
-                <p><strong>Next Billing Date:</strong> <%= Time.at(current_user.subscription.current_period_end).strftime("%b %d, %Y") || 'N/A' %></p>
-                <p><strong>Amount:</strong> <%= number_to_currency(current_user.subscription.data&.dig('amount').to_f / 100) %> / <%= current_user.subscription.data&.dig('interval') == 'year' ? 'year' : 'month' %></p>
-                <%= link_to "Manage Subscription", subscription_path(current_user.subscription), class: "btn btn-sm btn-outline-primary" %>
-            <% else %>
-                <div class="d-flex align-items-center mb-3">
-                <span class="badge bg-secondary me-2">No Active Subscription</span>
-                </div>
-                <p>You don't have an active subscription.</p>
-                <%= link_to "View Plans", pricing_path, class: "btn btn-sm btn-primary" %>
-            <% end %>
-            </div>
-        </div>
-        </div>
+<div class="card shadow-sm mb-4">
+    <div class="card-header">
+    <h5 class="mb-0">Account Overview</h5>
     </div>
-
+    <div class="card-body">
     <div class="row">
         <div class="col-md-6">
-        <div class="card shadow-sm mb-4">
-            <div class="card-header">
-            <h5 class="mb-0">Recent Conversations</h5>
-            </div>
-            <div class="card-body">
-            <% if current_user.conversations.any? %>
-                <div class="list-group list-group-flush">
-                <% current_user.conversations.order(created_at: :desc).limit(5).each do |conversation| %>
-                    <%= link_to ai_agent_conversation_path(conversation.agent, conversation), class: "list-group-item list-group-item-action" do %>
-                    <div class="d-flex w-100 justify-content-between">
-                        <h6 class="mb-1"><%= conversation.title || "Conversation ##{conversation.id}" %></h6>
-                        <small><%= time_ago_in_words(conversation.updated_at) %> ago</small>
-                    </div>
-                    <p class="mb-1 text-truncate"><%= conversation.messages.last&.content || "No messages" %></p>
-                    <small><%= conversation.agent.name %></small>
-                    <% end %>
-                <% end %>
-                </div>
-                <%= link_to "View All Conversations", ai_agents_path, class: "btn btn-sm btn-outline-primary mt-3" %>
-            <% else %>
-                <div class="text-center py-4">
-                <i class="bi bi-chat-dots mb-3" style="font-size: 2rem;"></i>
-                <p>No conversations yet.</p>
-                <%= link_to "Start a Conversation", ai_agents_path, class: "btn btn-sm btn-primary" %>
-                </div>
-            <% end %>
-            </div>
+        <h6 class="text-muted mb-3">Account Information</h6>
+        <p><strong>Name:</strong> <%= current_user.name || current_user.email.split('@').first %></p>
+        <p><strong>Email:</strong> <%= current_user.email %></p>
+        <p><strong>Member Since:</strong> <%= current_user.created_at.strftime('%B %d, %Y') %></p>
         </div>
-        </div>
-        
         <div class="col-md-6">
-        <div class="card shadow-sm mb-4">
-            <div class="card-header">
-            <h5 class="mb-0">Recent Payments</h5>
+        <h6 class="text-muted mb-3">Subscription Status</h6>
+        <% if current_user.subscribed? %>
+            <div class="d-flex align-items-center mb-2">
+            <span class="badge bg-success me-2">Active</span>
+            <span><%= current_user.subscription.name %> Plan</span>
             </div>
-            <div class="card-body">
-            <% if current_user.charges.any? %>
-                <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <% current_user.charges.order(created_at: :desc).limit(5).each do |charge| %>
-                        <tr>
-                        <td>
-                            <% if charge.data && charge.data["created_at"] %>
-                            <%= Time.at(charge.data["created_at"]).strftime('%b %d, %Y') %>
-                            <% else %>
-                            <%= charge.created_at.strftime('%b %d, %Y') %>
-                            <% end %>
-                        </td>
-                        <td><%= number_to_currency(charge.amount / 100.0) %></td>
-                        <td><span class="badge bg-success">Paid</span></td>
-                        </tr>
-                    <% end %>
-                    </tbody>
-                </table>
-                </div>
-                <%= link_to "View All Payments", payments_path, class: "btn btn-sm btn-outline-primary mt-3" %>
-            <% else %>
-                <div class="text-center py-4">
-                <i class="bi bi-credit-card mb-3" style="font-size: 2rem;"></i>
-                <p>No payment history yet.</p>
-                </div>
-            <% end %>
+            <p><strong>Next Billing Date:</strong> <%= Time.at(current_user.subscription.current_period_end).strftime("%b %d, %Y") || 'N/A' %></p>
+            <p><strong>Amount:</strong> <%= number_to_currency(current_user.subscription.data&.dig('amount').to_f / 100) %> / <%= current_user.subscription.data&.dig('interval') == 'year' ? 'year' : 'month' %></p>
+            <%= link_to "Manage Subscription", subscription_path(current_user.subscription), class: "btn btn-sm btn-outline-primary", data: { turbo: false } %>
+        <% else %>
+            <div class="d-flex align-items-center mb-3">
+            <span class="badge bg-secondary me-2">No Active Subscription</span>
             </div>
-        </div>
+            <p>You don't have an active subscription.</p>
+            <%= link_to "View Plans", pricing_path, class: "btn btn-sm btn-primary", data: { turbo: false } %>
+        <% end %>
         </div>
     </div>
-<% end %>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+        <h5 class="mb-0">Recent Conversations</h5>
+        </div>
+        <div class="card-body">
+        <% if current_user.conversations.any? %>
+            <div class="list-group list-group-flush">
+            <% current_user.conversations.order(created_at: :desc).limit(5).each do |conversation| %>
+                <%= link_to ai_agent_conversation_path(conversation.agent, conversation), class: "list-group-item list-group-item-action", data: { turbo: false } do %>
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1"><%= conversation.title || "Conversation ##{conversation.id}" %></h6>
+                    <small><%= time_ago_in_words(conversation.updated_at) %> ago</small>
+                </div>
+                <p class="mb-1 text-truncate"><%= conversation.messages.last&.content || "No messages" %></p>
+                <small><%= conversation.agent.name %></small>
+                <% end %>
+            <% end %>
+            </div>
+            <%= link_to "View All Conversations", ai_agents_path, class: "btn btn-sm btn-outline-primary mt-3", data: { turbo: false } %>
+        <% else %>
+            <div class="text-center py-4">
+            <i class="bi bi-chat-dots mb-3" style="font-size: 2rem;"></i>
+            <p>No conversations yet.</p>
+            <%= link_to "Start a Conversation", ai_agents_path, class: "btn btn-sm btn-primary", data: { turbo: false } %>
+            </div>
+        <% end %>
+        </div>
+    </div>
+    </div>
+    
+    <div class="col-md-6">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+        <h5 class="mb-0">Recent Payments</h5>
+        </div>
+        <div class="card-body">
+        <% if current_user.charges.any? %>
+            <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <% current_user.charges.order(created_at: :desc).limit(5).each do |charge| %>
+                    <tr>
+                    <td>
+                        <% if charge.data && charge.data["created_at"] %>
+                        <%= Time.at(charge.data["created_at"]).strftime('%b %d, %Y') %>
+                        <% else %>
+                        <%= charge.created_at.strftime('%b %d, %Y') %>
+                        <% end %>
+                    </td>
+                    <td><%= number_to_currency(charge.amount / 100.0) %></td>
+                    <td><span class="badge bg-success">Paid</span></td>
+                    </tr>
+                <% end %>
+                </tbody>
+            </table>
+            </div>
+            <%= link_to "View All Payments", payments_path, class: "btn btn-sm btn-outline-primary mt-3", data: { turbo: false } %>
+        <% else %>
+            <div class="text-center py-4">
+            <i class="bi bi-credit-card mb-3" style="font-size: 2rem;"></i>
+            <p>No payment history yet.</p>
+            </div>
+        <% end %>
+        </div>
+    </div>
+    </div>
+</div>

@@ -1,115 +1,113 @@
-<%= turbo_frame_tag "dashboard_content" do %>
-  <div class="card shadow-sm mb-4">
-    <div class="card-header">
-      <h5 class="mb-0">Billing & Payment Methods</h5>
-    </div>
-    <div class="card-body">
-      <% if current_user.payment_processor %>
-        <h6 class="text-muted mb-3">Your Payment Methods</h6>
-        
-        <% if current_user.payment_processor.payment_methods.any? %>
-          <div class="list-group mb-4">
-            <% current_user.payment_processor.payment_methods.each do |payment_method| %>
-              <div class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                  <% if payment_method.card? %>
-                    <i class="bi bi-credit-card me-2"></i>
-                    <%= payment_method.brand.titleize %> ending in <%= payment_method.last4 %>
-                    <small class="text-muted">
-                      Expires <%= payment_method.exp_month %>/<%= payment_method.exp_year %>
-                    </small>
-                  <% else %>
-                    <i class="bi bi-wallet me-2"></i>
-                    <%= payment_method.type.titleize %>
-                  <% end %>
-                  
-                  <% if payment_method.default? %>
-                    <span class="badge bg-primary ms-2">Default</span>
-                  <% end %>
-                </div>
+<div class="card shadow-sm mb-4">
+  <div class="card-header">
+    <h5 class="mb-0">Billing & Payment Methods</h5>
+  </div>
+  <div class="card-body">
+    <% if current_user.payment_processor %>
+      <h6 class="text-muted mb-3">Your Payment Methods</h6>
+      
+      <% if current_user.payment_processor.payment_methods.any? %>
+        <div class="list-group mb-4">
+          <% current_user.payment_processor.payment_methods.each do |payment_method| %>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <% if payment_method.card? %>
+                  <i class="bi bi-credit-card me-2"></i>
+                  <%= payment_method.brand.titleize %> ending in <%= payment_method.last4 %>
+                  <small class="text-muted">
+                    Expires <%= payment_method.exp_month %>/<%= payment_method.exp_year %>
+                  </small>
+                <% else %>
+                  <i class="bi bi-wallet me-2"></i>
+                  <%= payment_method.type.titleize %>
+                <% end %>
                 
-                <div>
-                  <% unless payment_method.default? %>
-                    <%= button_to "Make Default", payment_method_path(payment_method, default: true), method: :patch, class: "btn btn-sm btn-outline-primary me-2" %>
-                  <% end %>
-                  <%= button_to "Remove", payment_method_path(payment_method), method: :delete, class: "btn btn-sm btn-outline-danger", data: { turbo_confirm: "Are you sure you want to remove this payment method?" } %>
-                </div>
+                <% if payment_method.default? %>
+                  <span class="badge bg-primary ms-2">Default</span>
+                <% end %>
               </div>
-            <% end %>
-          </div>
-        <% else %>
-          <div class="alert alert-info mb-4">
-            You don't have any payment methods yet.
-          </div>
-        <% end %>
-        
-        <div class="mb-4">
-          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#payment-method-modal">
-            Add Payment Method
-          </button>
+              
+              <div>
+                <% unless payment_method.default? %>
+                  <%= button_to "Make Default", payment_method_path(payment_method, default: true), method: :patch, class: "btn btn-sm btn-outline-primary me-2", data: { turbo: false } %>
+                <% end %>
+                <%= button_to "Remove", payment_method_path(payment_method), method: :delete, class: "btn btn-sm btn-outline-danger", data: { turbo_confirm: "Are you sure you want to remove this payment method?", turbo: false } %>
+              </div>
+            </div>
+          <% end %>
         </div>
-        
-        <hr class="my-4">
-      <% end %>
-      
-      <h6 class="text-muted mb-3">Billing Address</h6>
-      
-      <%= form_with model: current_user, url: update_billing_address_subscriptions_path, method: :patch, class: "needs-validation", novalidate: true do |f| %>
-        <div class="row g-3">
-          <div class="col-md-6">
-            <div class="form-floating mb-3">
-              <%= f.text_field :billing_name, class: "form-control", placeholder: "Full Name", required: true %>
-              <%= f.label :billing_name, "Full Name" %>
-            </div>
-          </div>
-          
-          <div class="col-md-6">
-            <div class="form-floating mb-3">
-              <%= f.email_field :billing_email, class: "form-control", placeholder: "Email", required: true %>
-              <%= f.label :billing_email, "Email" %>
-            </div>
-          </div>
-          
-          <div class="col-12">
-            <div class="form-floating mb-3">
-              <%= f.text_field :billing_address, class: "form-control", placeholder: "Address", required: true %>
-              <%= f.label :billing_address, "Address" %>
-            </div>
-          </div>
-          
-          <div class="col-md-5">
-            <div class="form-floating mb-3">
-              <%= f.text_field :billing_city, class: "form-control", placeholder: "City", required: true %>
-              <%= f.label :billing_city, "City" %>
-            </div>
-          </div>
-          
-          <div class="col-md-4">
-            <div class="form-floating mb-3">
-              <%= f.text_field :billing_state, class: "form-control", placeholder: "State", required: true %>
-              <%= f.label :billing_state, "State/Province" %>
-            </div>
-          </div>
-          
-          <div class="col-md-3">
-            <div class="form-floating mb-3">
-              <%= f.text_field :billing_zip, class: "form-control", placeholder: "Zip", required: true %>
-              <%= f.label :billing_zip, "Zip/Postal Code" %>
-            </div>
-          </div>
-          
-          <div class="col-12">
-            <div class="form-floating mb-3">
-              <%= f.text_field :billing_country, class: "form-control", placeholder: "Country", required: true %>
-              <%= f.label :billing_country, "Country" %>
-            </div>
-          </div>
-        </div>
-        
-        <div class="mt-4">
-          <%= f.submit "Update Billing Address", class: "btn btn-primary" %>
+      <% else %>
+        <div class="alert alert-info mb-4">
+          You don't have any payment methods yet.
         </div>
       <% end %>
-    </div>
-  </div> 
-<% end %>
+      
+      <div class="mb-4">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#payment-method-modal">
+          Add Payment Method
+        </button>
+      </div>
+      
+      <hr class="my-4">
+    <% end %>
+    
+    <h6 class="text-muted mb-3">Billing Address</h6>
+    
+    <%= form_with model: current_user, url: update_billing_address_subscriptions_path, method: :patch, class: "needs-validation", novalidate: true, data: { turbo: false } do |f| %>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="form-floating mb-3">
+            <%= f.text_field :billing_name, class: "form-control", placeholder: "Full Name", required: true %>
+            <%= f.label :billing_name, "Full Name" %>
+          </div>
+        </div>
+        
+        <div class="col-md-6">
+          <div class="form-floating mb-3">
+            <%= f.email_field :billing_email, class: "form-control", placeholder: "Email", required: true %>
+            <%= f.label :billing_email, "Email" %>
+          </div>
+        </div>
+        
+        <div class="col-12">
+          <div class="form-floating mb-3">
+            <%= f.text_field :billing_address, class: "form-control", placeholder: "Address", required: true %>
+            <%= f.label :billing_address, "Address" %>
+          </div>
+        </div>
+        
+        <div class="col-md-5">
+          <div class="form-floating mb-3">
+            <%= f.text_field :billing_city, class: "form-control", placeholder: "City", required: true %>
+            <%= f.label :billing_city, "City" %>
+          </div>
+        </div>
+        
+        <div class="col-md-4">
+          <div class="form-floating mb-3">
+            <%= f.text_field :billing_state, class: "form-control", placeholder: "State", required: true %>
+            <%= f.label :billing_state, "State/Province" %>
+          </div>
+        </div>
+        
+        <div class="col-md-3">
+          <div class="form-floating mb-3">
+            <%= f.text_field :billing_zip, class: "form-control", placeholder: "Zip", required: true %>
+            <%= f.label :billing_zip, "Zip/Postal Code" %>
+          </div>
+        </div>
+        
+        <div class="col-12">
+          <div class="form-floating mb-3">
+            <%= f.text_field :billing_country, class: "form-control", placeholder: "Country", required: true %>
+            <%= f.label :billing_country, "Country" %>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mt-4">
+        <%= f.submit "Update Billing Address", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

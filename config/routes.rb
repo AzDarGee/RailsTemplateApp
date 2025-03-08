@@ -36,11 +36,6 @@ Rails.application.routes.draw do
       get :success
     end
   end
-
-  # AI routes
-  # resources :ai_agents, controller: 'ai/agents' do
-  #   resources :conversations, controller: 'ai/conversations'
-  # end
   
   namespace :ai do   
     resources :agents do
@@ -88,7 +83,7 @@ Rails.application.routes.draw do
   end
 
   # Mount Pay routes
-  mount Pay::Engine, at: '/'
+  # mount Pay::Engine, at: '/'
 
   resources :payment_methods, only: [:new, :create, :update, :destroy]
 

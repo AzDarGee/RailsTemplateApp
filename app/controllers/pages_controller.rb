@@ -27,10 +27,9 @@ class PagesController < ApplicationController
   end
   
   def dashboard
-    # Default to overview section
-    @section = "overview"
+    # Default to overview section if no section is specified
+    @section = params[:section] || "overview"
     render "dashboard"
-    
   end
    
   def dashboard_section
@@ -38,7 +37,7 @@ class PagesController < ApplicationController
 
     case @section
     when "overview"
-
+      # Overview section data
     when "ai_agents"
       @agents = current_user.agents.order(created_at: :desc)
     when "subscriptions"
@@ -46,13 +45,17 @@ class PagesController < ApplicationController
     when "billing"
       # Billing section data
     when "payment_history"
-      @charges = current_user.charges.order(created_at: :desc)
+      # Get both charges and subscriptions for payment history
+      charges = current_user.charges.order(created_at: :desc)
+      subscriptions = current_user.subscriptions.order(created_at: :desc)
+      @charges = (charges + subscriptions).sort_by(&:created_at).reverse
     else
       redirect_to pages_dashboard_path
       return
     end
     
     respond_to do |format|
+      format.html { render "dashboard" }
       format.turbo_stream { 
         render turbo_stream: turbo_stream.replace(
           "dashboard_content", 
