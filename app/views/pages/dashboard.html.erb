@@ -5,22 +5,25 @@
         <div class="card-header">
           Dashboard
         </div>
-        <div class="list-group list-group-flush" id="dashboard-tabs">
+        <div class="list-group list-group-flush">
           <%= link_to "Overview", dashboard_section_path(section: "overview"), 
-              class: "list-group-item list-group-item-action #{'active' if @section == 'overview'}",
-              data: { turbo_frame: "dashboard_content" } %>
+              class: "list-group-item list-group-item-action",
+              data: { turbo_frame: "dashboard_content", turbo_action: "advance" } %>
+          <%= link_to "Profile", dashboard_section_path(section: "profile"), 
+              class: "list-group-item list-group-item-action",
+              data: { turbo_frame: "dashboard_content", turbo_action: "advance" } %>
           <%= link_to "AI Agents", dashboard_section_path(section: "ai_agents"), 
-              class: "list-group-item list-group-item-action #{'active' if @section == 'ai_agents'}",
-              data: { turbo_frame: "dashboard_content" } %>
+              class: "list-group-item list-group-item-action",
+              data: { turbo_frame: "dashboard_content", turbo_action: "advance" } %>
           <%= link_to "Subscriptions", dashboard_section_path(section: "subscriptions"), 
-              class: "list-group-item list-group-item-action #{'active' if @section == 'subscriptions'}",
-              data: { turbo_frame: "dashboard_content" } %>
+              class: "list-group-item list-group-item-action",
+              data: { turbo_frame: "dashboard_content", turbo_action: "advance" } %>
           <%= link_to "Billing", dashboard_section_path(section: "billing"), 
-              class: "list-group-item list-group-item-action #{'active' if @section == 'billing'}",
-              data: { turbo_frame: "dashboard_content" } %>
+              class: "list-group-item list-group-item-action",
+              data: { turbo_frame: "dashboard_content", turbo_action: "advance" } %>
           <%= link_to "Payment History", dashboard_section_path(section: "payment_history"), 
-              class: "list-group-item list-group-item-action #{'active' if @section == 'payment_history'}",
-              data: { turbo_frame: "dashboard_content" } %>
+              class: "list-group-item list-group-item-action",
+              data: { turbo_frame: "dashboard_content", turbo_action: "advance" } %>
         </div>
       </div>
     </div>

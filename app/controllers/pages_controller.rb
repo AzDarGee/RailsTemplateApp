@@ -38,6 +38,8 @@ class PagesController < ApplicationController
     case @section
     when "overview"
       # Overview section data
+    when "profile"
+      # Profile section data
     when "ai_agents"
       @agents = current_user.agents.order(created_at: :desc)
     when "subscriptions"

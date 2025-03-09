@@ -4,7 +4,7 @@
       <h1>Subscription Details</h1>
     </div>
     <div class="col-md-4 text-end">
-      <%= link_to "Back to Subscriptions", subscriptions_path, class: "btn btn-outline-secondary" %>
+      <%= link_to "Back to Subscriptions", dashboard_section_path(section: "subscriptions"), class: "btn btn-outline-secondary" %>
     </div>
   </div>
 
@@ -75,7 +75,7 @@
           </div>
           <div class="card-body">
             <div class="d-grid gap-2">
-              <%= link_to "Manage Billing", billing_subscriptions_path, class: "btn btn-primary" %>
+              <%= link_to "Manage Billing", dashboard_section_path(section: "billing"), class: "btn btn-primary" %>
               <%= link_to "Cancel Subscription", subscription_path(@subscription), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to cancel this subscription? You'll still have access until the end of your current billing period." }, class: "btn btn-outline-danger mt-2" %>
             </div>
           </div>

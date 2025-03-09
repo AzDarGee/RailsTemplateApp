@@ -3,7 +3,6 @@ import "@hotwired/turbo-rails"
 import "./controllers"
 import "@fortawesome/fontawesome-free/js/all.js"
 import * as bootstrap from "bootstrap"
-window.bootstrap = bootstrap
 
 // Trix Editor
 import "trix"
