@@ -15,24 +15,24 @@
                 <% current_user.payment_processor.payment_methods.each do |payment_method| %>
                   <div class="list-group-item d-flex justify-content-between align-items-center">
                     <div>
-                      <% if payment_method.card? %>
+                      <% if payment_method.type == 'card' || payment_method.respond_to?(:card_type) %>
                         <i class="bi bi-credit-card me-2"></i>
-                        <%= payment_method.brand.titleize %> ending in <%= payment_method.last4 %>
+                        <%= payment_method.respond_to?(:brand) ? payment_method.brand.titleize : payment_method.card_brand.to_s.titleize %> ending in <%= payment_method.respond_to?(:last4) ? payment_method.last4 : payment_method.last_digits %>
                         <small class="text-muted">
-                          Expires <%= payment_method.exp_month %>/<%= payment_method.exp_year %>
+                          Expires <%= payment_method.respond_to?(:exp_month) ? payment_method.exp_month : payment_method.expiration_month %>/<%= payment_method.respond_to?(:exp_year) ? payment_method.exp_year : payment_method.expiration_year %>
                         </small>
                       <% else %>
                         <i class="bi bi-wallet me-2"></i>
-                        <%= payment_method.type.titleize %>
+                        <%= payment_method.type.to_s.titleize %>
                       <% end %>
                       
-                      <% if payment_method.default? %>
+                      <% if payment_method.respond_to?(:default?) ? payment_method.default? : payment_method.default %>
                         <span class="badge bg-primary ms-2">Default</span>
                       <% end %>
                     </div>
                     
                     <div>
-                      <% unless payment_method.default? %>
+                      <% unless payment_method.respond_to?(:default?) ? payment_method.default? : payment_method.default %>
                         <%= button_to "Make Default", payment_method_path(payment_method, default: true), method: :patch, class: "btn btn-sm btn-outline-primary me-2" %>
                       <% end %>
                       <%= button_to "Remove", payment_method_path(payment_method), method: :delete, class: "btn btn-sm btn-outline-danger", data: { turbo_confirm: "Are you sure you want to remove this payment method?" } %>

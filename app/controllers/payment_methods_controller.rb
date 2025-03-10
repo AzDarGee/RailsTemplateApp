@@ -26,7 +26,14 @@ class PaymentMethodsController < ApplicationController
       
       # Set as default if it's the first payment method
       if current_user.payment_processor.payment_methods.count == 1
-        current_user.payment_processor.update_default_payment_method(payment_method.processor_id)
+        # Use Stripe API directly to update the customer's default payment method
+        Stripe::Customer.update(
+          current_user.payment_processor.processor_id,
+          { invoice_settings: { default_payment_method: payment_method.processor_id } }
+        )
+        
+        # Refresh the payment processor to reflect changes
+        # current_user.payment_processor.refresh
       end
       
       redirect_to billing_subscriptions_path, notice: "Payment method added successfully."
@@ -38,19 +45,55 @@ class PaymentMethodsController < ApplicationController
   def update
     # Make this payment method the default
     if params[:default] && @payment_method
-      current_user.payment_processor.update_default_payment_method(@payment_method.processor_id)
-      redirect_to billing_subscriptions_path, notice: "Default payment method updated."
+      begin
+        # Try different approaches to set default payment method
+        Stripe.api_key = Rails.application.credentials.dig(:stripe, :test, :private_key)
+        
+        # Use Stripe API directly to update the customer's default payment method
+        Stripe::Customer.update(
+          current_user.payment_processor.processor_id,
+          { invoice_settings: { default_payment_method: @payment_method.processor_id } }
+        )
+        
+        # Refresh the payment processor to reflect changes
+        current_user.reload
+        current_user.save
+        
+        redirect_to dashboard_section_path(section: "billing"), notice: "Default payment method updated."
+      rescue => e
+        Rails.logger.error("Failed to update default payment method: #{e.message}")
+        redirect_to dashboard_section_path(section: "billing"), alert: "Failed to update payment method: #{e.message}"
+      end
     else
-      redirect_to billing_subscriptions_path, alert: "Failed to update payment method."
+      redirect_to dashboard_section_path(section: "billing"), alert: "Failed to update payment method."
     end
   end
 
   def destroy
     if @payment_method
-      current_user.payment_processor.delete_payment_method(@payment_method.processor_id)
-      redirect_to billing_subscriptions_path, notice: "Payment method removed."
+      begin
+        # Configure Stripe API key
+        Stripe.api_key = Rails.application.credentials.dig(:stripe, :test, :private_key)
+        
+        # Use Stripe API directly to detach the payment method
+        Stripe::PaymentMethod.detach(@payment_method.processor_id)
+        
+        # Force reload of payment methods to clear cache
+        current_user.reload
+        
+        # If using Pay gem's database records for payment methods, find and destroy the record
+        if defined?(Pay::PaymentMethod)
+          payment_method_record = Pay::PaymentMethod.find_by(processor_id: @payment_method.processor_id)
+          payment_method_record.destroy if payment_method_record
+        end
+        
+        redirect_to dashboard_section_path(section: "billing"), notice: "Payment method removed."
+      rescue => e
+        Rails.logger.error("Failed to remove payment method: #{e.message}")
+        redirect_to dashboard_section_path(section: "billing"), alert: "Failed to remove payment method: #{e.message}"
+      end
     else
-      redirect_to billing_subscriptions_path, alert: "Failed to remove payment method."
+      redirect_to dashboard_section_path(section: "billing"), alert: "Payment method not found."
     end
   end
 

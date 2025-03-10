@@ -32,10 +32,6 @@
       <%= yield %>
     </main>
     
-    <% if current_user && controller_name == 'pages' && action_name == 'dashboard_section' && params[:section] == 'billing' %>
-      <%= render 'shared/payment_method_modal' %>
-    <% end %>
-    
     <%= render "shared/footer" %>
   </body>
 </html>
