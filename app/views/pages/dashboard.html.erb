@@ -30,7 +30,7 @@
     
     <div class="col-lg-9">
       <%= turbo_frame_tag "dashboard_content" do %>
-        <%= render "pages/dashboard_sections/#{@section}" %>
+        <%= render "pages/dashboard_sections/#{@section}", data: { section: @section } %>
       <% end %>
     </div>
   </div>
