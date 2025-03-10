@@ -161,13 +161,18 @@
 <script src="https://js.stripe.com/v3/"></script>
 <script>
   document.addEventListener('turbo:load', function() {
-    // Initialize Stripe
+   
     const stripe = Stripe('<%= Rails.application.credentials.stripe.test[:public_key] %>');
     const elements = stripe.elements();
+
+    const cardElementContainer = document.getElementById('card-element');
+    if (!cardElementContainer) return;
     
-    // Create card element
     const cardElement = elements.create('card');
-    cardElement.mount('#card-element');
+    // Create card element
+    if (cardElementContainer) {
+      cardElement.mount('#card-element');
+    }
     
     // Handle form submission
     const form = document.getElementById('payment-method-form');
@@ -207,5 +212,14 @@
         form.submit();
       }
     });
+  });
+
+   // Handle Turbo navigation events
+  document.addEventListener('turbo:load', function() {
+    // Check if we're on the billing section
+    const billingSection = document.querySelector('[data-section="billing"]');
+    if (billingSection) {
+      initializeStripeElements();
+    }
   });
 </script>
