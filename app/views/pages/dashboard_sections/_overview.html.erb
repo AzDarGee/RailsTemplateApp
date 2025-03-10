@@ -1,32 +1,32 @@
 <div class="card shadow-sm mb-4">
     <div class="card-header">
-    <h5 class="mb-0">Account Overview</h5>
+        <h5 class="mb-0">Account Overview</h5>
     </div>
     <div class="card-body">
     <div class="row">
         <div class="col-md-6">
-        <h6 class="text-muted mb-3">Account Information</h6>
-        <p><strong>Name:</strong> <%= current_user.name || current_user.email.split('@').first %></p>
-        <p><strong>Email:</strong> <%= current_user.email %></p>
-        <p><strong>Member Since:</strong> <%= current_user.created_at.strftime('%B %d, %Y') %></p>
+            <h6 class="text-muted mb-3">Account Information</h6>
+            <p><strong>Name:</strong> <%= current_user.name || current_user.email.split('@').first %></p>
+            <p><strong>Email:</strong> <%= current_user.email %></p>
+            <p><strong>Member Since:</strong> <%= current_user.created_at.strftime('%B %d, %Y') %></p>
         </div>
         <div class="col-md-6">
-        <h6 class="text-muted mb-3">Subscription Status</h6>
-        <% if current_user.subscribed? %>
-            <div class="d-flex align-items-center mb-2">
-            <span class="badge bg-success me-2">Active</span>
-            <span><%= current_user.subscription.name %> Plan</span>
-            </div>
-            <p><strong>Next Billing Date:</strong> <%= Time.at(current_user.subscription.current_period_end).strftime("%b %d, %Y") || 'N/A' %></p>
-            <p><strong>Amount:</strong> <%= number_to_currency(current_user.subscription.data&.dig('amount').to_f / 100) %> / <%= current_user.subscription.data&.dig('interval') == 'year' ? 'year' : 'month' %></p>
-            <%= link_to "Manage Subscription", subscription_path(current_user.subscription), class: "btn btn-sm btn-outline-primary", data: { turbo: false } %>
-        <% else %>
-            <div class="d-flex align-items-center mb-3">
-            <span class="badge bg-secondary me-2">No Active Subscription</span>
-            </div>
-            <p>You don't have an active subscription.</p>
-            <%= link_to "View Plans", pricing_path, class: "btn btn-sm btn-primary", data: { turbo: false } %>
-        <% end %>
+            <h6 class="text-muted mb-3">Subscription Status</h6>
+            <% if current_user.subscribed? %>
+                <div class="d-flex align-items-center mb-2">
+                    <span class="badge bg-success me-2">Active</span>
+                    <span><%= current_user.subscription.name %> Plan</span>
+                </div>
+                <p><strong>Next Billing Date:</strong> <%= Time.at(current_user.subscription.current_period_end).strftime("%b %d, %Y") || 'N/A' %></p>
+                <p><strong>Amount:</strong> <%= number_to_currency(current_user.subscription.data&.dig('amount').to_f / 100) %> / <%= current_user.subscription.data&.dig('interval') == 'year' ? 'year' : 'month' %></p>
+                <%= link_to "Manage Subscription", subscription_path(current_user.subscription), class: "btn btn-sm btn-outline-primary", data: { turbo: false } %>
+            <% else %>
+                <div class="d-flex align-items-center mb-3">
+                    <span class="badge bg-secondary me-2">No Active Subscription</span>
+                </div>
+                <p>You don't have an active subscription.</p>
+                <%= link_to "View Plans", pricing_path, class: "btn btn-sm btn-primary", data: { turbo: false } %>
+            <% end %>
         </div>
     </div>
     </div>

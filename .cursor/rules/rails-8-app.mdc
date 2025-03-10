@@ -15,6 +15,7 @@ alwaysApply: false
 * When styling the views with bootstrap 5, keep in mind accessibility issues
 * Think along the lines of a Chief Technology Officer (CTO) when designing the models, views and controllers
 * The database tables are listed in the schema file located at db/schema.rb
+* I am using Pay gem for payments. Keep up to date with the latest documentation when forming solutions.
 
 
 

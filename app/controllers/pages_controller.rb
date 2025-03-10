@@ -59,7 +59,7 @@ class PagesController < ApplicationController
     respond_to do |format|
       format.html { render "dashboard" }
       format.turbo_stream { 
-        render turbo_stream: turbo_stream.replace(
+        render turbo_stream: turbo_stream.update(
           "dashboard_content", 
           partial: "pages/dashboard_sections/#{@section}",
           locals: { section: @section }

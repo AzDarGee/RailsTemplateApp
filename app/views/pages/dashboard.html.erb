@@ -5,32 +5,13 @@
         <div class="card-header">
           Dashboard
         </div>
-        <div class="list-group list-group-flush">
-          <%= link_to "Overview", dashboard_section_path(section: "overview"), 
-              class: "list-group-item list-group-item-action",
-              data: { turbo_frame: "dashboard_content", turbo_action: "advance" } %>
-          <%= link_to "Profile", dashboard_section_path(section: "profile"), 
-              class: "list-group-item list-group-item-action",
-              data: { turbo_frame: "dashboard_content", turbo_action: "advance" } %>
-          <%= link_to "AI Agents", dashboard_section_path(section: "ai_agents"), 
-              class: "list-group-item list-group-item-action",
-              data: { turbo_frame: "dashboard_content", turbo_action: "advance" } %>
-          <%= link_to "Subscriptions", dashboard_section_path(section: "subscriptions"), 
-              class: "list-group-item list-group-item-action",
-              data: { turbo_frame: "dashboard_content", turbo_action: "advance" } %>
-          <%= link_to "Billing", dashboard_section_path(section: "billing"), 
-              class: "list-group-item list-group-item-action",
-              data: { turbo_frame: "dashboard_content", turbo_action: "advance" } %>
-          <%= link_to "Payment History", dashboard_section_path(section: "payment_history"), 
-              class: "list-group-item list-group-item-action",
-              data: { turbo_frame: "dashboard_content", turbo_action: "advance" } %>
-        </div>
+        <%= render "pages/dashboard_sections/dashboard_tabs" %>
       </div>
     </div>
     
     <div class="col-lg-9">
       <%= turbo_frame_tag "dashboard_content" do %>
-        <%= render "pages/dashboard_sections/#{@section}", data: { section: @section } %>
+        <%= render "pages/dashboard_sections/#{@section}" %>
       <% end %>
     </div>
   </div>

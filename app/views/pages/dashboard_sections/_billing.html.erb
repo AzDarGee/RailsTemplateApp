@@ -157,8 +157,6 @@
   </div>
 </div>
 
-<!-- Include Stripe.js directly -->
-<script src="https://js.stripe.com/v3/"></script>
 <script>
   document.addEventListener('turbo:load', function() {
    
@@ -173,7 +171,7 @@
     if (cardElementContainer) {
       cardElement.mount('#card-element');
     }
-    
+
     // Handle form submission
     const form = document.getElementById('payment-method-form');
     const cardButton = document.getElementById('card-button');

@@ -20,7 +20,7 @@
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module", defer: true %>
-    <%# stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <script src="https://js.stripe.com/v3/"></script>
   </head>
 
   <body class="d-flex flex-column h-100">
