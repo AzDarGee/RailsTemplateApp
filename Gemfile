@@ -2,63 +2,63 @@ source "https://rubygems.org"
 
 
 gem "rails", "~> 8.0.2"
-gem "propshaft"
-gem "pg", "~> 1.1"
-gem "puma", ">= 5.0"
-gem "turbo-rails"
-gem "stimulus-rails"
-gem "jbuilder"
-gem "devise"
-gem 'omniauth'
-gem 'omniauth-google-oauth2'
-gem 'omniauth-linkedin-oauth2'
-gem 'omniauth-facebook'
-gem 'omniauth-twitter2'
-gem 'omniauth-rails_csrf_protection' # Required for security
-gem "image_processing"
-gem "mini_magick"
-gem "streamio-ffmpeg"
-gem "jsbundling-rails"
+gem "propshaft", "~> 1.1.0"
+gem "pg", "~> 1.5.9"
+gem "puma", "~> 6.6.0"
+gem "turbo-rails", "~> 2.0.13"
+gem "stimulus-rails", "~> 1.3.4"
+gem "jbuilder", "~> 2.13.0"
+gem "devise", "~> 4.9.4"
+gem 'omniauth', "~> 2.1.3"
+gem 'omniauth-google-oauth2', "~> 1.2.1"
+gem 'omniauth-linkedin-oauth2', "~> 1.0.1"
+gem 'omniauth-facebook', "~> 10.0.0"
+gem 'omniauth-twitter2', "~> 0.1.0"
+gem 'omniauth-rails_csrf_protection', "~> 1.0.2"
+gem "image_processing", "~> 1.14.0"
+gem "mini_magick", "~> 5.2.0"
+gem "streamio-ffmpeg", "~> 3.0.2"
+gem "jsbundling-rails", "~> 1.3.1"
 gem "cssbundling-rails", "~> 1.4.3"
-gem "mail"
-gem "aws-sdk-s3", require: false
-gem "view_component", "~> 3.21"
+gem "mail", "~> 2.8.1"
+gem "aws-sdk-s3", "~> 1.182.0", require: false
+gem "view_component", "~> 3.21.0"
 gem "langchainrb", "~> 0.19.4"
-gem "ruby-openai", "~> 7.4"
-gem "dry-initializer", "~> 3.2"
-gem "mission_control-jobs"
-gem "avo", ">= 3.17"
-gem "ransack"
+gem "ruby-openai", "~> 7.4.0"
+gem "dry-initializer", "~> 3.2.0"
+gem "mission_control-jobs", "~> 1.0.2"
+gem "avo", "~> 3.18.1"
+gem "ransack", "~> 4.3.0"
 
-gem "tzinfo-data", platforms: %i[ windows jruby ]
+gem "tzinfo-data", "~> 1.2025.1", platforms: %i[ windows jruby ]
 
-gem "solid_cache"
-gem "solid_queue"
-gem "solid_cable"
+gem "solid_cache", "~> 1.0.7"
+gem "solid_queue", "~> 1.1.3"
+gem "solid_cable", "~> 3.0.7"
 
-gem "bootsnap", require: false
-gem "kamal", require: false
-gem "thruster", require: false
+gem "bootsnap", "~> 1.18.4", require: false
+gem "kamal", "~> 2.5.3", require: false
+gem "thruster", "~> 0.1.12", require: false
 
 group :development, :test do
-  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
-  gem "brakeman", require: false
-  gem "rubocop-rails-omakase", require: false
+  gem "debug", "~> 1.10.0", platforms: %i[ mri windows ], require: "debug/prelude"
+  gem "brakeman", "~> 7.0.0", require: false
+  gem "rubocop-rails-omakase", "~> 1.1.0", require: false
 end
 
 group :development do
-  gem "web-console"
-  gem "hotwire-spark"
-  gem "letter_opener"
-  gem "letter_opener_web"
-  gem "pry"
-  gem "pry-remote"
-  gem "better_errors"
-  gem "binding_of_caller"
+  gem "web-console", "~> 4.2.1"
+  gem "hotwire-spark", "~> 0.1.13"
+  gem "letter_opener", "~> 1.10.0"
+  gem "letter_opener_web", "~> 3.0.0"
+  gem "pry", "~> 0.15.2", require: false
+  gem "pry-remote", "~> 0.1.8", require: false
+  gem "better_errors", "~> 2.10.1"
+  gem "binding_of_caller", "~> 1.0.1"
 end
 
 group :test do
-  gem "capybara"
-  gem "selenium-webdriver"
+  gem "capybara", "~> 3.40.0"
+  gem "selenium-webdriver", "~> 4.29.1"
 end
 
