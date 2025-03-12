@@ -28,6 +28,7 @@
     - Open AI
     - Claude
     - Google Gemini
+    - Openrouter
 - Admin Dashboard (Avo)
 - Search (ransack)
 - Tagging
