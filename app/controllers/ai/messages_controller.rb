@@ -20,7 +20,7 @@ class Ai::MessagesController < ApplicationController
   # POST /ai/messages or /ai/messages.json
   def create
     @message = @conversation.messages.build(message_params)
-    @message.role = "user"
+    @message.role = "User"
 
     respond_to do |format|
       if @message.save
