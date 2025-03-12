@@ -545,7 +545,7 @@ DEPENDENCIES
   bootsnap
   brakeman
   capybara
-  cssbundling-rails
+  cssbundling-rails (~> 1.4.3)
   debug
   devise
   dry-initializer (~> 3.2)
