@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_04_212407) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_12_214959) do
   create_schema "auth"
   create_schema "extensions"
   create_schema "graphql"
@@ -68,29 +68,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_04_212407) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
-  end
-
-  create_table "ai_agent_messages", force: :cascade do |t|
-    t.bigint "agent_task_id", null: false
-    t.string "role", null: false
-    t.text "content"
-    t.jsonb "tool_calls"
-    t.string "tool_call_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["agent_task_id"], name: "index_ai_agent_messages_on_agent_task_id"
-  end
-
-  create_table "ai_agent_tasks", force: :cascade do |t|
-    t.bigint "agent_id", null: false
-    t.bigint "user_id", null: false
-    t.bigint "parent_task_id"
-    t.string "status", default: "pending", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["agent_id"], name: "index_ai_agent_tasks_on_agent_id"
-    t.index ["parent_task_id"], name: "index_ai_agent_tasks_on_parent_task_id"
-    t.index ["user_id"], name: "index_ai_agent_tasks_on_user_id"
   end
 
   create_table "ai_agents", force: :cascade do |t|
@@ -398,10 +375,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_04_212407) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "ai_agent_messages", "ai_agent_tasks", column: "agent_task_id"
-  add_foreign_key "ai_agent_tasks", "ai_agent_tasks", column: "parent_task_id"
-  add_foreign_key "ai_agent_tasks", "ai_agents", column: "agent_id"
-  add_foreign_key "ai_agent_tasks", "users"
   add_foreign_key "ai_agents", "users"
   add_foreign_key "ai_conversations", "ai_agents", column: "agent_id"
   add_foreign_key "ai_conversations", "users"
