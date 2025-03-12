@@ -19,7 +19,7 @@ gem "image_processing"
 gem "mini_magick"
 gem "streamio-ffmpeg"
 gem "jsbundling-rails"
-gem "cssbundling-rails"
+gem "cssbundling-rails", "~> 1.4.3"
 gem "mail"
 gem "aws-sdk-s3", require: false
 gem "view_component", "~> 3.21"
