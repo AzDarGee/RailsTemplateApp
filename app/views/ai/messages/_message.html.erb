@@ -1,8 +1,8 @@
-<div id="<%= dom_id(message) %>" class="message mb-3 <%= message.role == 'user' ? 'text-end' : '' %>" data-role="<%= message.role %>">
-  <div class="message-bubble d-inline-block p-3 rounded <%= message.role == 'user' ? 'bg-primary text-white' : 'bg-light' %>" style="max-width: 75%;">
+<div id="<%= dom_id(message) %>" class="message mb-3 <%= message.role == 'User' ? 'text-end' : '' %>" data-role="<%= message.role %>">
+  <div class="message-bubble d-inline-block p-3 rounded <%= message.role == 'User' ? 'bg-primary text-white' : 'bg-light' %>" style="max-width: 75%;">
     <%= message.content %>
   </div>
   <div class="message-meta small text-muted mt-1">
-    <%= message.role == 'user' ? 'You' : @agent&.name || 'AI' %>, <%= time_ago_in_words(message.created_at) %> ago
+    <%= message.role == 'User' ? 'You' : @agent&.name || 'AI' %>, <%= time_ago_in_words(message.created_at) %> ago
   </div>
 </div>
