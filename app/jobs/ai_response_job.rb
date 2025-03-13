@@ -27,7 +27,7 @@ class AiResponseJob < ApplicationJob
       # Update the placeholder message with the real response
       ai_message.update(
         content: last_message.content,
-        role: "agent",
+        role: "AI Agent",
         tool_calls: last_message.tool_calls,
         tool_call_id: last_message.tool_call_id
       )
@@ -45,7 +45,7 @@ class AiResponseJob < ApplicationJob
       ai_message.update(content: "Sorry, I encountered an error while processing your request.")
       
       Turbo::StreamsChannel.broadcast_replace_to(
-        "ai_conversation_#{conversation.id}",
+        "conversation_#{conversation.id}",
         target: dom_id(ai_message),
         partial: "ai/messages/message",
         locals: { message: ai_message, agent: agent }

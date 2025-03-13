@@ -2,7 +2,7 @@ class Ai::AgentsController < ApplicationController
   before_action :set_agent, only: [:edit, :update, :destroy, :show]
   
   def index
-    @agents = Ai::Agent.all
+    @agents = Ai::Agent.all.order(created_at: :desc)
   end
 
   def new
