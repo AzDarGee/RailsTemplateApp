@@ -19,7 +19,7 @@
               <div class="card h-100 shadow-sm border-0 hover-shadow transition">
                 <div class="position-relative">
                   <% if current_user.avatar.attached? %>
-                    <%= image_tag(current_user.avatar.variant(resize_to_limit: [100, 100]), alt: agent.name , class: "img-fluid rounded-circle") %>
+                    <%= image_tag(current_user.avatar.variant(resize_to_limit: [50, 50]), alt: agent.name , class: "img-fluid rounded-circle") %>
                   <% end %>
                   
                   <div class="position-absolute top-0 end-0 p-2">
@@ -28,7 +28,7 @@
                 </div>
                 <div class="card-body d-flex flex-column">
                   <h5 class="card-title"><%= agent.name.humanize %></h5>
-                  <p class="card-text text-muted flex-grow-1">Description of the agent goes here.</p>
+                  <p class="card-text text-muted flex-grow-1"><%= agent.description %></p>
                   <div class="d-flex justify-content-between mt-3">
                     <%= link_to ai_agent_path(agent), class: "btn btn-outline-primary" do %>
                       <i class="bi bi-box-arrow-up-right me-1"></i> Open

@@ -29,7 +29,7 @@ class Ai::AgentsController < ApplicationController
   end
 
   def create
-    @agent = current_user.agents.create(agent_params)
+    @agent = current_user.agents.new(agent_params)
     
     respond_to do |format|
       if @agent.save

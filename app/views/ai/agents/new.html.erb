@@ -6,7 +6,7 @@
           <h5 class="m-0">Add New Agent</h5>
         </div>
         <div class="card-body">
-          <%= form_with(model: @agent, local: true) do |form| %>
+          <%= form_with(model: @agent, url: ai_agents_path, scope: :agent) do |form| %>
             <div class="mb-3">
               <%= form.label :name, class: "form-label" %>
               <%= form.text_field :name, class: "form-control", required: true %>
