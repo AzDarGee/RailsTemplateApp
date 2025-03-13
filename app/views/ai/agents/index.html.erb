@@ -19,7 +19,7 @@
               <div class="card h-100 shadow-sm border-0 hover-shadow transition">
                 <div class="position-relative">
                   <% if current_user.avatar.attached? %>
-                    <%= image_tag(current_user.avatar.variant(resize_to_limit: [50, 50]), alt: agent.name , class: "img-fluid rounded-circle") %>
+                    <%= image_tag(current_user.avatar.variant(resize_to_limit: [50, 50]), alt: agent.name , class: "img-fluid rounded-circle p-2") %>
                   <% end %>
                   
                   <div class="position-absolute top-0 end-0 p-2">
