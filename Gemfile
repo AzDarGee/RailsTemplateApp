@@ -51,8 +51,8 @@ group :development do
   gem "hotwire-spark", "~> 0.1.13"
   gem "letter_opener", "~> 1.10.0"
   gem "letter_opener_web", "~> 3.0.0"
-  gem "pry", "~> 0.15.2", require: false
-  gem "pry-remote", "~> 0.1.8", require: false
+  gem "pry", "~> 0.15.2"
+  gem "pry-remote", "~> 0.1.8"
   gem "better_errors", "~> 2.10.1"
   gem "binding_of_caller", "~> 1.0.1"
 end
