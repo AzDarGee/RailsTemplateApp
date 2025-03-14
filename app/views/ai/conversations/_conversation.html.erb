@@ -1,19 +1,38 @@
-<div id="<%= dom_id conversation %>" class="p-2 card m-2">
-  <p>
-    <strong><%= conversation.title %></strong>
-  </p>
-
-  <%= link_to ai_agent_conversation_path(conversation.agent, conversation), class: "list-group-item list-group-item-action #{'active' if local_assigns[:active]}" do %>
-    <div class="d-flex w-100 justify-content-between">
-      <h6 class="mb-1"><%= conversation.title %></h6>
-      <small><%= time_ago_in_words(conversation.updated_at) %> ago</small>
+<tr class="conversation-row" data-conversation-id="<%= conversation.id %>">
+  <td class="ps-4">
+    <div class="d-flex align-items-center">
+      <div class="conversation-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+        <i class="fas fa-comment"></i>
+      </div>
+      <div>
+        <h6 class="mb-0"><%= conversation.title || "Conversation #{conversation.id}" %></h6>
+        <small class="text-muted"><%= conversation.messages.count %> messages</small>
+      </div>
     </div>
-    <% if conversation.messages.any? %>
-      <p class="mb-1 text-truncate"><%= conversation.messages.last.content %></p>
-    <% else %>
-      <p class="mb-1 text-muted">No messages yet</p>
-    <% end %>
-  <% end %>
-
-  <%= link_to "Delete", ai_agent_conversation_path(conversation.agent, conversation), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %>
-</div>
+  </td>
+  <td>
+    <span class="text-truncate d-inline-block" style="max-width: 200px;">
+      <%= conversation.messages.last&.content&.truncate(50) || "No messages yet" %>
+    </span>
+  </td>
+  <td>
+    <span class="text-muted" title="<%= conversation.created_at.strftime('%B %d, %Y at %I:%M %p') %>">
+      <%= time_ago_in_words(conversation.created_at) %> ago
+    </span>
+  </td>
+  <td>
+    <span class="text-muted" title="<%= conversation.updated_at.strftime('%B %d, %Y at %I:%M %p') %>">
+      <%= time_ago_in_words(conversation.updated_at) %> ago
+    </span>
+  </td>
+  <td class="text-end pe-4">
+    <div class="btn-group">
+      <%= link_to ai_agent_conversation_path(@agent, conversation), class: "btn btn-primary btn-sm" do %>
+        <i class="fas fa-comments me-1"></i> Open
+      <% end %>
+      <button type="button" class="btn btn-outline-danger btn-sm delete-conversation" data-bs-toggle="modal" data-bs-target="#deleteModal" data-conversation-id="<%= conversation.id %>">
+        <i class="fas fa-trash-alt"></i>
+      </button>
+    </div>
+  </td>
+</tr>
