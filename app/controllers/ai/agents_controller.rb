@@ -2,7 +2,7 @@ class Ai::AgentsController < ApplicationController
   before_action :set_agent, only: [:edit, :update, :destroy, :show]
   
   def index
-    @agents = Ai::Agent.all.order(created_at: :desc)
+    @agents = current_user.agents.order(created_at: :desc)
   end
 
   def new
@@ -47,6 +47,6 @@ class Ai::AgentsController < ApplicationController
   end
 
   def agent_params
-    params.require(:agent).permit(:name, :description, :instructions, :tools)
+    params.require(:agent).permit(:name, :description, :instructions, :tools, :avatar)
   end
 end
