@@ -43,7 +43,7 @@ class Ai::ConversationsController < ApplicationController
     @conversation.destroy!
 
     respond_to do |format|
-      format.turbo_stream { render turbo_stream: turbo_stream.remove("ai_conversation_#{@conversation.id}") }
+      format.turbo_stream { render turbo_stream: turbo_stream.remove("conversation_#{@conversation.id}") }
     end
   end
 

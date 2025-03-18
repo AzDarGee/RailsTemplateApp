@@ -46,11 +46,9 @@
       <div class="card shadow-sm mb-3">
         <div class="card-body p-3">
           <div class="d-flex align-items-center mb-3">
-            <% if current_user.avatar.present? %>
+            <% if current_user.avatar.attached? %>
               <%= image_tag(current_user.avatar.variant(resize_to_limit: [50, 50]), alt: @agent.name , class: "img-fluid rounded-circle me-3") %>
-            <% else %>
-              <%= image_tag("default_avatar.png", alt: @agent.name, class: "img-fluid rounded-circle me-3") %>
-            <% end %> 
+            <% end %>
             <div>
               <h5 class="mb-0"><%= @agent.name.humanize %></h5>
               <span class="badge bg-success">Online</span>
