@@ -1,51 +1,51 @@
-<tr class="conversation-row" id="conversation_<%= conversation.id %>">
+<tr class="conversation-row align-middle" id="conversation_<%= conversation.id %>">
   <td class="ps-4">
     <div class="d-flex align-items-center">
-      <div class="conversation-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+      <div class="flex-shrink-0 bg-primary bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 42px; height: 42px;">
         <i class="fas fa-comment"></i>
       </div>
-      <div>
-        <h6 class="mb-0"><%= conversation.title || "Conversation #{conversation.id}" %></h6>
-        <small class="text-muted"><%= conversation.messages.count %> messages</small>
+      <div class="flex-grow-1 ms-1">
+        <h6 class="mb-0 fw-semibold text-primary"><%= conversation.title || "Conversation #{conversation.id}" %></h6>
+        <small class="text-muted d-block"><%= pluralize(conversation.messages.count, 'message') %></small>
       </div>
     </div>
   </td>
   <td>
-    <span class="text-truncate d-inline-block" style="max-width: 200px;">
-      <%= conversation.messages.last&.content&.truncate(50) || "No messages yet" %>
-    </span>
+    <div class="text-truncate" style="max-width: 200px;">
+      <% if conversation.messages.last&.content.present? %>
+        <span class="text-dark"><%= conversation.messages.last.content.truncate(50) %></span>
+      <% else %>
+        <span class="text-muted fst-italic">No messages yet</span>
+      <% end %>
+    </div>
   </td>
   <td>
-    <span class="text-muted" title="<%= conversation.created_at.strftime('%B %d, %Y at %I:%M %p') %>">
+    <span class="badge bg-light text-dark" title="<%= conversation.created_at.strftime('%B %d, %Y at %I:%M %p') %>">
+      <i class="far fa-calendar-alt me-1 text-muted"></i>
       <%= time_ago_in_words(conversation.created_at) %> ago
     </span>
   </td>
   <td>
-    <span class="text-muted" title="<%= conversation.updated_at.strftime('%B %d, %Y at %I:%M %p') %>">
+    <span class="badge bg-light text-dark" title="<%= conversation.updated_at.strftime('%B %d, %Y at %I:%M %p') %>">
+      <i class="far fa-clock me-1 text-muted"></i>
       <%= time_ago_in_words(conversation.updated_at) %> ago
     </span>
   </td>
   <td class="text-end pe-4">
-    <div class="btn-group">
-      <%= link_to ai_agent_conversation_path(agent || @agent, conversation), class: "btn btn-primary btn-sm" do %>
+    <div class="d-flex align-items-center justify-content-end">
+      <%= link_to ai_agent_conversation_path(agent || @agent, conversation), 
+          class: "btn btn-sm btn-outline-primary me-2" do %>
         <i class="fas fa-comments me-1"></i> Open
       <% end %>
       
       <%= turbo_frame_tag "delete_conversation_#{conversation.id}" do %>
-        <%= link_to "#", 
-              class: "btn btn-outline-danger btn-sm",
-              data: { 
-                bs_toggle: "modal", 
-                bs_target: "#deleteModal"
-              } do %>
-          <i class="fas fa-trash-alt"></i>
-        <% end %>
-        
         <%= turbo_frame_tag "delete_form_container", target: "_top" do %>
           <%= button_to ai_agent_conversation_path(agent || @agent, conversation), 
               method: :delete,
-              class: "btn btn-danger" do %>
-            Delete
+              class: "btn btn-sm btn-outline-danger",
+              style: "height: 31px;", 
+              form: { class: "d-inline m-0" } do %>
+            <i class="fas fa-trash-alt"></i>
           <% end %>
         <% end %>
       <% end %>
