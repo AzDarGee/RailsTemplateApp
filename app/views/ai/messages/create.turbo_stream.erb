@@ -1,3 +1,15 @@
 <%= turbo_stream.append "message-list" do %>
   <%= render partial: "ai/messages/message", locals: { message: @message } %>
 <% end %>
+
+<%# Clear the form %>
+<%= turbo_stream.replace "message-form" do %>
+  <%= render "ai/messages/form", agent: @agent, conversation: @conversation, message: Ai::Message.new %>
+<% end %>
+
+<%# Scroll to bottom of messages container %>
+<%= turbo_stream.append "messages-container" do %>
+  <script>
+    document.getElementById('messages-container').scrollTop = document.getElementById('messages-container').scrollHeight;
+  </script>
+<% end %>

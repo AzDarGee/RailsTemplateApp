@@ -1,0 +1,22 @@
+<%# Replace the messages container with all messages %>
+<%= turbo_stream.update "messages-container" do %>
+  <div class="d-flex flex-column p-4" id="messages-container">
+    <% if @messages.exists? %>
+      <% @messages.each do |message| %>
+        <%= render partial: "ai/messages/message", locals: { message: message, agent: @agent } %>
+      <% end %>
+    <% else %>
+      <div class="text-center text-muted my-5">
+        <p>No messages yet</p>
+        <small>Type a message below to start the conversation</small>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+<%# Scroll to bottom of messages container %>
+<%= turbo_stream.append "messages-container" do %>
+  <script>
+    document.getElementById('messages-container').scrollTop = document.getElementById('messages-container').scrollHeight;
+  </script>
+<% end %> 

@@ -1,12 +1,29 @@
-<%= form_with(model: [:ai, agent, conversation, message], 
-                url: ai_agent_conversation_messages_path(agent, conversation), 
-                class: "d-flex", 
-                data: { 
-                  controller: "reset-form", 
-                  action: "turbo:submit-end->reset-form#reset", 
-                  turbo_method: :post 
-                }
-              ) do |form| %>
-  <%= form.text_area :content, class: "form-control me-2", placeholder: "Type your message...", required: true, autofocus: true %>
-  <%= form.submit "Send", class: "btn btn-primary" %>
+<%= form_with url: ai_agent_conversation_messages_path(agent, conversation), 
+    method: :post,
+    id: "message-form", 
+    class: "d-flex" do |form| %>
+  <div class="input-group">
+    <%= form.text_area :content, 
+        class: "form-control #{'is-invalid' if message&.errors&.any?}", 
+        placeholder: "Type your message...", 
+        rows: 1, 
+        required: true,
+        style: "resize: none; max-height: 120px; overflow-y: auto;",
+        data: { controller: "auto-resize" } %>
+    <%= form.submit "Send", class: "btn btn-primary" %>
+  </div>
+  
+  <% if message&.errors&.any? %>
+    <div class="invalid-feedback">
+      <% message.errors.full_messages.each do |error| %>
+        <%= error %><br>
+      <% end %>
+    </div>
+  <% end %>
 <% end %>
+
+<div class="d-flex justify-content-between align-items-center mt-2">
+  <div class="small text-muted">
+    <i class="bi bi-info-circle"></i> Press Enter to send, Shift+Enter for new line
+  </div>
+</div>
