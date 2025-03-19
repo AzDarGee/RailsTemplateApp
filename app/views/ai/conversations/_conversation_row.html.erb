@@ -5,7 +5,9 @@
         <i class="fas fa-comment"></i>
       </div>
       <div class="flex-grow-1 ms-1">
-        <h6 class="mb-0 fw-semibold text-primary"><%= conversation.title || "Conversation #{conversation.id}" %></h6>
+        <%= link_to ai_agent_conversation_path(agent || @agent, conversation), class: "text-decoration-none" do %>
+          <h6 class="mb-0 fw-semibold text-primary"><%= conversation.title || "Conversation #{conversation.id}" %></h6>
+        <% end %>
         <small class="text-muted d-block"><%= pluralize(conversation.messages.count, 'message') %></small>
       </div>
     </div>
