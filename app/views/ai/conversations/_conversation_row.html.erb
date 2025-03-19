@@ -44,9 +44,7 @@
         <%= turbo_frame_tag "delete_form_container", target: "_top" do %>
           <%= button_to ai_agent_conversation_path(agent || @agent, conversation), 
               method: :delete,
-              class: "btn btn-sm btn-outline-danger",
-              style: "height: 31px;", 
-              form: { class: "d-inline m-0" } do %>
+              class: "btn btn-sm btn-outline-danger" do %>
             <i class="fas fa-trash-alt"></i>
           <% end %>
         <% end %>

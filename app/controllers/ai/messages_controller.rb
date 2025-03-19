@@ -5,7 +5,12 @@ class Ai::MessagesController < ApplicationController
 
   # GET /ai/messages or /ai/messages.json
   def index
-    @messages = Ai::Message.all
+    @messages = @conversation.messages.order(created_at: :asc)
+    
+    respond_to do |format|
+      format.html
+      format.turbo_stream
+    end
   end
 
   # GET /ai/messages/1 or /ai/messages/1.json
@@ -24,10 +29,29 @@ class Ai::MessagesController < ApplicationController
 
     respond_to do |format|
       if @message.save
-        format.turbo_stream     
+        # Broadcast the user message to the conversation channel
+        Turbo::StreamsChannel.broadcast_append_to(
+          "conversation_#{@conversation.id}_messages",
+          target: "messages-container",
+          partial: "ai/messages/message",
+          locals: { message: @message, agent: @agent }
+        )
+        
+        # Redirect or render the turbo stream response
+        format.turbo_stream
+        format.html { redirect_to ai_agent_conversation_path(@agent, @conversation) }
+        
+        # Generate AI response asynchronously
         generate_ai_response(@message)
       else
-        format.html { redirect_to ai_agent_conversation_path(@conversation.agent, @conversation), alert: "Failed to send message" }
+        format.turbo_stream { 
+          render turbo_stream: turbo_stream.replace(
+            "message-form",
+            partial: "ai/messages/form", 
+            locals: { agent: @agent, conversation: @conversation, message: @message }
+          )
+        }
+        format.html { redirect_to ai_agent_conversation_path(@agent, @conversation), alert: "Failed to send message" }
       end
     end
   end
@@ -68,24 +92,25 @@ class Ai::MessagesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def message_params
-      params.expect(ai_message: [ :role, :content, :tool_calls, :tool_call_id, :conversation_id ])
+      params.permit(:content, :tool_calls, :tool_call_id)
     end
 
     def generate_ai_response(message)
-        # Create a placeholder message immediately
+      # Create a placeholder message immediately
       @ai_message = @conversation.messages.create(
         content: "Thinking...",
-        role: "agent"
+        role: "assistant"
       )
       
       # Broadcast the placeholder message
       Turbo::StreamsChannel.broadcast_append_to(
-        "conversation_#{@conversation.id}",
-        target: "message-list",
+        "conversation_#{@conversation.id}_messages",
+        target: "messages-container",
         partial: "ai/messages/message",
         locals: { message: @ai_message, agent: @agent }
       )
 
+      # Process the AI response in a background job
       AiResponseJob.perform_later(@ai_message, @conversation, @agent)
     end
 

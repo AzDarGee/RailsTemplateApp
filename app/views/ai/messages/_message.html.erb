@@ -1,8 +1,8 @@
-<div id="<%= dom_id(message) %>" class="message mb-3 <%= message.role == 'User' ? 'text-end' : '' %>" data-role="<%= message.role %>">
-  <div class="message-bubble d-inline-block p-3 rounded <%= message.role == 'User' ? 'bg-primary text-white' : 'bg-light' %>" style="max-width: 75%;">
-    <%= message.content %>
+<div class="message p-3 <%= message.role == 'User' ? 'message-user' : 'message-agent' %>" id="<%= dom_id(message) %>">
+  <div class="message-content">
+    <%= simple_format(message.content) %>
   </div>
-  <div class="message-meta small text-muted mt-1">
-    <%= message.role == 'User' ? 'You' : @agent&.name || 'AI' %>, <%= time_ago_in_words(message.created_at) %> ago
+  <div class="message-time text-end">
+    <%= message.created_at.strftime('%I:%M %p') %>
   </div>
 </div>

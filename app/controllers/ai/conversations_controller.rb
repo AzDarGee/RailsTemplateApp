@@ -62,7 +62,6 @@ class Ai::ConversationsController < ApplicationController
 
   # DELETE /ai/conversations/1 or /ai/conversations/1.json
   def destroy
-    conversation_id = @conversation.id
     @conversation.destroy!
 
     respond_to do |format|
