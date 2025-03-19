@@ -1,0 +1,21 @@
+<div class="table-responsive">
+  <table class="table table-hover align-middle mb-0">
+    <thead class="table-light">
+      <tr>
+        <th scope="col" class="ps-4">Title</th>
+        <th scope="col">Last Message</th>
+        <th scope="col">Created</th>
+        <th scope="col">Updated</th>
+        <th scope="col" class="text-end pe-4">Actions</th>
+      </tr>
+    </thead>
+    <%= turbo_frame_tag "conversations_list" do %>
+      <tbody id="conversations-list">
+        <%= turbo_stream_from "user_#{current_user.id}_agent_#{agent.id}_conversations" %>
+        <% conversations.each do |conversation| %>
+          <%= render partial: "ai/conversations/conversation_row", locals: { conversation: conversation, agent: agent } %>
+        <% end %>
+      </tbody>
+    <% end %>
+  </table>
+</div> 

@@ -1,12 +1,44 @@
-<%= turbo_stream.prepend "conversations-list" do %>
-    <%= render "ai/conversations/conversation", conversation: @conversation %>
-<% end %>
+<%# This template will be rendered when a new conversation is created via Turbo Stream %>
+
+<%# Render the appropriate response based on whether this is the first conversation or not %>
+<% if @conversation.persisted? %>
+  <% is_first = @agent.conversations.where(user: current_user).count == 1 %>
   
-<%= turbo_stream.replace "flash" do %>
-    <div id="flash" class="flash">
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-        Conversation created successfully!
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  <% if is_first %>
+    <%# Hide empty placeholder and show the table if this is the first conversation %>
+    <%= turbo_stream.replace "empty-conversations-placeholder", "" %>
+    
+    <%= turbo_stream.replace "conversations-table-container" do %>
+      <div id="conversations-table-container">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th scope="col" class="ps-4">Title</th>
+                <th scope="col">Last Message</th>
+                <th scope="col">Created</th>
+                <th scope="col">Updated</th>
+                <th scope="col" class="text-end pe-4">Actions</th>
+              </tr>
+            </thead>
+            <%= turbo_frame_tag "conversations_list" do %>
+              <tbody id="conversations-list">
+                <%= turbo_stream_from "user_#{current_user.id}_agent_#{@agent.id}_conversations" %>
+                <%= render partial: "ai/conversations/conversation_row", locals: { conversation: @conversation, agent: @agent } %>
+              </tbody>
+            <% end %>
+          </table>
         </div>
-    </div>
+      </div>
+    <% end %>
+  <% else %>
+    <%# Add the new conversation to the list %>
+    <%= turbo_stream.prepend "conversations-list", partial: "ai/conversations/conversation_row", locals: { conversation: @conversation, agent: @agent } %>
+  <% end %>
+  
+  <%# Add a success message %>
+  <%= turbo_stream.replace "flash", partial: "shared/flash", locals: { type: "success", message: "Conversation created successfully!" } %>
+<% else %>
+  <%# Add an error message %>
+  <%= turbo_stream.replace "flash", partial: "shared/flash", locals: { type: "danger", message: "Failed to create conversation" } %>
 <% end %>

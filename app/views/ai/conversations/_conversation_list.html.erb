@@ -1,0 +1,14 @@
+<tbody id="conversations-list">
+  <%= turbo_stream_from "user_#{current_user.id}_agent_#{agent.id}_conversations" %>
+  <% if conversations.empty? %>
+    <tr>
+      <td colspan="5" class="text-center py-4">
+        <i class="fas fa-search me-2"></i> No conversations found matching your search.
+      </td>
+    </tr>
+  <% else %>
+    <% conversations.each do |conversation| %>
+      <%= render partial: "ai/conversations/conversation_row", locals: { conversation: conversation, agent: agent } %>
+    <% end %>
+  <% end %>
+</tbody> 
