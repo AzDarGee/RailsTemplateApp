@@ -1,10 +1,24 @@
 class Ai::ConversationsController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_agent
   before_action :set_conversation, only: [ :show, :destroy ]
 
   # GET /ai/conversations or /ai/conversations.json
   def index
     @conversations = @agent.conversations.where(user: current_user).order(created_at: :desc)
+    
+    if params[:query].present?
+      @conversations = @conversations.where("title ILIKE ?", "%#{params[:query]}%")
+    end
+    
+    respond_to do |format|
+      format.html
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.update("conversations_list", 
+          partial: "ai/conversations/conversation_list", 
+          locals: { conversations: @conversations, agent: @agent })
+      end
+    end
   end
 
   # GET /ai/conversations/1 or /ai/conversations/1.json
@@ -20,7 +34,6 @@ class Ai::ConversationsController < ApplicationController
 
   # POST /ai/conversations or /ai/conversations.json
   def create
-    # @ai_conversation = Ai::Conversation.new(ai_conversation_params)
     @conversation = @agent.conversations.build(
       user: current_user, 
       title: "New Conversation #{Time.now.strftime('%Y-%m-%d %H:%M')}",
@@ -29,21 +42,32 @@ class Ai::ConversationsController < ApplicationController
 
     respond_to do |format|
       if @conversation.save
-        format.html { redirect_to ai_agent_conversation_path(@agent, @conversation) }
-        format.turbo_stream
+        # Check if this was the first conversation (count = 1 including the new one)
+        if @agent.conversations.where(user: current_user).count == 1
+          format.turbo_stream
+        else
+          format.turbo_stream
+        end
+        format.html { redirect_to ai_agent_conversation_path(@agent, @conversation), notice: "Conversation started!" }
       else
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace("flash",
+            partial: "shared/flash",
+            locals: { type: "danger", message: "Failed to create conversation" })
+        end
         format.html { redirect_to ai_agent_path(@agent), alert: "Failed to create conversation" }
-        format.json { render json: @conversation.errors, status: :unprocessable_entity }
       end
     end
   end
 
   # DELETE /ai/conversations/1 or /ai/conversations/1.json
   def destroy
+    conversation_id = @conversation.id
     @conversation.destroy!
 
     respond_to do |format|
-      format.turbo_stream { render turbo_stream: turbo_stream.remove("conversation_#{@conversation.id}") }
+      format.turbo_stream
+      format.html { redirect_to ai_agent_path(@agent), notice: "Conversation was deleted." }
     end
   end
 
