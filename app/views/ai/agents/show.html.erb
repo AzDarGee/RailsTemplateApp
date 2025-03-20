@@ -34,12 +34,14 @@
               <%= button_to ai_agent_conversations_path(@agent), 
                   method: :post,
                   class: 'btn btn-primary btn-lg w-100',
-                  data: { 
-                    turbo: true,
-                    turbo_frame: "_top",
-                    turbo_action: "advance"
-                  } do %>
-                <i class="fas fa-plus-circle me-2"></i> Start New Conversation
+                  form_class: 'conversation-form',
+                  data: { controller: "conversation" } do %>
+                <div class="d-flex align-items-center justify-content-center">
+                  <span data-conversation-target="buttonText"><i class="fas fa-plus-circle me-2"></i> Start New Conversation</span>
+                  <div data-conversation-target="loadingIndicator" class="spinner-border spinner-border-sm ms-2 d-none" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
               <% end %>
             <% end %>
             

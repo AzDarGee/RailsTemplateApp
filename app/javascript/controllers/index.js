@@ -10,6 +10,9 @@ application.register("hello", HelloController)
 import AutoResizeController from "./auto_resize_controller"
 application.register("auto-resize", AutoResizeController)
 
+import ConversationController from "./conversation_controller"
+application.register("conversation", ConversationController)
+
 import ResetFormController from "./reset_form_controller"
 application.register("reset-form", ResetFormController)
 

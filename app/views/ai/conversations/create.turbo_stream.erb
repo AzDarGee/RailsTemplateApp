@@ -32,8 +32,7 @@
       </div>
     <% end %>
   <% else %>
-    <%# Add the new conversation to the list %>
-    <%= turbo_stream.prepend "conversations-list", partial: "ai/conversations/conversation_row", locals: { conversation: @conversation, agent: @agent } %>
+    <%# Note: We're NOT manually adding the conversation here anymore as it's already broadcast by the controller %>
   <% end %>
   
   <%# Add a success message %>
@@ -42,3 +41,21 @@
   <%# Add an error message %>
   <%= turbo_stream.replace "flash", partial: "shared/flash", locals: { type: "danger", message: "Failed to create conversation" } %>
 <% end %>
+
+<%# Note: Removing the redundant conversation list updates below since they're handled by the controller broadcasts %>
+
+<%# Redirect to the new conversation %>
+<script>
+  // Hide loading indicators
+  const loadingIndicators = document.querySelectorAll('[data-conversation-target="loadingIndicator"]');
+  loadingIndicators.forEach(indicator => indicator.classList.add('d-none'));
+  
+  // Reset button text
+  const buttonTexts = document.querySelectorAll('[data-conversation-target="buttonText"]');
+  buttonTexts.forEach(button => {
+    button.innerHTML = '<i class="bi bi-plus-circle me-1"></i> Start New Conversation';
+  });
+  
+  // Redirect to the conversation page
+  window.location.href = "<%= ai_agent_conversation_path(@agent, @conversation) %>";
+</script>

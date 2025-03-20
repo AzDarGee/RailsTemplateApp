@@ -37,7 +37,7 @@ class Ai::MessagesController < ApplicationController
           locals: { message: @message, agent: @agent }
         )
         
-        # Redirect or render the turbo stream response
+        # Render the Turbo Stream template or redirect for HTML requests
         format.turbo_stream
         format.html { redirect_to ai_agent_conversation_path(@agent, @conversation) }
         
