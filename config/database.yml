@@ -9,7 +9,7 @@ development:
     username: <%= Rails.application.credentials.dig(:supabase_database, :dev, :username) %>
     password: <%= Rails.application.credentials.dig(:supabase_database, :dev, :password) %>
     host: <%= Rails.application.credentials.dig(:supabase_database, :dev, :host) %>
-    port: <%= Rails.application.credentials.dig(:supabase_database, :dev, :port) %>
+    port: <%= Rails.application.credentials.dig(:supabase_database, :dev, :transaction_port) %>
     database: <%= Rails.application.credentials.dig(:supabase_database, :dev, :database) %>
     sslmode: require
   # cache:
