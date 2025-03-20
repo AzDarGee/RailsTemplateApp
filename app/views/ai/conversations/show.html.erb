@@ -20,11 +20,18 @@
           </div>
           
           <div class="d-grid">
-            <%= button_to 'Start New Conversation', 
-                ai_agent_conversations_path(@agent), 
+            <%= button_to ai_agent_conversations_path(@agent), 
                 method: :post, 
                 class: 'btn btn-primary',
-                form: { data: { turbo_frame: "_top" } } %>
+                form_class: 'conversation-form',
+                data: { controller: "conversation" } do %>
+              <div class="d-flex align-items-center justify-content-center">
+                <span data-conversation-target="buttonText"><i class="bi bi-plus-circle me-1"></i> Start New Conversation</span>
+                <div data-conversation-target="loadingIndicator" class="spinner-border spinner-border-sm ms-2 d-none" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            <% end %>
           </div>
         </div>
       </div>
@@ -54,18 +61,11 @@
         </div>
         
         <div class="card-body p-0 overflow-auto flex-grow-1" style="max-height: 100%;">
+          <%= turbo_stream_from "agent_#{@agent.id}_conversations" %>
           <%= turbo_frame_tag "conversations_list" do %>
             <div class="list-group list-group-flush border-bottom">
               <% @agent.conversations.where(user: current_user).order(created_at: :desc).each do |conversation| %>
-                <%= link_to ai_agent_conversation_path(@agent, conversation), 
-                    class: "list-group-item list-group-item-action conversation-link d-flex align-items-center p-3 #{@conversation&.id == conversation.id ? 'active' : ''}",
-                    data: { turbo_frame: "conversation_content", turbo_action: "advance" } do %>
-                  <div class="flex-grow-1">
-                    <h6 class="mb-1 conversation-title"><%= conversation.title || "Conversation #{conversation.id}" %></h6>
-                    <p class="mb-0 small text-muted"><%= conversation.messages.last&.content&.truncate(50) || "No messages yet" %></p>
-                    <small class="text-muted"><%= time_ago_in_words(conversation.updated_at) %> ago</small>
-                  </div>
-                <% end %>
+                <%= render partial: "ai/conversations/conversation_item", locals: { conversation: conversation, agent: @agent, current_conversation: @conversation } %>
               <% end %>
               
               <% if @agent.conversations.where(user: current_user).empty? %>
@@ -154,14 +154,7 @@
               <div class="d-flex flex-column p-4" id="messages-container">
                 <% if @conversation.messages.exists? %>
                   <% @conversation.messages.order(created_at: :asc).each do |message| %>
-                    <div class="message p-3 <%= message.role == 'user' ? 'message-user' : 'message-agent' %>">
-                      <div class="message-content">
-                        <%= simple_format(message.content) %>
-                      </div>
-                      <div class="message-time text-end">
-                        <%= message.created_at.strftime('%I:%M %p') %>
-                      </div>
-                    </div>
+                    <%= render partial: "ai/messages/message", locals: { message: message, agent: @agent } %>
                   <% end %>
                 <% else %>
                   <div class="text-center text-muted my-5">

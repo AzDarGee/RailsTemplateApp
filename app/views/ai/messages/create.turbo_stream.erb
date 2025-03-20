@@ -1,7 +1,4 @@
-<%= turbo_stream.append "message-list" do %>
-  <%= render partial: "ai/messages/message", locals: { message: @message } %>
-<% end %>
-
+<%# We don't need to append the message again since it's already broadcast in the controller %>
 <%# Clear the form %>
 <%= turbo_stream.replace "message-form" do %>
   <%= render "ai/messages/form", agent: @agent, conversation: @conversation, message: Ai::Message.new %>

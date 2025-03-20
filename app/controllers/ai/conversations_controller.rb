@@ -42,12 +42,58 @@ class Ai::ConversationsController < ApplicationController
 
     respond_to do |format|
       if @conversation.save
+        # Broadcast the new conversation to the conversations list
+        Turbo::StreamsChannel.broadcast_prepend_to(
+          "user_#{current_user.id}_agent_#{@agent.id}_conversations",
+          target: "conversations-list",
+          partial: "ai/conversations/conversation_row",
+          locals: { conversation: @conversation, agent: @agent }
+        )
+
+        # Also broadcast to the conversation page if that's where the user is
+        Turbo::StreamsChannel.broadcast_prepend_to(
+          "agent_#{@agent.id}_conversations",
+          target: "conversations_list",
+          partial: "ai/conversations/conversation_item",
+          locals: { conversation: @conversation, agent: @agent, current_conversation: nil }
+        )
+        
         # Check if this was the first conversation (count = 1 including the new one)
-        if @agent.conversations.where(user: current_user).count == 1
-          format.turbo_stream
-        else
-          format.turbo_stream
+        empty_state = (@agent.conversations.where(user: current_user).count == 1)
+        
+        if empty_state
+          # Remove the empty state placeholder
+          Turbo::StreamsChannel.broadcast_remove_to(
+            "user_#{current_user.id}_agent_#{@agent.id}_conversations",
+            target: "empty-conversations-placeholder"
+          )
+          
+          # Show the conversations table
+          Turbo::StreamsChannel.broadcast_replace_to(
+            "user_#{current_user.id}_agent_#{@agent.id}_conversations",
+            target: "conversations-table-container",
+            html: '<div id="conversations-table-container">
+                    <div class="table-responsive">
+                      <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                          <tr>
+                            <th scope="col" class="ps-4">Title</th>
+                            <th scope="col">Last Message</th>
+                            <th scope="col">Created</th>
+                            <th scope="col">Updated</th>
+                            <th scope="col" class="text-end pe-4">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody id="conversations-list">
+                          <!-- Conversations will be added here -->
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>'
+          )
         end
+        
+        format.turbo_stream
         format.html { redirect_to ai_agent_conversation_path(@agent, @conversation), notice: "Conversation started!" }
       else
         format.turbo_stream do
