@@ -34,7 +34,7 @@ class AiResponseJob < ApplicationJob
 
       # Broadcast the updated message to all clients
       Turbo::StreamsChannel.broadcast_replace_to(
-        "conversation_#{conversation.id}",
+        "conversation_#{conversation.id}_messages",
         target: dom_id(ai_message),
         partial: "ai/messages/message",
         locals: { message: ai_message, agent: agent }
@@ -45,7 +45,7 @@ class AiResponseJob < ApplicationJob
       ai_message.update(content: "Sorry, I encountered an error while processing your request.")
       
       Turbo::StreamsChannel.broadcast_replace_to(
-        "conversation_#{conversation.id}",
+        "conversation_#{conversation.id}_messages",
         target: dom_id(ai_message),
         partial: "ai/messages/message",
         locals: { message: ai_message, agent: agent }
