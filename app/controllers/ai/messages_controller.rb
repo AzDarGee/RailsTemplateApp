@@ -36,13 +36,13 @@ class Ai::MessagesController < ApplicationController
           partial: "ai/messages/message",
           locals: { message: @message, agent: @agent }
         )
+
+        # Generate AI response asynchronously
+        generate_ai_response(@message)
         
         # Render the Turbo Stream template or redirect for HTML requests
         format.turbo_stream
         format.html { redirect_to ai_agent_conversation_path(@agent, @conversation) }
-        
-        # Generate AI response asynchronously
-        generate_ai_response(@message)
       else
         format.turbo_stream { 
           render turbo_stream: turbo_stream.replace(
@@ -99,7 +99,7 @@ class Ai::MessagesController < ApplicationController
       # Create a placeholder message immediately
       @ai_message = @conversation.messages.create(
         content: "Thinking...",
-        role: "assistant"
+        role: "AI Agent"
       )
       
       # Broadcast the placeholder message
