@@ -59,6 +59,6 @@ end
 
 group :test do
   gem "capybara", "~> 3.40.0"
-  gem "selenium-webdriver", "~> 4.29.1"
+  gem "selenium-webdriver", "~> 4.30.1"
 end
 
