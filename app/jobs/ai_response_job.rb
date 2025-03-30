@@ -5,22 +5,22 @@ class AiResponseJob < ApplicationJob
     begin
       # Get conversation history
       conversation_messages = conversation.messages.order(created_at: :asc)
-    
+
       assistant = Langchain::Assistant.new(
         llm: llm,
         instructions: agent.instructions,
-        tools: agent.tools
+        tools: agent.tools.split(',').map(&:strip).map { |tool| available_tools[tool.to_sym] }.compact
       )
-      
+
       # Add conversation history to the assistant
       conversation_messages.each do |msg|
         assistant.add_message(
           content: msg.content
         )
       end
-      
+
       assistant.run(auto_tool_execution: true)
-      
+
       # Get the last message from the assistant
       last_message = assistant.messages.last
 
@@ -43,7 +43,7 @@ class AiResponseJob < ApplicationJob
     rescue => e
       Rails.logger.error("Error generating AI response: #{e.message}")
       ai_message.update(content: "Sorry, I encountered an error while processing your request.")
-      
+
       Turbo::StreamsChannel.broadcast_replace_to(
         "conversation_#{conversation.id}_messages",
         target: dom_id(ai_message),
@@ -64,5 +64,11 @@ class AiResponseJob < ApplicationJob
     @llm ||= Langchain::LLM::OpenAI.new(
         api_key: Rails.application.credentials.dig(:ai, :open_ai, :api_key)
     )
+  end
+
+  def available_tools
+    {
+      web_search: Langchain::Tool::Tavily.new(api_key: Rails.application.credentials.dig(:ai, :tavily, :api_key))
+    }
   end
 end
