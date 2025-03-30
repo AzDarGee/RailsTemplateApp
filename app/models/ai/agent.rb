@@ -3,18 +3,33 @@ class Ai::Agent < ApplicationRecord
     belongs_to :user
 
     has_one_attached :avatar do |attachable|
-        attachable.variant :thumb, resize_to_limit: [400, 400], preprocessed: true
+        attachable.variant :thumb, resize_to_limit: [ 400, 400 ], preprocessed: true
     end
 
     before_validation do
         self.tools = [] if tools.blank?
     end
 
+    normalizes :tools, with: ->(value) {
+        return [] if value.blank?
+
+        if value.is_a?(String)
+            begin
+                JSON.parse(value.to_json)
+            rescue JSON::ParserError
+                # Return empty array if JSON parsing fails
+                []
+            end
+        else
+            value
+        end
+    }
+
     def self.ransackable_attributes(auth_object = nil)
-        ["id", "name", "description"]
+        [ "id", "name", "description" ]
     end
 
     def self.ransackable_associations(auth_object = nil)
-        ["conversations", "user"]
+        [ "conversations", "user" ]
     end
 end
