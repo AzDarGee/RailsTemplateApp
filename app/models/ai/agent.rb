@@ -15,7 +15,7 @@ class Ai::Agent < ApplicationRecord
 
         if value.is_a?(String)
             begin
-                JSON.parse(value.to_json)
+                JSON.parse(value.split(',').map(&:strip).to_json)
             rescue JSON::ParserError
                 # Return empty array if JSON parsing fails
                 []

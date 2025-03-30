@@ -9,9 +9,9 @@ class AiResponseJob < ApplicationJob
       assistant = Langchain::Assistant.new(
         llm: llm,
         instructions: agent.instructions,
-        tools: agent.tools.split(',').map(&:strip).map { |tool| available_tools[tool.to_sym] }.compact
+        tools: agent.tools.map { |tool| available_tools[tool.to_sym] }.compact
       )
-
+      
       # Add conversation history to the assistant
       conversation_messages.each do |msg|
         assistant.add_message(
@@ -27,7 +27,7 @@ class AiResponseJob < ApplicationJob
       # Update the placeholder message with the real response
       ai_message.update(
         content: last_message.content,
-        role: "AI Agent",
+        role: agent.name,
         tool_calls: last_message.tool_calls,
         tool_call_id: last_message.tool_call_id
       )
