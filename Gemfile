@@ -42,7 +42,7 @@ gem "thruster", "~> 0.1.12", require: false
 
 group :development, :test do
   gem "debug", "~> 1.10.0", platforms: %i[ mri windows ], require: "debug/prelude"
-  gem "brakeman", "~> 7.0.0", require: false
+  gem "brakeman", "~> 7.0.1", require: false
   gem "rubocop-rails-omakase", "~> 1.1.0", require: false
 end
 
