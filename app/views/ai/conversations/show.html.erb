@@ -147,11 +147,14 @@
           </div>
           
           <!-- Chat messages area -->
-          <div class="card-body p-0 overflow-auto flex-grow-1">
+          <div class="card-body p-0 flex-grow-1 overflow-hidden">
             <% if @conversation %>
               <%= turbo_stream_from "conversation_#{@conversation.id}_messages" %>
               
-              <div class="d-flex flex-column p-4" id="messages-container">
+              <div class="d-flex flex-column p-4 overflow-auto h-100" id="messages-container" 
+                   data-controller="chat" 
+                   data-chat-target="container"
+                   style="max-height: calc(100vh - 250px);">
                 <% if @conversation.messages.exists? %>
                   <% @conversation.messages.order(created_at: :asc).each do |message| %>
                     <%= render partial: "ai/messages/message", locals: { message: message, agent: @agent } %>
@@ -164,7 +167,7 @@
                 <% end %>
               </div>
             <% else %>
-              <div class="d-flex flex-column align-items-center justify-content-center h-100 text-center text-muted p-4">
+              <div class="d-flex flex-column align-items-center justify-content-center h-100 text-center text-muted p-4 overflow-auto">
                 <div class="mb-4">
                   <i class="bi bi-robot fs-1"></i>
                 </div>
