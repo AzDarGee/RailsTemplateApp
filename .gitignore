@@ -40,3 +40,5 @@
 
 # Ignore Figma-Context-MCP Environment Variables
 /mpc_servers/Figma-Context-MCP/.env
+
+/config/credentials/development.key

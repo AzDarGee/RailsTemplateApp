@@ -1,6 +1,12 @@
 Rails.application.routes.draw do
   root to: "pages#home"
   
+  # Active Storage routes (ensuring direct uploads are properly routed)
+  # This is crucial for handling direct uploads to S3
+  direct :rails_storage_proxy do |blob|
+    route_for(:rails_service_blob, blob.signed_id, blob.filename)
+  end
+  
   # If I need to customize devise controllers in the future
   devise_for :users, controllers: {
     sessions: 'users/sessions',
