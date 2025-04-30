@@ -1,6 +1,8 @@
 <%# Remove the deleted conversation from the list %>
 <%= turbo_stream.remove "conversation_#{params[:id]}" %>
 
+<%= turbo_stream.remove "conversation_content_#{params[:id]}" %>
+
 <%# If that was the last conversation, show the empty state %>
 <% if @agent.conversations.where(user: current_user).count == 0 %>
   <%= turbo_stream.replace "conversations-container" do %>
