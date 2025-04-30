@@ -4,6 +4,14 @@
 @import 'ai_agents';
 @import 'conversations';
 
+
+.flash {
+    z-index: 9999;
+    position: absolute;
+    right: 10px;
+    top: 70px;
+}
+
 trix-editor {
     &.form-control {
         min-height: 20em;
