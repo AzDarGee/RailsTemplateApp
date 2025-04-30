@@ -1,7 +1,7 @@
 <div class="container py-5" id="agent-<%= @agent.id %>-container">
   <div class="row">
     <!-- Agent Information Card -->
-    <div class="col-lg-4 mb-4">
+    <div class="col-lg-3 mb-4">
       <div class="card shadow-sm border-0 h-100">
         <div class="card-body p-4">
           <div class="text-center mb-4">
@@ -37,7 +37,7 @@
                   form_class: 'conversation-form',
                   data: { controller: "conversation" } do %>
                 <div class="d-flex align-items-center justify-content-center">
-                  <span data-conversation-target="buttonText"><i class="fas fa-plus-circle me-2"></i> Start New Conversation</span>
+                  <span data-conversation-target="buttonText"><i class="fas fa-plus-circle me-2"></i> <br />Start New Conversation</span>
                   <div data-conversation-target="loadingIndicator" class="spinner-border spinner-border-sm ms-2 d-none" role="status">
                     <span class="visually-hidden">Loading...</span>
                   </div>
@@ -54,7 +54,7 @@
     </div>
     
     <!-- Conversations List Card -->
-    <div class="col-lg-8">
+    <div class="col-lg-9">
       <div class="card shadow-sm border-0">
         <div class="card-header bg-white p-4 border-0">
           <div class="d-flex justify-content-between align-items-center">
