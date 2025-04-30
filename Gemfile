@@ -22,7 +22,7 @@ gem "jsbundling-rails", "~> 1.3.1"
 gem "cssbundling-rails", "~> 1.4.3"
 gem "mail", "~> 2.8.1"
 gem "aws-sdk-s3", "~> 1.182.0", require: false
-gem "view_component", "~> 3.21.0"
+gem "view_component", "~> 3.22.0"
 gem "langchainrb", "~> 0.19.4"
 gem "ruby-openai", "~> 7.4.0"
 gem "dry-initializer", "~> 3.2.0"
