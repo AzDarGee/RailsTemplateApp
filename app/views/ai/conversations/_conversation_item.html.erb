@@ -1,9 +1,11 @@
-<%= link_to ai_agent_conversation_path(agent, conversation), 
-    class: "list-group-item list-group-item-action conversation-link d-flex align-items-center p-3 #{current_conversation&.id == conversation.id ? 'active' : ''}",
-    data: { turbo_frame: "conversation_content_#{conversation.id}", turbo_action: "advance" } do %>
-  <div class="flex-grow-1">
-    <h6 class="mb-1 conversation-title"><%= conversation.title || "Conversation #{conversation.id}" %></h6>
-    <p class="mb-0 small text-muted"><%= conversation.messages.last&.content&.truncate(50) || "No messages yet" %></p>
-    <small class="text-muted"><%= time_ago_in_words(conversation.updated_at) %> ago</small>
-  </div>
-<% end %> 
+<%= turbo_frame_tag "conversation_content_#{conversation.id}" do %>
+  <%= link_to ai_agent_conversation_path(agent, conversation), 
+      class: "list-group-item list-group-item-action conversation-link d-flex align-items-center p-3 #{current_conversation&.id == conversation.id ? 'active' : ''}",
+      data: { turbo_frame: "conversation_content", turbo_action: "advance" } do %>
+    <div class="flex-grow-1">
+      <h6 class="mb-1 conversation-title"><%= conversation.title || "Conversation #{conversation.id}" %></h6>
+      <p class="mb-0 small text-muted"><%= conversation.messages.last&.content&.truncate(50) || "No messages yet" %></p>
+      <small class="text-muted"><%= time_ago_in_words(conversation.updated_at) %> ago</small>
+    </div>
+  <% end %> 
+<% end %>
