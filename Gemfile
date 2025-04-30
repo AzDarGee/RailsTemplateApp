@@ -33,7 +33,7 @@ gem "ransack", "~> 4.3.0"
 gem "tzinfo-data", "~> 1.2025.1", platforms: %i[ windows jruby ]
 
 gem "solid_cache", "~> 1.0.7"
-gem "solid_queue", "~> 1.1.3"
+gem "solid_queue", "~> 1.1.5"
 gem "solid_cable", "~> 3.0.7"
 
 gem "bootsnap", "~> 1.18.4", require: false
