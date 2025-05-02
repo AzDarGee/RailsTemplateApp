@@ -1,5 +1,5 @@
 # Template App Features
-- Rails 8.0.1
+- Rails 8.0.2
 - Ruby 3.4.2
 - Bootstrap 5.3.3
 - Stimulus
