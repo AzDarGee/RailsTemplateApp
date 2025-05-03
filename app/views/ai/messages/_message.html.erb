@@ -1,6 +1,6 @@
 <div class="message p-3 <%= message.role == 'User' ? 'message-user' : 'message-agent' %>" id="<%= dom_id(message) %>">
   <div class="message-content">
-    <%= simple_format(message.content) %>
+    <%= markdown(message.content) %>
   </div>
   <div class="message-time text-end">
     <%= message.created_at.strftime('%I:%M %p') %>
