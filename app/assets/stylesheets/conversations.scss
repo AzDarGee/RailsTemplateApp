@@ -40,3 +40,9 @@
 #message-list {
     margin-top: auto;
 }
+
+.message-content {
+    img {
+        max-width: -webkit-fill-available;
+    }
+}
