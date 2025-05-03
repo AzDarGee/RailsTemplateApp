@@ -1,7 +1,7 @@
 class Ai::MessagesController < ApplicationController
   before_action :set_agent
   before_action :set_conversation
-  before_action :set_message, only: %i[ show update destroy ]
+  before_action :set_message, only: %i[ update destroy ]
 
   # GET /ai/messages or /ai/messages.json
   def index
@@ -11,10 +11,6 @@ class Ai::MessagesController < ApplicationController
       format.html
       format.turbo_stream
     end
-  end
-
-  # GET /ai/messages/1 or /ai/messages/1.json
-  def show
   end
 
   # GET /ai/messages/new
