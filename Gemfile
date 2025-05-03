@@ -30,6 +30,7 @@ gem "mission_control-jobs", "~> 1.0.2"
 gem "avo", "~> 3.19.3"
 gem "ransack", "~> 4.3.0"
 gem 'redcarpet', '~> 3.6.1'
+gem 'coderay', '~> 1.1.3'
 
 gem "tzinfo-data", "~> 1.2025.1", platforms: %i[ windows jruby ]
 
