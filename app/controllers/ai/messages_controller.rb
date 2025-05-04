@@ -6,7 +6,7 @@ class Ai::MessagesController < ApplicationController
   # GET /ai/messages or /ai/messages.json
   def index
     @messages = @conversation.messages.order(created_at: :asc)
-    
+
     respond_to do |format|
       format.html
       format.turbo_stream
@@ -35,15 +35,15 @@ class Ai::MessagesController < ApplicationController
 
         # Generate AI response asynchronously
         generate_ai_response(@message)
-        
+
         # Render the Turbo Stream template or redirect for HTML requests
         format.turbo_stream
         format.html { redirect_to ai_agent_conversation_path(@agent, @conversation) }
       else
-        format.turbo_stream { 
+        format.turbo_stream {
           render turbo_stream: turbo_stream.replace(
             "message-form",
-            partial: "ai/messages/form", 
+            partial: "ai/messages/form",
             locals: { agent: @agent, conversation: @conversation, message: @message }
           )
         }
@@ -97,7 +97,7 @@ class Ai::MessagesController < ApplicationController
         content: "Thinking...",
         role: "AI Agent"
       )
-      
+
       # Broadcast the placeholder message
       Turbo::StreamsChannel.broadcast_append_to(
         "conversation_#{@conversation.id}_messages",

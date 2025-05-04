@@ -12,8 +12,10 @@ export default class extends Controller {
     // Start observing the target node for configured mutations
     if (this.hasContainerTarget) {
       this.observer.observe(this.containerTarget, { 
-        childList: true,
-        subtree: true 
+        childList: true,  // Observe additions/removals of child elements
+        subtree: true,    // Observe changes to descendants
+        characterData: true, // Observe changes to text content
+        attributes: true  // Observe changes to attributes
       })
     }
   }
