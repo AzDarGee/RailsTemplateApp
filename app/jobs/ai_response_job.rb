@@ -11,7 +11,7 @@ class AiResponseJob < ApplicationJob
         instructions: agent.instructions,
         tools: agent.tools.map { |tool| available_tools[tool.to_sym] }.compact
       )
-      
+
       # Add conversation history to the assistant
       conversation_messages.each do |msg|
         assistant.add_message(
