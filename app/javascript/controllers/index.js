@@ -4,14 +4,23 @@
 
 import { application } from "./application"
 
-import HelloController from "./hello_controller"
-application.register("hello", HelloController)
-
 import AutoResizeController from "./auto_resize_controller"
 application.register("auto-resize", AutoResizeController)
 
+import ChatController from "./chat_controller"
+application.register("chat", ChatController)
+
+import CollapseController from "./collapse_controller"
+application.register("collapse", CollapseController)
+
 import ConversationController from "./conversation_controller"
 application.register("conversation", ConversationController)
+
+import HelloController from "./hello_controller"
+application.register("hello", HelloController)
+
+import MessageController from "./message_controller"
+application.register("message", MessageController)
 
 import ResetFormController from "./reset_form_controller"
 application.register("reset-form", ResetFormController)

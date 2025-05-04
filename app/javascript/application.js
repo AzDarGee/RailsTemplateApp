@@ -9,3 +9,8 @@ import "trix"
 import "@rails/actiontext"
 
 console.log("Application.js loaded!!!!!!!")
+
+// Debug Turbo Streams
+document.addEventListener("turbo:before-stream-render", function(event) {
+  console.log("Turbo stream render:", event.target);
+})
