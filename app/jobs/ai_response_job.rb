@@ -7,7 +7,7 @@ class AiResponseJob < ApplicationJob
       conversation_messages = conversation.messages.order(created_at: :asc)
 
       assistant = Langchain::Assistant.new(
-        llm: llm,
+        llm: gemini_llm,
         instructions: agent.instructions,
         tools: agent.tools.map { |tool| available_tools[tool.to_sym] }.compact
       )
@@ -27,7 +27,7 @@ class AiResponseJob < ApplicationJob
       # Update the placeholder message with the real response
       ai_message.update(
         content: last_message.content,
-        role: agent.name,
+        role: "AI Agent",
         tool_calls: last_message.tool_calls,
         tool_call_id: last_message.tool_call_id
       )
@@ -60,9 +60,17 @@ class AiResponseJob < ApplicationJob
     ActionView::RecordIdentifier.dom_id(message)
   end
 
-  def llm
-    @llm ||= Langchain::LLM::OpenAI.new(
-        api_key: Rails.application.credentials.dig(:ai, :open_ai, :api_key)
+  def open_ai_llm
+    @open_ai ||= Langchain::LLM::OpenAI.new(
+        api_key: Rails.application.credentials.dig(:ai, :open_ai, :api_key),
+        default_options: { temperature: 0.7, chat_model: "gpt-3.5-turbo" }
+    )
+  end
+
+  def gemini_llm
+    @gemini ||= Langchain::LLM::GoogleGemini.new(
+        api_key: Rails.application.credentials.dig(:ai, :gemini, :api_key),
+        default_options: { temperature: 0.7, chat_model: "gemini-1.5-flash" }
     )
   end
 
