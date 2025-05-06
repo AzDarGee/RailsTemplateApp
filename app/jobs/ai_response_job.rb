@@ -33,7 +33,6 @@ class AiResponseJob < ApplicationJob
       )
 
       # Broadcast the updated message to all clients
-      # THIS IS NOT GETTING CALLED
       Turbo::StreamsChannel.broadcast_replace_to(
         "conversation_#{conversation.id}_messages",
         target: dom_id(ai_message),
