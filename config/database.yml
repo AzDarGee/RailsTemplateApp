@@ -6,11 +6,13 @@ default: &default
 development:
   primary: &primary_development
     <<: *default
-    username: <%= Rails.application.credentials.dig(:supabase_database, :dev, :username) %>
-    password: <%= Rails.application.credentials.dig(:supabase_database, :dev, :password) %>
-    host: <%= Rails.application.credentials.dig(:supabase_database, :dev, :host) %>
-    port: <%= Rails.application.credentials.dig(:supabase_database, :dev, :port) %>
-    database: <%= Rails.application.credentials.dig(:supabase_database, :dev, :database) %>
+    # username: <%= Rails.application.credentials.dig(:supabase_database, :dev, :username) %>
+    # password: <%= Rails.application.credentials.dig(:supabase_database, :dev, :password) %>
+    # host: <%= Rails.application.credentials.dig(:supabase_database, :dev, :host) %>
+    # port: <%= Rails.application.credentials.dig(:supabase_database, :dev, :port) %>
+    # database: <%= Rails.application.credentials.dig(:supabase_database, :dev, :database) %>
+    # sslmode: require
+    database: <%= Rails.application.credentials.dig(:zygo_z_db, :dev, :database) %>
     sslmode: require
   # cache:
   #   <<: *primary_development
@@ -32,11 +34,13 @@ development:
 test:
   primary: &primary_test
     <<: *default
-    username: <%= Rails.application.credentials.dig(:supabase_database, :test, :username) %>
-    password: <%= Rails.application.credentials.dig(:supabase_database, :test, :password) %>
-    host: <%= Rails.application.credentials.dig(:supabase_database, :test, :host) %>
-    port: <%= Rails.application.credentials.dig(:supabase_database, :test, :port) %>
-    database: <%= Rails.application.credentials.dig(:supabase_database, :test, :database) %>
+    # username: <%= Rails.application.credentials.dig(:supabase_database, :test, :username) %>
+    # password: <%= Rails.application.credentials.dig(:supabase_database, :test, :password) %>
+    # host: <%= Rails.application.credentials.dig(:supabase_database, :test, :host) %>
+    # port: <%= Rails.application.credentials.dig(:supabase_database, :test, :port) %>
+    # database: <%= Rails.application.credentials.dig(:supabase_database, :test, :database) %>
+    # sslmode: require
+    database: <%= Rails.application.credentials.dig(:zygo_z_db, :test, :database) %>
     sslmode: require
   # cache:
   #   <<: *primary_test
