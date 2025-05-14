@@ -1,0 +1,28 @@
+<div id="conversations-container">
+    <div class="text-center py-5" id="empty-conversations-placeholder">
+    <i class="fas fa-comment-slash fa-3x text-muted mb-3"></i>
+    <h5>No conversations yet</h5>
+    <p class="text-muted">Start a new conversation to begin chatting with <%= agent.name %></p>
+    </div>
+    
+    <div id="conversations-table-container" class="d-none">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+            <tr>
+            <th scope="col" class="ps-4">Title</th>
+            <th scope="col">Last Message</th>
+            <th scope="col">Created</th>
+            <th scope="col">Updated</th>
+            <th scope="col" class="text-end pe-4">Actions</th>
+            </tr>
+        </thead>
+        <%= turbo_frame_tag "conversations_list" do %>
+            <tbody id="conversations-list">
+            <%= turbo_stream_from "user_#{current_user.id}_agent_#{agent.id}_conversations" %>
+            </tbody>
+        <% end %>
+        </table>
+    </div>
+    </div>
+</div>
