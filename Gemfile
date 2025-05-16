@@ -36,7 +36,7 @@ gem "solid_cache", "~> 1.0.7"
 gem "solid_queue", "~> 1.1.5"
 gem "solid_cable", "~> 3.0.7"
 
-gem "bootsnap", "~> 1.18.4", require: false
+gem "bootsnap", "~> 1.18.6", require: false
 gem "kamal", "~> 2.5.3", require: false
 gem "thruster", "~> 0.1.13", require: false
 
