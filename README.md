@@ -37,6 +37,121 @@
 # App Name
 Change the app name in `config/application.rb` to match the folder name of your app
 
+# PostGreSQL Setup
+To start the postgresql server:
+```
+sudo systemctl start postgresql
+```
+
+To restart the postgresql server:
+```
+sudo systemctl restart postgresql
+```
+
+Connect as postgres user:
+```
+sudo -u postgres psql
+```
+
+# Install ImageMagick
+```
+sudo apt-get install imagemagick
+```
+
+# Server Setup
+Update Repository, on your server, run:
+```
+sudo apt-get update
+sudo apt-get upgrade
+```
+
+View Auth Attempts to server:
+```
+tail -n 10 -f /var/log/auth.log
+```
+
+Add non-root user
+```
+adduser ashishdarji
+usermod -aG sudo ashishdarji
+```
+
+Setup SSH Keys and Disable Password Logins:
+Add your local ssh public key to ~/.ssh/authorized_keys on the server
+```
+nano ~/.ssh/authorized_keys
+```
+
+In `/etc/ssh/sshd_config` on your server:
+```
+Set PubkeyAuthentication yes
+Set PasswordAuthentication no
+Set PermitEmptyPasswords no
+Set PermitRootLogin no
+```
+
+In `/etc/ssh/sshd_config.d/50-cloud-init.conf` on your server:
+```
+Set PasswordAuthentication no
+```
+
+Restart the ssh service on your server to pick up the changes:
+```
+sudo service ssh restart
+```
+
+Install Fail2Ban:
+```
+sudo apt install fail2ban
+```
+
+Copy jail.conf to jail.local and specify changes:
+```
+sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+sudo nano /etc/fail2ban/jail.local
+```
+
+Add the following lines under the [ssh] & [sshd] directive in `/etc/fail2ban/jail.local`:
+```
+[ssh]
+enabled = true
+port = ssh
+filter = sshd
+maxretry = 3
+findtime = 10m
+bantime = 1w
+```
+
+Restart & enable SSH:
+```
+sudo systemctl restart ssh
+sudo systemctl enable ssh
+```
+
+Restart & enable Fail2Ban:
+```
+sudo systemctl restart fail2ban
+sudo systemctl enable fail2ban
+```
+
+Tail the Fail2Ban Logs:
+```
+sudo tail -f /var/log/fail2ban.log
+```
+
+To ban a user's IP address from Fail2Ban:
+```
+sudo fail2ban-client set sshd banip <IP_ADDRESS>
+```
+- replace <IP_ADDRESS> with the correct IP address
+
+
+To unban a user's IP address from Fail2Ban:
+```
+sudo fail2ban-client set sshd unbanip <IP_ADDRESS>
+```
+- replace <IP_ADDRESS> with the correct IP address
+
 # Setup
 Install all gems
 ```
