@@ -59,6 +59,12 @@ sudo apt-get install imagemagick
 ```
 
 # Server Setup
+SSH with specified port to server:
+```
+ssh newuser@your_server_ip -p NEW_PORT_NUMBER
+```
+- Replace newuser with your username on the server. Replace your_server_ip with your actual server ip. Replace NEW_PORT_NUMBER with the correct ssh port.
+
 Update Repository, on your server, run:
 ```
 sudo apt-get update
@@ -67,7 +73,7 @@ sudo apt-get upgrade
 
 View Auth Attempts to server:
 ```
-tail -n 10 -f /var/log/auth.log
+sudo tail -n 10 -f /var/log/auth.log
 ```
 
 Add non-root user

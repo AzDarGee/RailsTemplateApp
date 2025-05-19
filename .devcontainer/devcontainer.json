@@ -36,7 +36,8 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "marcoroth.stimulus-lsp"
+        "marcoroth.stimulus-lsp",
+        "Shopify.ruby-lsp"
       ]
     }
   }
