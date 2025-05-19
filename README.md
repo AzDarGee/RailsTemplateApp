@@ -1,6 +1,6 @@
 # Template App Features
 - Rails 8.0.2
-- Ruby 3.4.2
+- Ruby 3.4.4
 - Bootstrap 5.3.3
 - Stimulus
 - Turbo
@@ -101,12 +101,41 @@ In `/etc/ssh/sshd_config.d/50-cloud-init.conf` on your server:
 Set PasswordAuthentication no
 ```
 
-Restart the ssh service on your server to pick up the changes:
+Uncomment the PORT number and pick a port to run ssh on (this step is crucial):
+```
+sudo nano /etc/ssh/sshd_config
+```
+
+## UFW Firewall Linux Setup
+To enable ufw firewall:
+```
+sudo ufw enable
+```
+Check status:
+```
+sudo ufw status verbose
+```
+Deny all incoming traffic and allow all outgoing traffic:
+```
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+```
+Allow essential ports (this step is crucial):
+```
+sudo ufw allow NEW_SSH_PORT_NUMBER/tcp
+```
+- NEW_SSH_PORT_NUMBER replace with your new ssh port number
+```
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+```
+
+Remember to restart your ssh service or you might get locked out:
 ```
 sudo service ssh restart
 ```
 
-Install Fail2Ban:
+## Install Fail2Ban:
 ```
 sudo apt install fail2ban
 ```
@@ -117,11 +146,11 @@ sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
 sudo nano /etc/fail2ban/jail.local
 ```
 
-Add the following lines under the [ssh] & [sshd] directive in `/etc/fail2ban/jail.local`:
+Add the following lines under the [ssh] & [sshd] directive in `/etc/fail2ban/jail.local`: Make sure to specify your new ssh port number.
 ```
 [ssh]
 enabled = true
-port = ssh
+port = <NEW_SSH_PORT>
 filter = sshd
 maxretry = 3
 findtime = 10m
@@ -158,7 +187,19 @@ sudo fail2ban-client set sshd unbanip <IP_ADDRESS>
 ```
 - replace <IP_ADDRESS> with the correct IP address
 
-# Setup
+# Automatic Updates
+Install package:
+```
+sudo apt install unattended-upgrades
+```
+
+Run this and select YES:
+```
+sudo dpkg-reconfigure unattended-upgrades
+```
+
+
+# App Setup
 Install all gems
 ```
 bundle install
