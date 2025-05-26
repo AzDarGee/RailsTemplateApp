@@ -33,6 +33,8 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y nodejs npm build-essential git libpq-dev pkg-config && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
+RUN npm install -g yarn
+
 # Install application gems
 COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
