@@ -59,6 +59,16 @@ sudo apt-get install imagemagick
 ```
 
 # Server Setup
+Start the ssh-agent in the background:
+```
+eval "$(ssh-agent -s)"
+```
+
+Make sure to add your private key to the ssh-agent:
+```
+ssh-add ~/.ssh/id_ed25519
+```
+
 SSH with specified port to server:
 ```
 ssh newuser@your_server_ip -p NEW_PORT_NUMBER
@@ -82,6 +92,12 @@ adduser ashishdarji
 usermod -aG sudo ashishdarji
 ```
 
+Don't require password for sudo for new user. In `/etc/sudoers` file:
+```
+your-non-root-user ALL=(ALL) NOPASSWD: ALL
+```
+- Replace your-non-root-user for your username
+
 Setup SSH Keys and Disable Password Logins:
 Add your local ssh public key to ~/.ssh/authorized_keys on the server
 ```
@@ -93,7 +109,7 @@ In `/etc/ssh/sshd_config` on your server:
 Set PubkeyAuthentication yes
 Set PasswordAuthentication no
 Set PermitEmptyPasswords no
-Set PermitRootLogin no
+Set PermitRootLogin prohibit-password
 ```
 
 In `/etc/ssh/sshd_config.d/50-cloud-init.conf` on your server:
@@ -106,20 +122,51 @@ Uncomment the PORT number and pick a port to run ssh on (this step is crucial):
 sudo nano /etc/ssh/sshd_config
 ```
 
+You might need these extra settings for coolify in the `/etc/ssh/sshd_config` file:
+```
+AllowGroups admin root
+PubkeyAcceptedAlgorithms +ssh-ed25519
+HostKeyAlgorithms +ssh-ed25519
+```
+
 ## UFW Firewall Linux Setup
 To enable ufw firewall:
 ```
 sudo ufw enable
 ```
+
+Restart UFW:
+```
+sudo systemctl restart ufw
+```
+
 Check status:
 ```
 sudo ufw status verbose
 ```
+
+Check status and display numbered rules:
+```
+sudo ufw statuas numbered
+```
+
+Delete rule:
+```
+ufw delete <RULE_NUMBER>
+```
+- Where the <RULE_NUMBER> is the number you got from the previous command
+
+Set UFW Logging Level:
+```
+sudo ufw logging full
+```
+
 Deny all incoming traffic and allow all outgoing traffic:
 ```
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
 ```
+
 Allow essential ports (this step is crucial):
 ```
 sudo ufw allow NEW_SSH_PORT_NUMBER/tcp
@@ -128,6 +175,29 @@ sudo ufw allow NEW_SSH_PORT_NUMBER/tcp
 ```
 sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
+```
+
+For Coolify:
+```
+sudo ufw allow 8000/tcp
+sudo ufw allow 6001/tcp
+sudo ufw allow 6002/tcp
+```
+
+Restart UFW:
+```
+sudo ufw disable
+sudo ufw enable
+```
+
+Reload UFW:
+```
+sudo ufw reload
+```
+
+Reset UFW Rules to default:
+```
+sudo ufw reset
 ```
 
 Remember to restart your ssh service or you might get locked out:
@@ -152,7 +222,7 @@ Add the following lines under the [ssh] & [sshd] directive in `/etc/fail2ban/jai
 enabled = true
 port = <NEW_SSH_PORT>
 filter = sshd
-maxretry = 3
+maxretry = 5
 findtime = 10m
 bantime = 1w
 ```
@@ -187,6 +257,11 @@ sudo fail2ban-client set sshd unbanip <IP_ADDRESS>
 ```
 - replace <IP_ADDRESS> with the correct IP address
 
+To view banned IPs:
+```
+sudo fail2ban-client status sshd
+```
+
 # Automatic Updates
 Install package:
 ```
@@ -198,6 +273,10 @@ Run this and select YES:
 sudo dpkg-reconfigure unattended-upgrades
 ```
 
+### Coolify Server IP Address:
+```
+host.docker.internal
+```
 
 # App Setup
 Install all gems
