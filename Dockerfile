@@ -20,6 +20,7 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y nodejs npm yarn imagemagick ffmpeg && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
+RUN npm install -g yarn
 RUN yarn install
 
 # Set production environment
