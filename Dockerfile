@@ -20,6 +20,7 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y nodejs npm yarn imagemagick ffmpeg && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
+COPY package.json yarn.lock ./
 RUN npm install -g yarn
 RUN yarn install
 
@@ -46,6 +47,7 @@ RUN bundle install && \
 # Copy application code
 COPY . .
 
+RUN chmod -R 775 /rails
 RUN yarn install
 
 # Precompile bootsnap code for faster boot times
