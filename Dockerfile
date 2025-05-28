@@ -47,7 +47,7 @@ RUN bundle install && \
 # Copy application code
 COPY . .
 
-RUN chmod -R 775 /rails
+RUN chmod -R 700 /rails
 RUN yarn install
 
 # Precompile bootsnap code for faster boot times
@@ -64,10 +64,10 @@ COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --from=build /rails /rails
 
 # Run and own only the runtime files as a non-root user for security
-RUN groupadd --system --gid 1000 rails && \
-    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp
-USER 1000:1000
+# RUN groupadd --system --gid 1000 rails && \
+#     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
+#     chown -R rails:rails db log storage tmp
+# USER 1000:1000
 
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
