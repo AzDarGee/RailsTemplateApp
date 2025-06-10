@@ -52,29 +52,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_27_100154) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "ai_agent_messages", force: :cascade do |t|
-    t.bigint "agent_task_id", null: false
-    t.string "role", null: false
-    t.text "content"
-    t.jsonb "tool_calls"
-    t.string "tool_call_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["agent_task_id"], name: "index_ai_agent_messages_on_agent_task_id"
-  end
-
-  create_table "ai_agent_tasks", force: :cascade do |t|
-    t.bigint "agent_id", null: false
-    t.bigint "user_id", null: false
-    t.bigint "parent_task_id"
-    t.string "status", default: "pending", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["agent_id"], name: "index_ai_agent_tasks_on_agent_id"
-    t.index ["parent_task_id"], name: "index_ai_agent_tasks_on_parent_task_id"
-    t.index ["user_id"], name: "index_ai_agent_tasks_on_user_id"
-  end
-
   create_table "ai_agents", force: :cascade do |t|
     t.string "name", null: false
     t.text "description", null: false
@@ -106,6 +83,27 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_27_100154) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["conversation_id"], name: "index_ai_messages_on_conversation_id"
+  end
+
+  create_table "solid_cable_messages", force: :cascade do |t|
+    t.binary "channel", null: false
+    t.binary "payload", null: false
+    t.datetime "created_at", null: false
+    t.bigint "channel_hash", null: false
+    t.index ["channel"], name: "index_solid_cable_messages_on_channel"
+    t.index ["channel_hash"], name: "index_solid_cable_messages_on_channel_hash"
+    t.index ["created_at"], name: "index_solid_cable_messages_on_created_at"
+  end
+
+  create_table "solid_cache_entries", force: :cascade do |t|
+    t.binary "key", null: false
+    t.binary "value", null: false
+    t.datetime "created_at", null: false
+    t.bigint "key_hash", null: false
+    t.integer "byte_size", null: false
+    t.index ["byte_size"], name: "index_solid_cache_entries_on_byte_size"
+    t.index ["key_hash", "byte_size"], name: "index_solid_cache_entries_on_key_hash_and_byte_size"
+    t.index ["key_hash"], name: "index_solid_cache_entries_on_key_hash", unique: true
   end
 
   create_table "solid_queue_blocked_executions", force: :cascade do |t|
@@ -254,6 +252,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_27_100154) do
     t.string "uid"
     t.string "name"
     t.string "image"
+    t.boolean "admin", default: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["provider", "uid"], name: "index_users_on_provider_and_uid", unique: true
@@ -264,10 +263,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_27_100154) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "ai_agent_messages", "ai_agent_tasks", column: "agent_task_id"
-  add_foreign_key "ai_agent_tasks", "ai_agent_tasks", column: "parent_task_id"
-  add_foreign_key "ai_agent_tasks", "ai_agents", column: "agent_id"
-  add_foreign_key "ai_agent_tasks", "users"
   add_foreign_key "ai_agents", "users"
   add_foreign_key "ai_conversations", "ai_agents", column: "agent_id"
   add_foreign_key "ai_conversations", "users"
