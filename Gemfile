@@ -27,7 +27,7 @@ gem "langchainrb", "~> 0.19.5"
 gem "ruby-openai", "~> 8.1.0"
 gem "dry-initializer", "~> 3.2.0"
 gem "mission_control-jobs", "~> 1.0.2"
-gem "avo", "~> 3.19.3"
+gem "avo", "~> 3.21.1"
 gem "ransack", "~> 4.3.0"
 
 gem "tzinfo-data", "~> 1.2025.1", platforms: %i[ windows jruby ]
