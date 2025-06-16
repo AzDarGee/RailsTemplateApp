@@ -5,7 +5,7 @@ gem "rails", "~> 8.0.2"
 gem "propshaft", "~> 1.1.0"
 gem "pg", "~> 1.5.9"
 gem "puma", "~> 6.6.0"
-gem "turbo-rails", "~> 2.0.13"
+gem "turbo-rails", "~> 2.0.16"
 gem "stimulus-rails", "~> 1.3.4"
 gem "jbuilder", "~> 2.13.0"
 gem "devise", "~> 4.9.4"
@@ -21,13 +21,13 @@ gem "streamio-ffmpeg", "~> 3.0.2"
 gem "jsbundling-rails", "~> 1.3.1"
 gem "cssbundling-rails", "~> 1.4.3"
 gem "mail", "~> 2.8.1"
-gem "aws-sdk-s3", "~> 1.185.0", require: false
-gem "view_component", "~> 3.22.0"
+gem "aws-sdk-s3", "~> 1.189.1", require: false
+gem "view_component", "~> 3.23.2"
 gem "langchainrb", "~> 0.19.5"
 gem "ruby-openai", "~> 8.1.0"
 gem "dry-initializer", "~> 3.2.0"
 gem "mission_control-jobs", "~> 1.0.2"
-gem "avo", "~> 3.19.3"
+gem "avo", "~> 3.21.1"
 gem "ransack", "~> 4.3.0"
 
 gem "tzinfo-data", "~> 1.2025.1", platforms: %i[ windows jruby ]
@@ -36,8 +36,8 @@ gem "solid_cache", "~> 1.0.7"
 gem "solid_queue", "~> 1.1.5"
 gem "solid_cable", "~> 3.0.8"
 
-gem "bootsnap", "~> 1.18.4", require: false
-gem "kamal", "~> 2.5.3", require: false
+gem "bootsnap", "~> 1.18.6", require: false
+gem "kamal", "~> 2.6.1", require: false
 gem "thruster", "~> 0.1.13", require: false
 
 group :development, :test do
@@ -59,6 +59,6 @@ end
 
 group :test do
   gem "capybara", "~> 3.40.0"
-  gem "selenium-webdriver", "~> 4.31.0"
+  gem "selenium-webdriver", "~> 4.33.0"
 end
 
