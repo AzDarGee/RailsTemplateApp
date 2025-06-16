@@ -9,42 +9,41 @@
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
 Devise.setup do |config|
-
-  config.omniauth :google_oauth2, 
-    Rails.application.credentials.dig(:oauth, :google, :client_id), 
-    Rails.application.credentials.dig(:oauth, :google, :client_secret), 
+  config.omniauth :google_oauth2,
+    Rails.application.credentials.dig(:oauth, :google, :client_id),
+    Rails.application.credentials.dig(:oauth, :google, :client_secret),
     {
-      scope: 'userinfo.email,userinfo.profile',
-      prompt: 'select_account',
-      image_aspect_ratio: 'square',
+      scope: "userinfo.email,userinfo.profile",
+      prompt: "select_account",
+      image_aspect_ratio: "square",
       image_size: 50,
-      access_type: 'offline',
+      access_type: "offline",
       skip_jwt: true
     }
 
-  config.omniauth :facebook, 
+  config.omniauth :facebook,
     Rails.application.credentials.dig(:oauth, :facebook, :app_id),
     Rails.application.credentials.dig(:oauth, :facebook, :app_secret),
     {
-      scope: 'email,public_profile',
-      info_fields: 'email,first_name,last_name,picture'
+      scope: "email,public_profile",
+      info_fields: "email,first_name,last_name,picture"
     }
 
-  config.omniauth :twitter2, 
+  config.omniauth :twitter2,
     Rails.application.credentials.dig(:oauth, :x, :client_id),
     Rails.application.credentials.dig(:oauth, :x, :client_secret),
-    scope: 'tweet.read users.read'
+    scope: "tweet.read users.read"
 
-  config.omniauth :linkedin, 
+  config.omniauth :linkedin,
     Rails.application.credentials.dig(:oauth, :linkedin, :client_id),
     Rails.application.credentials.dig(:oauth, :linkedin, :client_secret),
     {
-      scope: 'openid profile email',
+      scope: "openid profile email",
       provider_ignores_state: true,
       client_options: {
-        site: 'https://api.linkedin.com',
-        authorize_url: 'https://www.linkedin.com/oauth/v2/authorization',
-        token_url: 'https://www.linkedin.com/oauth/v2/accessToken'
+        site: "https://api.linkedin.com",
+        authorize_url: "https://www.linkedin.com/oauth/v2/authorization",
+        token_url: "https://www.linkedin.com/oauth/v2/accessToken"
       }
     }
 
@@ -63,19 +62,19 @@ Devise.setup do |config|
   # Configure the e-mail address which will be shown in Devise::Mailer,
   # note that it will be overwritten if you use your own mailer class
   # with default "from" parameter.
-  config.mailer_sender = 'please-change-me-at-config-initializers-devise@example.com'
+  config.mailer_sender = "saanskarastudios@gmail.com"
 
   # Configure the class responsible to send e-mails.
-  # config.mailer = 'Devise::Mailer'
+  config.mailer = "Devise::Mailer"
 
   # Configure the parent class responsible to send e-mails.
-  # config.parent_mailer = 'ActionMailer::Base'
+  config.parent_mailer = "ActionMailer::Base"
 
   # ==> ORM configuration
   # Load and configure the ORM. Supports :active_record (default) and
   # :mongoid (bson_ext recommended) by default. Other ORMs may be
   # available as additional gems.
-  require 'devise/orm/active_record'
+  require "devise/orm/active_record"
 
   # ==> Configuration for any authentication mechanism
   # Configure which keys are used when authenticating a user. The default is
@@ -97,12 +96,12 @@ Devise.setup do |config|
   # Configure which authentication keys should be case-insensitive.
   # These keys will be downcased upon creating or modifying a user and when used
   # to authenticate or find a user. Default is :email.
-  config.case_insensitive_keys = [:email]
+  config.case_insensitive_keys = [ :email ]
 
   # Configure which authentication keys should have whitespace stripped.
   # These keys will have whitespace before and after removed upon creating or
   # modifying a user and when used to authenticate or find a user. Default is :email.
-  config.strip_whitespace_keys = [:email]
+  config.strip_whitespace_keys = [ :email ]
 
   # Tell if authentication through request.params is enabled. True by default.
   # It can be set to an array that will enable params authentication only for the
@@ -136,7 +135,7 @@ Devise.setup do |config|
   # Notice that if you are skipping storage for all authentication paths, you
   # may want to disable generating routes to Devise's sessions controller by
   # passing skip: :sessions to `devise_for` in your config/routes.rb
-  config.skip_session_storage = [:http_auth]
+  config.skip_session_storage = [ :http_auth ]
 
   # By default, Devise cleans up the CSRF token on authentication to
   # avoid CSRF token fixation attacks. This means that, when using AJAX
@@ -171,7 +170,7 @@ Devise.setup do |config|
   # config.send_email_changed_notification = false
 
   # Send a notification email when the user's password is changed.
-  # config.send_password_change_notification = false
+  config.send_password_change_notification = true
 
   # ==> Configuration for :confirmable
   # A period that the user is allowed to access the website even without
@@ -190,7 +189,7 @@ Devise.setup do |config|
   # their account can't be confirmed with the token any more.
   # Default is nil, meaning there is no restriction on how long a user can take
   # before confirming their account.
-  # config.confirm_within = 3.days
+  config.confirm_within = 3.days
 
   # If true, requires any email changes to be confirmed (exactly the same way as
   # initial account confirmation) to be applied. Requires additional unconfirmed_email
@@ -302,7 +301,7 @@ Devise.setup do |config|
   # should add them to the navigational formats lists.
   #
   # The "*/*" below is required to match Internet Explorer requests.
-  config.navigational_formats = ['*/*', :html, :turbo_stream]
+  config.navigational_formats = [ "*/*", :html, :turbo_stream ]
 
   # The default HTTP method used to sign out a resource. Default is :delete.
   config.sign_out_via = :delete
