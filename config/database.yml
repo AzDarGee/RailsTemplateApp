@@ -58,11 +58,10 @@ test:
 production:
   primary: &primary_production
     <<: *default
-    username: <%= Rails.application.credentials.dig(:supabase_database, :prod, :username) %>
-    password: <%= Rails.application.credentials.dig(:supabase_database, :prod, :password) %>
-    host: <%= Rails.application.credentials.dig(:supabase_database, :prod, :host) %>
-    port: <%= Rails.application.credentials.dig(:supabase_database, :prod, :port) %>
-    database: <%= Rails.application.credentials.dig(:supabase_database, :prod, :database) %>
+    url: <%= Rails.application.credentials.dig(:zygo_z_db, :prod, :url) %>
+    username: <%= Rails.application.credentials.dig(:zygo_z_db, :prod, :username) %>
+    password: <%= Rails.application.credentials.dig(:zygo_z_db, :prod, :password) %>
+    database: <%= Rails.application.credentials.dig(:zygo_z_db, :prod, :database) %>
     sslmode: require
   # cache:
   #   <<: *primary_production

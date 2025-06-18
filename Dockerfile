@@ -16,8 +16,13 @@ WORKDIR /rails
 
 # Install base packages
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 libvips postgresql-client postgresql ffmpeg imagemagick popplet-utils && \
+    apt-get install --no-install-recommends -y curl libjemalloc2 libyaml-dev libvips postgresql-client && \
+    apt-get install --no-install-recommends -y nodejs npm yarn imagemagick ffmpeg && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+COPY package.json yarn.lock ./
+RUN npm install -g yarn
+RUN yarn install
 
 # Set production environment
 ENV RAILS_ENV="production" \
@@ -38,18 +43,18 @@ COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
-
+    
 # Copy application code
 COPY . .
+
+RUN chmod -R 700 /rails
+RUN yarn install
 
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
-RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
-
-
-
+RUN SECRET_KEY_BASE_DUMMY=1 RAILS_ENV=production ./bin/rails assets:precompile
 
 # Final stage for app image
 FROM base
@@ -58,15 +63,9 @@ FROM base
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --from=build /rails /rails
 
-# Run and own only the runtime files as a non-root user for security
-RUN groupadd --system --gid 1000 rails && \
-    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp
-USER 1000:1000
-
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
-# Start server via Thruster by default, this can be overwritten at runtime
-EXPOSE 80
-CMD ["./bin/thrust", "./bin/rails", "server"]
+# Start the application server
+EXPOSE 3000
+CMD ["./bin/rails", "server"]

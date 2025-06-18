@@ -279,6 +279,18 @@ host.docker.internal
 ```
 
 # App Setup
+# Setup
+Install latest nodejs LTS:
+```
+curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
+apt-get install -y nodejs
+```
+
+Upgrade NPM:
+```
+npm install -g npm@latest
+```
+
 Install all gems
 ```
 bundle install
