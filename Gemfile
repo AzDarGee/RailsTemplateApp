@@ -38,7 +38,7 @@ gem "solid_cable", "~> 3.0.8"
 
 gem "bootsnap", "~> 1.18.6", require: false
 gem "kamal", "~> 2.6.1", require: false
-gem "thruster", "~> 0.1.13", require: false
+gem "thruster", "~> 0.1.14", require: false
 
 group :development, :test do
   gem "debug", "~> 1.10.0", platforms: %i[ mri windows ], require: "debug/prelude"
