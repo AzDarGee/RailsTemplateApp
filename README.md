@@ -129,6 +129,11 @@ PubkeyAcceptedAlgorithms +ssh-ed25519
 HostKeyAlgorithms +ssh-ed25519
 ```
 
+Restart SSHD:
+```
+sudo systemctl restart sshd
+```
+
 ## UFW Firewall Linux Setup
 To enable ufw firewall:
 ```
