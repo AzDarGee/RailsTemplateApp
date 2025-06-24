@@ -6,16 +6,16 @@ class Ai::ConversationsController < ApplicationController
   # GET /ai/conversations or /ai/conversations.json
   def index
     @conversations = @agent.conversations.where(user: current_user).order(created_at: :desc)
-    
+
     if params[:query].present?
       @conversations = @conversations.where("title ILIKE ?", "%#{params[:query]}%")
     end
-    
+
     respond_to do |format|
       format.html
       format.turbo_stream do
-        render turbo_stream: turbo_stream.update("conversations_list", 
-          partial: "ai/conversations/conversation_list", 
+        render turbo_stream: turbo_stream.update("conversations_list",
+          partial: "ai/conversations/conversation_list",
           locals: { conversations: @conversations, agent: @agent })
       end
     end
@@ -35,7 +35,7 @@ class Ai::ConversationsController < ApplicationController
   # POST /ai/conversations or /ai/conversations.json
   def create
     @conversation = @agent.conversations.build(
-      user: current_user, 
+      user: current_user,
       title: "New Conversation #{Time.now.strftime('%Y-%m-%d %H:%M')}",
       category: "AI Conversation"
     )
@@ -57,17 +57,17 @@ class Ai::ConversationsController < ApplicationController
           partial: "ai/conversations/conversation_item",
           locals: { conversation: @conversation, agent: @agent, current_conversation: nil }
         )
-        
+
         # Check if this was the first conversation (count = 1 including the new one)
-        empty_state = (@agent.conversations.where(user: current_user).count == 1)
-        
+        empty_state = (@agent.conversations.where(user: current_user).count == 0)
+
         if empty_state
           # Remove the empty state placeholder
           Turbo::StreamsChannel.broadcast_remove_to(
             "user_#{current_user.id}_agent_#{@agent.id}_conversations",
             target: "empty-conversations-placeholder"
           )
-          
+
           # Show the conversations table
           Turbo::StreamsChannel.broadcast_replace_to(
             "user_#{current_user.id}_agent_#{@agent.id}_conversations",
@@ -92,7 +92,7 @@ class Ai::ConversationsController < ApplicationController
                   </div>'
           )
         end
-        
+
         format.turbo_stream
         format.html { redirect_to ai_agent_conversation_path(@agent, @conversation), notice: "Conversation started!" }
       else
