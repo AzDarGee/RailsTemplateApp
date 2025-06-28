@@ -35,7 +35,11 @@
 - Pay gem to manage payments (Stripe and PayPal)
 
 # App Name
-Change the app name in `config/application.rb` to match the folder name of your app
+* Change the app name in `config/application.rb` to match the folder name of your app
+* Change the name of the app in `.devcontainer/devcontainer.json` & `.devcontainer/compose.yaml` to the new app name
+* Change the description in `app/views/pwa/manifest.json.erb` to the new app name
+* Change `app/views/shared/_navbar.html.erb` name of app to new app name
+* Change `config/environments/production.rb` Action Mailer default url options to your new domain name
 
 # PostGreSQL Setup
 To start the postgresql server:
