@@ -26,7 +26,7 @@ gem "view_component", "~> 3.23.2"
 gem "langchainrb", "~> 0.19.5"
 gem "ruby-openai", "~> 8.1.0"
 gem "dry-initializer", "~> 3.2.0"
-gem "mission_control-jobs", "~> 1.0.2"
+gem "mission_control-jobs", "~> 1.1.0"
 gem "avo", "~> 3.21.1"
 gem "ransack", "~> 4.3.0"
 
