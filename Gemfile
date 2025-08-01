@@ -21,7 +21,7 @@ gem "streamio-ffmpeg", "~> 3.0.2"
 gem "jsbundling-rails", "~> 1.3.1"
 gem "cssbundling-rails", "~> 1.4.3"
 gem "mail", "~> 2.8.1"
-gem "aws-sdk-s3", "~> 1.191.0", require: false
+gem "aws-sdk-s3", "~> 1.195.0", require: false
 gem "view_component", "~> 3.23.2"
 gem "langchainrb", "~> 0.19.5"
 gem "ruby-openai", "~> 8.1.0"
