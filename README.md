@@ -40,6 +40,7 @@
 * Change the description in `app/views/pwa/manifest.json.erb` to the new app name
 * Change `app/views/shared/_navbar.html.erb` name of app to new app name
 * Change `config/environments/production.rb` Action Mailer default url options to your new domain name
+* Update all environment variables to reflect the new app name
 
 # PostGreSQL Setup
 To start the postgresql server:
