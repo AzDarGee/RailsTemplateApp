@@ -1,6 +1,6 @@
 class Ai::AgentsController < ApplicationController
-  before_action :set_agent, only: [:edit, :update, :destroy, :show]
-  
+  before_action :set_agent, only: [ :edit, :update, :destroy, :show ]
+
   def index
     @agents = current_user.agents.order(created_at: :desc)
   end
@@ -18,9 +18,9 @@ class Ai::AgentsController < ApplicationController
   def destroy
     @agent.destroy
     respond_to do |format|
-      format.turbo_stream { 
-        render turbo_stream: turbo_stream.remove("agent_#{@agent.id}"), 
-        notice: "Agent deleted successfully" 
+      format.turbo_stream {
+        render turbo_stream: turbo_stream.remove("agent_#{@agent.id}"),
+        notice: "Agent deleted successfully"
       }
     end
   end
@@ -30,7 +30,7 @@ class Ai::AgentsController < ApplicationController
 
   def create
     @agent = current_user.agents.new(agent_params)
-    
+
     respond_to do |format|
       if @agent.save
         format.html { redirect_to ai_agent_path(@agent), notice: "Agent created successfully" }
