@@ -1,6 +1,5 @@
 source "https://rubygems.org"
 
-
 gem "rails", "~> 8.0.2"
 gem "propshaft", "~> 1.1.0"
 gem "pg", "~> 1.5.9"
