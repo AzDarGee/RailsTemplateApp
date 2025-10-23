@@ -7,7 +7,7 @@ class AiResponseJob < ApplicationJob
       conversation_messages = conversation.messages.order(created_at: :asc)
 
       assistant = Langchain::Assistant.new(
-        llm: gemini_llm,
+        llm: open_ai_llm,
         instructions: agent.instructions,
         tools: agent.tools.map { |tool| available_tools[tool.to_sym] }.compact
       )
@@ -42,7 +42,7 @@ class AiResponseJob < ApplicationJob
 
     rescue => e
       Rails.logger.error("Error generating AI response: #{e.message}")
-      ai_message.update(content: "Sorry, I encountered an error while processing your request.")
+      ai_message.update(content: "Sorry, I encountered an error while processing your request. \n \n #{e.message}")
 
       Turbo::StreamsChannel.broadcast_replace_to(
         "conversation_#{conversation.id}_messages",
@@ -63,20 +63,36 @@ class AiResponseJob < ApplicationJob
   def open_ai_llm
     @open_ai ||= Langchain::LLM::OpenAI.new(
         api_key: Rails.application.credentials.dig(:ai, :open_ai, :api_key),
-        default_options: { temperature: 0.7, chat_model: "gpt-3.5-turbo" }
+        default_options: { temperature: 0.7 }
     )
   end
 
   def gemini_llm
     @gemini ||= Langchain::LLM::GoogleGemini.new(
         api_key: Rails.application.credentials.dig(:ai, :gemini, :api_key),
-        default_options: { temperature: 0.7, chat_model: "gemini-1.5-flash" }
+        default_options: { temperature: 0.7, chat_model: "gemini-2.5-pro" }
+    )
+  end
+
+  def open_router_llm
+    @open_router ||= Langchain::LLM::OpenRouter.new(
+        api_key: Rails.application.credentials.dig(:ai, :open_router, :api_key),
+        model: "gpt-4o",
+        default_options: { temperature: 0.7 }
     )
   end
 
   def available_tools
     {
       web_search: Langchain::Tool::Tavily.new(api_key: Rails.application.credentials.dig(:ai, :tavily, :api_key))
+      # calculator: Langchain::Tool::Calculator.new,
+      # wikipedia: Langchain::Tool::Wikipedia.new,
+      # file_search: Langchain::Tool::FileSearch.new(base_path: Rails.root.join("storage", "ai_files")),
+      # resumable_file_search: Langchain::Tool::ResumableFileSearch.new(base_path: Rails.root.join("storage", "ai_files")),
+      # url_content_reader: Langchain::Tool::UrlContentReader.new,
+      # code_executor: Langchain::Tool::CodeExecutor.new(runtime: :ruby),
+      # news: Langchain::Tool::NewsRetriever.new(api_key: Rails.application.credentials.dig(:ai, :news_api, :api_key)),
+      # weather: Langchain::Tool::Weather.new(api_key: Rails.application.credentials.dig(:ai, :weather_api, :api_key))
     }
   end
 end
