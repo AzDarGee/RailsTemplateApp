@@ -24,7 +24,7 @@ gem "mail", "~> 2.8.1"
 gem "view_component", "~> 4.1.0"
 gem "aws-sdk-s3", "~> 1.202.0", require: false
 gem "langchainrb", "~> 0.19.5"
-gem "ruby-openai", "~> 8.1.0"
+gem "ruby-openai", "~> 8.3.0"
 gem "dry-initializer", "~> 3.2.0"
 gem "mission_control-jobs", "~> 1.1.0"
 gem "avo", "~> 3.25.3"
