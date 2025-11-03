@@ -21,19 +21,19 @@ gem "streamio-ffmpeg", "~> 3.0.2"
 gem "jsbundling-rails", "~> 1.3.1"
 gem "cssbundling-rails", "~> 1.4.3"
 gem "mail", "~> 2.8.1"
-gem "aws-sdk-s3", "~> 1.191.0", require: false
-gem "view_component", "~> 3.23.2"
+gem "view_component", "~> 4.1.0"
+gem "aws-sdk-s3", "~> 1.202.0", require: false
 gem "langchainrb", "~> 0.19.5"
 gem "ruby-openai", "~> 8.1.0"
 gem "dry-initializer", "~> 3.2.0"
 gem "mission_control-jobs", "~> 1.0.2"
-gem "avo", "~> 3.21.1"
+gem "avo", "~> 3.25.3"
 gem "ransack", "~> 4.3.0"
 
 gem "tzinfo-data", "~> 1.2025.1", platforms: %i[ windows jruby ]
 
 gem "solid_cache", "~> 1.0.7"
-gem "solid_queue", "~> 1.1.5"
+gem "solid_queue", "~> 1.2.3"
 gem "solid_cable", "~> 3.0.11"
 
 gem "bootsnap", "~> 1.18.6", require: false
@@ -59,5 +59,5 @@ end
 
 group :test do
   gem "capybara", "~> 3.40.0"
-  gem "selenium-webdriver", "~> 4.33.0"
+  gem "selenium-webdriver", "~> 4.38.0"
 end
