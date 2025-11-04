@@ -14,14 +14,13 @@ FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 # Rails app lives here
 WORKDIR /rails
 
-RUN apt-get update -qq && \
-    apt-get install -y yarn && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
-
 # Install base packages
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y curl libjemalloc2 libyaml-dev libvips postgresql-client && \
     apt-get install --no-install-recommends -y nodejs npm imagemagick ffmpeg && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+RUN npm install -g yarn && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 COPY package.json yarn.lock ./
