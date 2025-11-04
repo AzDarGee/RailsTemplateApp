@@ -4,6 +4,12 @@
 
 import { application } from "./application"
 
+import AutoResizeController from "./auto_resize_controller"
+application.register("auto-resize", AutoResizeController)
+
+import CollapseController from "./collapse_controller"
+application.register("collapse", CollapseController)
+
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
 

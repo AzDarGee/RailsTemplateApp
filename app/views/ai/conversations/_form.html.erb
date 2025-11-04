@@ -1,9 +1,0 @@
-<footer class="border-top p-3">
-  <%= form_with(model: [:ai, @conversation, @message], 
-                url: ai_conversation_messages_path(@conversation), 
-                class: "d-flex", 
-                data: { controller: "reset-form", action: "turbo:submit-end->reset-form#reset", turbo_method: :post }) do |form| %>
-    <%= form.text_field :content, class: "form-control me-2", placeholder: "Type your message...", required: true, autofocus: true %>
-    <%= form.submit "Send", class: "btn btn-primary" %>
-  <% end %>
-</footer>

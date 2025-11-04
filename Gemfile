@@ -1,7 +1,6 @@
 source "https://rubygems.org"
 
-
-gem "rails", "~> 8.0.2"
+gem 'rails', '~> 8.1', '>= 8.1.1'
 gem "propshaft", "~> 1.3.1"
 gem "pg", "~> 1.6.2"
 gem "puma", "~> 6.6.0"
@@ -23,14 +22,15 @@ gem "cssbundling-rails", "~> 1.4.3"
 gem "mail", "~> 2.8.1"
 gem "view_component", "~> 4.1.0"
 gem "aws-sdk-s3", "~> 1.202.0", require: false
-gem "langchainrb", "~> 0.19.5"
-gem "ruby-openai", "~> 8.1.0"
 gem "dry-initializer", "~> 3.2.0"
 gem "mission_control-jobs", "~> 1.1.0"
 gem "avo", "~> 3.25.3"
-
-
+gem 'openssl', '~> 3.1'
+gem 'ruby_llm', '~> 1.8', '>= 1.8.2'
 gem "ransack", "~> 4.3.0"
+gem "redcarpet", "~> 3.6.1"
+gem "coderay", "~> 1.1.3"
+gem "resend", "~> 0.22.0"
 
 gem "tzinfo-data", "~> 1.2025.1", platforms: %i[ windows jruby ]
 
@@ -53,8 +53,8 @@ group :development do
   gem "hotwire-spark", "~> 0.1.13"
   gem "letter_opener", "~> 1.10.0"
   gem "letter_opener_web", "~> 3.0.0"
-  gem "pry", "~> 0.15.2", require: false
-  gem "pry-remote", "~> 0.1.8", require: false
+  gem "pry", "~> 0.15.2"
+  gem "pry-remote", "~> 0.1.8"
   gem "better_errors", "~> 2.10.1"
   gem "binding_of_caller", "~> 1.0.1"
 end

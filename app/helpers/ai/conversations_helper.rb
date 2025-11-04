@@ -1,2 +1,0 @@
-module Ai::ConversationsHelper
-end

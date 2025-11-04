@@ -1,0 +1,120 @@
+<% content_for :title, "Chats" %>
+
+<div class="row g-0 min-vh-100 p-4 p-md-5">
+  <div class="col-12 col-lg-10 col-xl-8 mx-auto d-flex flex-column">
+    <div class="card rounded-3 h-100 shadow-sm overflow-hidden" style="max-height: calc(100vh - 125px);">
+      <div class="card-header d-flex align-items-center justify-content-between bg-body-tertiary py-3">
+        <div class="d-flex align-items-center gap-2">
+          <i class="fa-solid fa-comments me-2"></i>
+          <h5 class="mb-0 fw-semibold">Chats</h5>
+        </div>
+        <div>
+          <%= link_to new_chat_path, class: "btn btn-primary" do %>
+            <i class="fa-solid fa-plus me-1"></i>
+            New Chat
+          <% end %>
+        </div>
+      </div>
+
+      <% if @chats.any? %>
+        <div class="card-body p-0 d-flex flex-column" style="min-height: 0;">
+          <div class="m-3">
+            <%= render "shared/flash_messages" %>
+          </div>
+
+          <div id="chats" class="list-group list-group-flush flex-grow-1 overflow-auto" style="min-height: 0;">
+            <% @chats.each do |chat| %>
+              <div id="<%= dom_id(chat) %>" class="list-group-item py-3">
+                <div class="d-flex w-100 align-items-center justify-content-between">
+                  <div class="d-flex align-items-center">
+                    <i class="fa-solid fa-message text-primary me-2"></i>
+                    <%= link_to chat, class: "text-decoration-none text-reset" do %>
+                      <div>
+                        <div class="fw-semibold">Chat <%= chat.id %></div>
+                        <div class="small text-muted">
+                          <i class="fa-solid fa-microchip me-1"></i>
+                          <%= chat.try(:model)&.name || "Model" %>
+                        </div>
+                      </div>
+                    <% end %>
+                  </div>
+                  <div class="text-end">
+                    <div class="small text-muted mb-2">
+                      <% if chat.respond_to?(:messages) %>
+                        <span class="badge rounded-pill text-bg-light border px-3 py-2 me-2">
+                          <i class="fa-regular fa-message me-1"></i>
+                          <%= chat.messages.size %>
+                        </span>
+                      <% end %>
+                      <span>
+                        <i class="fa-regular fa-clock me-1"></i>
+                        <%= chat.updated_at&.strftime("%b %e, %I:%M %p") %>
+                      </span>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteChatModal-<%= chat.id %>">
+                      <i class="fa-regular fa-trash-can"></i>
+                      <span class="d-none d-sm-inline ms-1">Delete</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="modal fade" id="deleteChatModal-<%= chat.id %>" tabindex="-1" aria-labelledby="deleteChatModalLabel-<%= chat.id %>" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="deleteChatModalLabel-<%= chat.id %>">Delete chat <%= chat.id %>?</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        Are you sure you want to delete this chat? This action cannot be undone.
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <%= form_with url: chat_path(chat), method: :delete do |f| %>
+                          <%= f.button class: "btn btn-danger", data: { bs_dismiss: "modal" } do %>
+                            <i class="fa-regular fa-trash-can me-1"></i>
+                            Delete
+                          <% end %>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% else %>
+        <div class="card-body d-flex flex-column align-items-center justify-content-center text-center">
+          <% if notice.present? %>
+            <div class="alert alert-success w-100 mb-3" role="alert"><%= notice %></div>
+          <% end %>
+          <% if alert.present? %>
+            <div class="alert alert-danger w-100 mb-3" role="alert"><%= alert %></div>
+          <% end %>
+          <div class="text-muted">
+            <i class="fa-regular fa-comments fa-2x mb-2"></i>
+            <p class="mb-1">No chats yet</p>
+            <p class="small mb-3">Start a new conversation to see it here.</p>
+            <%= link_to new_chat_path, class: "btn btn-outline-primary" do %>
+              <i class="fa-solid fa-plus me-1"></i>
+              New Chat
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="card-footer d-flex justify-content-between align-items-center">
+        <div id="chats_count" class="small text-muted">
+          <%= render "chats/count", count: @chats.size %>
+        </div>
+        <div>
+          <%= link_to chats_path, class: "btn btn-sm btn-outline-secondary" do %>
+            <i class="fa-solid fa-rotate-right me-1"></i>
+            Refresh
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,32 @@
+<% role = message.role.to_s %>
+<% is_user = role == "user" %>
+<% align_class = is_user ? "justify-content-end" : "justify-content-start" %>
+<% bubble_class = is_user ? "bg-primary text-white" : "bg-light" %>
+<% icon_class = if is_user
+  "fa-solid fa-user"
+elsif role == "system"
+  "fa-solid fa-gear"
+else
+  "fa-solid fa-robot"
+end %>
+
+<div id="message_<%= message.id %>" class="d-flex <%= align_class %> mb-3">
+  <div class="d-inline-block" style="max-width: 85%;">
+    <div class="rounded-3 px-3 py-2 shadow-sm <%= bubble_class %>">
+      <div class="small opacity-75 mb-1">
+        <i class="<%= icon_class %> me-1"></i>
+        <span class="text-uppercase"><%= role.presence || "Message" %></span>
+      </div>
+      <div id="message_<%= message.id %>_content" class="message-content" style="white-space: pre-wrap;"><%= message.content %></div>
+      <% if message.tool_call? %>
+        <div class="mt-2">
+          <%= render "messages/tool_calls", message: message %>
+        </div>
+      <% end %>
+      <div class="mt-2 small opacity-75 <%= is_user ? 'text-end' : '' %>">
+        <i class="fa-regular fa-clock me-1"></i>
+        <%= message.created_at&.strftime("%b %e, %I:%M %p") %>
+      </div>
+    </div>
+  </div>
+</div>

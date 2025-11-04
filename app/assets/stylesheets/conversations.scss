@@ -40,3 +40,27 @@
 #message-list {
     margin-top: auto;
 }
+
+.message-content {
+    img {
+        max-width: -webkit-fill-available;
+    }
+    .CodeRay {
+        background-color: #f2dbac;
+        padding: 10px;
+        margin: 5px;
+        border-radius: 10px;
+        &:hover {
+            background-color: #baa67d;
+        }
+    }
+}
+
+.message-content.updated {
+    animation: flash-update 0.3s ease-in-out;
+}
+
+@keyframes flash-update {
+    0% { background-color: rgba(255, 255, 0, 0.2); }
+    100% { background-color: transparent; }
+}

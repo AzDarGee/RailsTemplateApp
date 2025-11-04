@@ -28,14 +28,267 @@
     - Open AI
     - Claude
     - Google Gemini
+    - Openrouter
 - Admin Dashboard (Avo)
 - Search (ransack)
 - Tagging
 - Pay gem to manage payments (Stripe and PayPal)
 
 # App Name
-Change the app name in `config/application.rb` to match the folder name of your app
+* Change the app name in `config/application.rb` to match the folder name of your app
+* Change the name of the app in `.devcontainer/devcontainer.json` & `.devcontainer/compose.yaml` to the new app name
+* Change the description in `app/views/pwa/manifest.json.erb` to the new app name
+* Change `app/views/shared/_navbar.html.erb` name of app to new app name
+* Change `config/environments/production.rb` Action Mailer default url options to your new domain name
+* Update all environment variables to reflect the new app name
 
+# PostGreSQL Setup
+To start the postgresql server:
+```
+sudo systemctl start postgresql
+```
+
+To restart the postgresql server:
+```
+sudo systemctl restart postgresql
+```
+
+Connect as postgres user:
+```
+sudo -u postgres psql
+```
+
+# Install ImageMagick
+```
+sudo apt-get install imagemagick
+```
+
+# Server Setup
+Start the ssh-agent in the background:
+```
+eval "$(ssh-agent -s)"
+```
+
+Make sure to add your private key to the ssh-agent:
+```
+ssh-add ~/.ssh/id_ed25519
+```
+
+SSH with specified port to server:
+```
+ssh newuser@your_server_ip -p NEW_PORT_NUMBER
+```
+- Replace newuser with your username on the server. Replace your_server_ip with your actual server ip. Replace NEW_PORT_NUMBER with the correct ssh port.
+
+Update Repository, on your server, run:
+```
+sudo apt-get update
+sudo apt-get upgrade
+```
+
+View Auth Attempts to server:
+```
+sudo tail -n 10 -f /var/log/auth.log
+```
+
+Add non-root user
+```
+adduser ashishdarji
+usermod -aG sudo ashishdarji
+```
+
+Don't require password for sudo for new user. In `/etc/sudoers` file:
+```
+your-non-root-user ALL=(ALL) NOPASSWD: ALL
+```
+- Replace your-non-root-user for your username
+
+Setup SSH Keys and Disable Password Logins:
+Add your local ssh public key to ~/.ssh/authorized_keys on the server
+```
+nano ~/.ssh/authorized_keys
+```
+
+In `/etc/ssh/sshd_config` on your server:
+```
+Set PubkeyAuthentication yes
+Set PasswordAuthentication no
+Set PermitEmptyPasswords no
+Set PermitRootLogin prohibit-password
+```
+
+In `/etc/ssh/sshd_config.d/50-cloud-init.conf` on your server:
+```
+Set PasswordAuthentication no
+```
+
+Uncomment the PORT number and pick a port to run ssh on (this step is crucial):
+```
+sudo nano /etc/ssh/sshd_config
+```
+
+You might need these extra settings for coolify in the `/etc/ssh/sshd_config` file:
+```
+AllowGroups admin root
+PubkeyAcceptedAlgorithms +ssh-ed25519
+HostKeyAlgorithms +ssh-ed25519
+```
+
+Restart SSHD:
+```
+sudo systemctl restart sshd
+```
+
+## UFW Firewall Linux Setup
+To enable ufw firewall:
+```
+sudo ufw enable
+```
+
+Restart UFW:
+```
+sudo systemctl restart ufw
+```
+
+Check status:
+```
+sudo ufw status verbose
+```
+
+Check status and display numbered rules:
+```
+sudo ufw statuas numbered
+```
+
+Delete rule:
+```
+ufw delete <RULE_NUMBER>
+```
+- Where the <RULE_NUMBER> is the number you got from the previous command
+
+Set UFW Logging Level:
+```
+sudo ufw logging full
+```
+
+Deny all incoming traffic and allow all outgoing traffic:
+```
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+```
+
+Allow essential ports (this step is crucial):
+```
+sudo ufw allow NEW_SSH_PORT_NUMBER/tcp
+```
+- NEW_SSH_PORT_NUMBER replace with your new ssh port number
+```
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+```
+
+For Coolify:
+```
+sudo ufw allow 8000/tcp
+sudo ufw allow 6001/tcp
+sudo ufw allow 6002/tcp
+```
+
+Restart UFW:
+```
+sudo ufw disable
+sudo ufw enable
+```
+
+Reload UFW:
+```
+sudo ufw reload
+```
+
+Reset UFW Rules to default:
+```
+sudo ufw reset
+```
+
+Remember to restart your ssh service or you might get locked out:
+```
+sudo service ssh restart
+```
+
+## Install Fail2Ban:
+```
+sudo apt install fail2ban
+```
+
+Copy jail.conf to jail.local and specify changes:
+```
+sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+sudo nano /etc/fail2ban/jail.local
+```
+
+Add the following lines under the [ssh] & [sshd] directive in `/etc/fail2ban/jail.local`: Make sure to specify your new ssh port number.
+```
+[ssh]
+enabled = true
+port = <NEW_SSH_PORT>
+filter = sshd
+maxretry = 5
+findtime = 10m
+bantime = 1w
+```
+
+Restart & enable SSH:
+```
+sudo systemctl restart ssh
+sudo systemctl enable ssh
+```
+
+Restart & enable Fail2Ban:
+```
+sudo systemctl restart fail2ban
+sudo systemctl enable fail2ban
+```
+
+Tail the Fail2Ban Logs:
+```
+sudo tail -f /var/log/fail2ban.log
+```
+
+To ban a user's IP address from Fail2Ban:
+```
+sudo fail2ban-client set sshd banip <IP_ADDRESS>
+```
+- replace <IP_ADDRESS> with the correct IP address
+
+
+To unban a user's IP address from Fail2Ban:
+```
+sudo fail2ban-client set sshd unbanip <IP_ADDRESS>
+```
+- replace <IP_ADDRESS> with the correct IP address
+
+To view banned IPs:
+```
+sudo fail2ban-client status sshd
+```
+
+# Automatic Updates
+Install package:
+```
+sudo apt install unattended-upgrades
+```
+
+Run this and select YES:
+```
+sudo dpkg-reconfigure unattended-upgrades
+```
+
+### Coolify Server IP Address:
+```
+host.docker.internal
+```
+
+# App Setup
 # Setup
 Install latest nodejs LTS:
 ```
