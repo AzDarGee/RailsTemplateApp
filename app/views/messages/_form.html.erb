@@ -1,9 +1,8 @@
 <%= form_with(model: message, url: [@chat, message], id: "new_message") do |form| %>
   <% if message.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(message.errors.count, "error") %> prohibited this message from being saved:</h2>
-
-      <ul>
+    <div class="alert alert-danger" role="alert">
+      <h6 class="alert-heading mb-2"><i class="fa-solid fa-triangle-exclamation me-1"></i><%= pluralize(message.errors.count, "error") %> prevented sending</h6>
+      <ul class="mb-0 ps-3">
         <% message.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,11 +10,19 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.text_field :content, style: "width: 100%; max-width: 600px;", placeholder: "Message...", autofocus: true %>
-  </div>
-
-  <div>
-    <%= form.submit "Send message" %>
+  <div class="d-flex gap-2">
+    <div class="flex-grow-1">
+      <%= form.text_area :content,
+            class: "form-control",
+            placeholder: "Type a message...",
+            rows: 2,
+            autofocus: true %>
+    </div>
+    <div class="d-flex align-items-end">
+      <%= form.button type: "submit", class: "btn btn-primary" do %>
+        <i class="fa-solid fa-paper-plane"></i>
+        <span class="d-none d-sm-inline ms-1">Send</span>
+      <% end %>
+    </div>
   </div>
 <% end %>

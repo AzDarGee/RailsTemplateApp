@@ -1,23 +1,39 @@
-<p style="color: green"><%= notice %></p>
-
 <%= turbo_stream_from "chat_#{@chat.id}" %>
 
-<% content_for :title, "Chat" %>
+<% content_for :title, "Chat ##{@chat.id}" %>
 
-<h1>Chat <%= @chat.id %></h1>
+<div class="container py-3 py-md-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-10 col-xl-8">
+      <div class="card shadow-sm">
+        <div class="card-header d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center">
+            <%= link_to chats_path, class: "btn btn-sm btn-outline-secondary me-2" do %>
+              <i class="fa-solid fa-arrow-left"></i>
+              <span class="d-none d-sm-inline ms-1">Back</span>
+            <% end %>
+            <h5 class="mb-0">Chat <%= @chat.id %></h5>
+          </div>
+          <div>
+            <span class="badge text-bg-light border">
+              <i class="fa-solid fa-microchip me-1"></i>
+              <%= @chat.model.name %>
+            </span>
+          </div>
+        </div>
 
-<p>Using <strong><%= @chat.model.name %></strong></p>
+        <div class="card-body p-0">
+          <div id="messages" data-controller="scroll" class="p-3 overflow-auto" style="max-height: 60vh;">
+            <% @chat.messages.where.not(id: nil).each do |message| %>
+              <%= render message %>
+            <% end %>
+          </div>
+        </div>
 
-<div id="messages">
-  <% @chat.messages.where.not(id: nil).each do |message| %>
-    <%= render message %>
-  <% end %>
-</div>
-
-<div style="margin-top: 30px;">
-  <%= render "messages/form", chat: @chat, message: @message %>
-</div>
-
-<div style="margin-top: 20px;">
-  <%= link_to "Back to chats", chats_path %>
+        <div class="card-footer bg-body-tertiary">
+          <%= render "messages/form", chat: @chat, message: @message %>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
