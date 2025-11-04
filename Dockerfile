@@ -15,7 +15,7 @@ FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 WORKDIR /rails
 
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y yarn && \
+    apt-get install -y yarn && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Install base packages
