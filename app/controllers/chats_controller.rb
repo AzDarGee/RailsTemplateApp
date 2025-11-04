@@ -1,5 +1,5 @@
 class ChatsController < ApplicationController
-  before_action :set_chat, only: [:show]
+  before_action :set_chat, only: [:show, :destroy]
 
   def index
     @chats = Chat.order(created_at: :desc)
@@ -21,6 +21,26 @@ class ChatsController < ApplicationController
 
   def show
     @message = @chat.messages.build
+  end
+
+  def destroy
+    if @chat.destroy
+      respond_to do |format|
+        format.turbo_stream do
+          flash.now[:notice] = 'Chat was successfully deleted.'
+          # renders destroy.turbo_stream.erb
+        end
+        format.html { redirect_to chats_path, notice: 'Chat was successfully deleted.' }
+      end
+    else
+      respond_to do |format|
+        format.turbo_stream do
+          flash.now[:alert] = 'Chat could not be deleted.'
+          render :destroy_failure, status: :unprocessable_entity
+        end
+        format.html { redirect_to @chat, alert: 'Chat could not be deleted.' }
+      end
+    end
   end
 
   private

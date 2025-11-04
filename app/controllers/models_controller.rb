@@ -1,6 +1,6 @@
 class ModelsController < ApplicationController
   def index
-    @models = Model.all
+    @models = Model.where(provider: "openrouter").limit(10)
   end
 
   def show

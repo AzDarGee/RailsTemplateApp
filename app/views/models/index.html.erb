@@ -1,28 +1,61 @@
-<p style="color: green"><%= notice %></p>
-
 <% content_for :title, "Models" %>
 
-<h1>Models</h1>
+<div class="row g-0 min-vh-100 p-4 p-md-5">
+  <div class="col-12 col-lg-10 col-xl-8 mx-auto d-flex flex-column">
+    <div class="card rounded-3 h-100 shadow-sm overflow-hidden" style="max-height: calc(100vh - 125px);">
+      <div class="card-header d-flex align-items-center justify-content-between bg-body-tertiary py-3">
+        <div class="d-flex align-items-center gap-2">
+          <i class="fa-solid fa-microchip me-2"></i>
+          <h5 class="mb-0 fw-semibold">Models</h5>
+        </div>
+        <div>
+          <span class="badge rounded-pill text-bg-light border px-3 py-2">
+            <i class="fa-regular fa-list me-1"></i>
+            <%= pluralize(@models.size, "model") %>
+          </span>
+        </div>
+      </div>
 
-<p>
-  <%= button_to "Refresh Models", refresh_models_path, method: :post %>
-</p>
+      <div class="card-body p-0 d-flex flex-column" style="min-height: 0;">
+        <% if notice.present? %>
+          <div class="alert alert-success m-3" role="alert"><%= notice %></div>
+        <% end %>
 
-<div id="models">
-  <table>
-    <thead>
-      <tr>
-        <th>Provider</th>
-        <th>Model</th>
-        <th>Context Window</th>
-        <th>$/1M tokens (In/Out)</th>
-        <th colspan="2"></th>
-      </tr>
-    </thead>
-    <tbody>
-      <%= render @models %>
-    </tbody>
-  </table>
+        <div id="models" class="flex-grow-1 overflow-auto" style="min-height: 0;">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Provider</th>
+                  <th>Model</th>
+                  <th>Context Window</th>
+                  <th>$/1M tokens (In/Out)</th>
+                  <th class="text-end" colspan="2">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <%= render @models %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer d-flex justify-content-between align-items-center bg-body-tertiary py-3">
+        <div class="small text-muted">
+          <%= pluralize(@models.size, "model") %>
+        </div>
+        <div class="d-flex gap-2">
+          <%= link_to chats_path, class: "btn btn-sm btn-outline-secondary" do %>
+            <i class="fa-solid fa-comments me-1"></i>
+            Back to chats
+          <% end %>
+          <%= button_to refresh_models_path, method: :post, class: "btn btn-sm btn-primary", form: { class: "d-inline" } do %>
+            <i class="fa-solid fa-rotate-right me-1"></i>
+            Refresh Models
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-
-<%= link_to "Back to chats", chats_path %>
