@@ -1,0 +1,8 @@
+<div class="d-flex flex-column gap-1 align-items-start font-monospace">
+  <% message.tool_calls.each do |tool_call| %>
+    <div class="bg-body-tertiary border rounded px-2 py-1 small">
+      <i class="fa-solid fa-wrench me-1"></i>
+      <strong><%= tool_call.name %></strong>(<%= tool_call.arguments.map { |k, v| "#{k}: #{v.inspect}" }.join(", ") %>)
+    </div>
+  <% end %>
+</div>

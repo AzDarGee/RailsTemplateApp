@@ -1,0 +1,84 @@
+<% content_for :title, @model.name %>
+
+<div class="row g-0 min-vh-100 p-4 p-md-5">
+  <div class="col-12 col-lg-10 col-xl-8 mx-auto d-flex flex-column">
+    <div class="card rounded-3 h-100 shadow-sm overflow-hidden" style="max-height: calc(100vh - 125px);">
+      <div class="card-header d-flex align-items-center justify-content-between bg-body-tertiary py-3">
+        <div class="d-flex align-items-center gap-2">
+          <%= link_to models_path, class: "btn btn-sm btn-outline-secondary" do %>
+            <i class="fa-solid fa-arrow-left"></i>
+            <span class="d-none d-sm-inline ms-1">Back</span>
+          <% end %>
+          <h5 class="mb-0 fw-semibold">
+            <i class="fa-solid fa-microchip me-2"></i>
+            <%= @model.name %>
+          </h5>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <% if @model.provider.present? %>
+            <span class="badge rounded-pill text-bg-light border px-3 py-2">
+              <i class="fa-solid fa-cloud me-1"></i>
+              <%= @model.provider %>
+            </span>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="card-body p-4 p-md-5">
+        <div class="mb-3">
+          <span class="small text-muted d-block mb-1">Model ID</span>
+          <span class="badge text-bg-light border font-monospace px-2 py-1"><%= @model.model_id %></span>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-12 col-md-6">
+            <div class="border rounded-3 p-3 h-100">
+              <div class="small text-muted mb-1">Context window</div>
+              <div class="fw-semibold"><%= number_with_delimiter(@model.context_window) %> tokens</div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <div class="border rounded-3 p-3 h-100">
+              <div class="small text-muted mb-1">Max output</div>
+              <div class="fw-semibold"><%= number_with_delimiter(@model.max_output_tokens) %> tokens</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <div class="small text-muted mb-2">Capabilities</div>
+          <% if @model.capabilities.any? %>
+            <div class="d-flex flex-wrap gap-2">
+              <% @model.capabilities.each do |cap| %>
+                <span class="badge rounded-pill text-bg-light border px-3 py-2"><%= cap %></span>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="text-muted mb-0 small">No listed capabilities</p>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="card-footer d-flex justify-content-between align-items-center bg-body-tertiary py-3">
+        <div class="small text-muted">
+          <i class="fa-solid fa-microchip me-1"></i>
+          <%= @model.name %>
+        </div>
+        <div class="d-flex gap-2">
+          <%= link_to new_chat_path(model: @model.model_id), class: "btn btn-sm btn-primary" do %>
+            <i class="fa-solid fa-comments me-1"></i>
+            Start chat
+          <% end %>
+          <%= link_to models_path, class: "btn btn-sm btn-outline-secondary" do %>
+            <i class="fa-regular fa-list me-1"></i>
+            All models
+          <% end %>
+          <%= link_to chats_path, class: "btn btn-sm btn-outline-secondary" do %>
+            <i class="fa-solid fa-comments me-1"></i>
+            Back to chats
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

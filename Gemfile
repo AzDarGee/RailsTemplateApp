@@ -1,9 +1,8 @@
 source "https://rubygems.org"
 
-
-gem "rails", "~> 8.0.2"
-gem "propshaft", "~> 1.1.0"
-gem "pg", "~> 1.5.9"
+gem 'rails', '~> 8.1', '>= 8.1.1'
+gem "propshaft", "~> 1.3.1"
+gem "pg", "~> 1.6.2"
 gem "puma", "~> 6.6.0"
 gem "turbo-rails", "~> 2.0.16"
 gem "stimulus-rails", "~> 1.3.4"
@@ -16,24 +15,27 @@ gem "omniauth-facebook", "~> 10.0.0"
 gem "omniauth-twitter2", "~> 0.1.0"
 gem "omniauth-rails_csrf_protection", "~> 1.0.2"
 gem "image_processing", "~> 1.14.0"
-gem "mini_magick", "~> 5.2.0"
+gem "mini_magick", "~> 5.3.1"
 gem "streamio-ffmpeg", "~> 3.0.2"
 gem "jsbundling-rails", "~> 1.3.1"
 gem "cssbundling-rails", "~> 1.4.3"
 gem "mail", "~> 2.8.1"
-gem "aws-sdk-s3", "~> 1.191.0", require: false
-gem "view_component", "~> 3.23.2"
-gem "langchainrb", "~> 0.19.5"
-gem "ruby-openai", "~> 8.1.0"
+gem "view_component", "~> 4.1.0"
+gem "aws-sdk-s3", "~> 1.202.0", require: false
 gem "dry-initializer", "~> 3.2.0"
-gem "mission_control-jobs", "~> 1.0.2"
-gem "avo", "~> 3.21.1"
+gem "mission_control-jobs", "~> 1.1.0"
+gem "avo", "~> 3.25.3"
+gem 'openssl', '~> 3.1'
+gem 'ruby_llm', '~> 1.8', '>= 1.8.2'
 gem "ransack", "~> 4.3.0"
+gem "redcarpet", "~> 3.6.1"
+gem "coderay", "~> 1.1.3"
+gem "resend", "~> 0.22.0"
 
 gem "tzinfo-data", "~> 1.2025.1", platforms: %i[ windows jruby ]
 
 gem "solid_cache", "~> 1.0.7"
-gem "solid_queue", "~> 1.1.5"
+gem "solid_queue", "~> 1.2.3"
 gem "solid_cable", "~> 3.0.11"
 
 gem "bootsnap", "~> 1.18.6", require: false
@@ -42,7 +44,7 @@ gem "thruster", "~> 0.1.14", require: false
 
 group :development, :test do
   gem "debug", "~> 1.11.0", platforms: %i[ mri windows ], require: "debug/prelude"
-  gem "brakeman", "~> 7.0.2", require: false
+  gem "brakeman", "~> 7.1.0", require: false
   gem "rubocop-rails-omakase", "~> 1.1.0", require: false
 end
 
@@ -51,13 +53,13 @@ group :development do
   gem "hotwire-spark", "~> 0.1.13"
   gem "letter_opener", "~> 1.10.0"
   gem "letter_opener_web", "~> 3.0.0"
-  gem "pry", "~> 0.15.2", require: false
-  gem "pry-remote", "~> 0.1.8", require: false
+  gem "pry", "~> 0.15.2"
+  gem "pry-remote", "~> 0.1.8"
   gem "better_errors", "~> 2.10.1"
   gem "binding_of_caller", "~> 1.0.1"
 end
 
 group :test do
   gem "capybara", "~> 3.40.0"
-  gem "selenium-webdriver", "~> 4.33.0"
+  gem "selenium-webdriver", "~> 4.38.0"
 end

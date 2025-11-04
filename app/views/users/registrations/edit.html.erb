@@ -46,7 +46,7 @@
 
             <div class="mb-3">
               <%= f.label :bio, class: "form-label" %>
-              <%= f.rich_textarea :bio, class: "form-control" %>
+              <%= f.rich_textarea :bio, class: "form-control", data: { direct_upload_url: rails_direct_uploads_url } %>
             </div>
 
             <% if !@omniauth_user %>

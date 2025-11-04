@@ -1,0 +1,3 @@
+<%= turbo_stream.remove @chat %>
+<%= turbo_stream.update "flash", partial: "shared/flash_messages" %>
+<%= turbo_stream.update "chats_count", partial: "chats/count", locals: { count: Chat.count } %>

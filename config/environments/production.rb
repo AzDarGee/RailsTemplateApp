@@ -62,6 +62,9 @@ Rails.application.configure do
     host: "rails-template-app.saanskara.studio",
     protocol: "https"
   }
+  config.action_mailer.delivery_method = :resend
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.raise_delivery_errors = true
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via rails credentials:edit.
   # config.action_mailer.smtp_settings = {
