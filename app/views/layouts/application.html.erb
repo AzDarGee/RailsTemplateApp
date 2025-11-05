@@ -24,14 +24,15 @@
     <%# stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   </head>
 
-  <body>
+  <body class="d-flex flex-column min-vh-100">
     <%= render "shared/navbar" %>
-    
+
     <%= render partial: "shared/flash_messages" %>
 
-    <div class="container-fluid">
+    <div class="container-fluid flex-grow-1">
       <%= yield %>
     </div>
 
+    <%= render "shared/footer" %>
   </body>
 </html>

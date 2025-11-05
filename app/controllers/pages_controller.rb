@@ -10,4 +10,13 @@ class PagesController < ApplicationController
 
   def pricing
   end
+
+  def terms
+  end
+
+  def privacy
+  end
+
+  def refund_policy
+  end
 end
