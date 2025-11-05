@@ -52,6 +52,39 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_03_090147) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "ai_agents", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description", null: false
+    t.text "instructions", null: false
+    t.string "name", null: false
+    t.jsonb "tools", default: [], null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_ai_agents_on_user_id"
+  end
+
+  create_table "ai_conversations", force: :cascade do |t|
+    t.bigint "agent_id", null: false
+    t.string "category"
+    t.datetime "created_at", null: false
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["agent_id"], name: "index_ai_conversations_on_agent_id"
+    t.index ["user_id"], name: "index_ai_conversations_on_user_id"
+  end
+
+  create_table "ai_messages", force: :cascade do |t|
+    t.text "content"
+    t.bigint "conversation_id", null: false
+    t.datetime "created_at", null: false
+    t.string "role"
+    t.string "tool_call_id"
+    t.jsonb "tool_calls"
+    t.datetime "updated_at", null: false
+    t.index ["conversation_id"], name: "index_ai_messages_on_conversation_id"
+  end
+
   create_table "chats", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "model_id"
@@ -287,6 +320,10 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_03_090147) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "ai_agents", "users"
+  add_foreign_key "ai_conversations", "ai_agents", column: "agent_id"
+  add_foreign_key "ai_conversations", "users"
+  add_foreign_key "ai_messages", "ai_conversations", column: "conversation_id"
   add_foreign_key "chats", "models"
   add_foreign_key "messages", "chats"
   add_foreign_key "messages", "models"
