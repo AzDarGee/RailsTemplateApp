@@ -30,7 +30,7 @@ gem 'ruby_llm', '~> 1.8', '>= 1.8.2'
 gem "ransack", "~> 4.3.0"
 gem "redcarpet", "~> 3.6.1"
 gem "coderay", "~> 1.1.3"
-gem "resend", "~> 0.22.0"
+gem "resend", "~> 1.0.0"
 
 gem "tzinfo-data", "~> 1.2025.1", platforms: %i[ windows jruby ]
 
