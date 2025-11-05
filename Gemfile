@@ -3,7 +3,7 @@ source "https://rubygems.org"
 gem 'rails', '~> 8.1', '>= 8.1.1'
 gem "propshaft", "~> 1.3.1"
 gem "pg", "~> 1.6.2"
-gem "puma", "~> 6.6.0"
+gem "puma", "~> 7.1.0"
 gem "turbo-rails", "~> 2.0.16"
 gem "stimulus-rails", "~> 1.3.4"
 gem "jbuilder", "~> 2.13.0"
