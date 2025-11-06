@@ -24,6 +24,7 @@ gem "view_component", "~> 4.1.0"
 gem "aws-sdk-s3", "~> 1.202.0", require: false
 gem "dry-initializer", "~> 3.2.0"
 gem "mission_control-jobs", "~> 1.1.0"
+gem "pagy", "~> 9.0"
 gem "avo", "~> 3.26.0"
 gem 'openssl', '~> 3.1'
 gem 'ruby_llm', '~> 1.9'
