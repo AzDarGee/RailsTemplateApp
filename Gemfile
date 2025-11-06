@@ -21,7 +21,7 @@ gem "jsbundling-rails", "~> 1.3.1"
 gem "cssbundling-rails", "~> 1.4.3"
 gem "mail", "~> 2.9.0"
 gem "view_component", "~> 4.1.0"
-gem "aws-sdk-s3", "~> 1.202.0", require: false
+gem "aws-sdk-s3", "~> 1.203.0", require: false
 gem "dry-initializer", "~> 3.2.0"
 gem "mission_control-jobs", "~> 1.1.0"
 gem "pagy", "~> 9.0"
