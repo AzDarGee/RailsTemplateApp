@@ -5,7 +5,7 @@
       <% last4 = pm.try(:last4) %>
       <% modal_id = "delete-pm-#{pm.id}-modal" %>
       <% is_default = (defined?(current_default_id) && current_default_id.present?) ? (pm.id == current_default_id) : pm.default? %>
-      <li class="list-group-item d-flex justify-content-between align-items-center" id="<%= dom_id(pm) %>" data-defaulted="<%= (defined?(just_default_id) && just_default_id.present? && pm.id == just_default_id) ? '1' : '0' %>">
+      <li class="list-group-item d-flex justify-content-between align-items-center m-2" id="<%= dom_id(pm) %>" data-defaulted="<%= (defined?(just_default_id) && just_default_id.present? && pm.id == just_default_id) ? '1' : '0' %>">
         <div class="d-flex align-items-center">
           <div>
             <strong><%= brand %></strong>
@@ -18,12 +18,12 @@
           </div>
         </div>
         <div class="btn-group">
-          <% unless is_default %>
+          <% if !is_default %>
             <%= button_to "Make default", billing_set_default_payment_method_path(pm), method: :post, form: { data: { turbo: true } }, class: "btn btn-sm btn-outline-primary" %>
           <% else %>
             <button class="btn btn-sm btn-outline-secondary" disabled aria-disabled="true" aria-label="Default payment method">Default</button>
           <% end %>
-          <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#<%= modal_id %>">
+          <button type="button" class="btn btn-sm btn-outline-danger ms-2" data-bs-toggle="modal" data-bs-target="#<%= modal_id %>">
             Remove
           </button>
         </div>
