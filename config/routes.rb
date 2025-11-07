@@ -28,6 +28,20 @@ Rails.application.routes.draw do
   get "pages/privacy"
   get "pages/refund_policy"
 
+  # Billing portal (authenticated)
+  authenticate :user do
+    get   "billing",                     to: "billing#dashboard",        as: :billing_dashboard
+    get   "billing/payment_methods",     to: "billing#payment_methods",  as: :billing_payment_methods
+    post  "billing/setup_intent",        to: "billing#create_setup_intent", as: :billing_setup_intent
+    post  "billing/attach_payment_method", to: "billing#attach_payment_method", as: :billing_attach_payment_method
+    delete "billing/payment_methods/:id", to: "billing#detach_payment_method", as: :billing_detach_payment_method
+
+    get   "billing/charges",             to: "billing#charges",          as: :billing_charges
+    get   "billing/charges/:id/receipt", to: "billing#receipt",          as: :billing_receipt
+
+    get   "billing/subscriptions",       to: "billing#subscriptions",    as: :billing_subscriptions
+  end
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
