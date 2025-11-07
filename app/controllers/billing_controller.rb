@@ -102,9 +102,19 @@ class BillingController < ApplicationController
       return
     end
 
-    # Pay v11 expects a Pay::PaymentMethod record/object here
-    customer.default_payment_method = pm_record
+    # Set as default on Stripe via Pay and ensure persistence
+    begin
+      customer.default_payment_method = pm_record
+      if defined?(Stripe)
+        # Ensure Stripe customer has the default set at the API level
+        Stripe::Customer.update(customer.processor_id, invoice_settings: { default_payment_method: pm_record.processor_id })
+      end
+    rescue => e
+      Rails.logger.warn("[Billing#attach_payment_method] Failed to set default: #{e.class} #{e.message}")
+    end
 
+    # Reload customer/payment methods so pm.default? reflects the latest default
+    customer.reload if customer.respond_to?(:reload)
     @payment_methods = customer.payment_methods.order(created_at: :desc)
     @payment_methods_count = @payment_methods.size
     @app_max_payment_methods = app_max_payment_methods
@@ -116,7 +126,7 @@ class BillingController < ApplicationController
           turbo_stream.replace(
             "payment_methods_list",
             partial: "billing/payment_methods_list",
-            locals: { payment_methods: @payment_methods }
+            locals: { payment_methods: @payment_methods, just_default_id: pm_record.id, current_default_id: customer.default_payment_method&.id }
           ),
           turbo_stream.replace(
             "payment_methods_meta",
@@ -181,9 +191,19 @@ class BillingController < ApplicationController
       next_pm = current_user.payment_processor.payment_methods.order(created_at: :asc).first
       if next_pm.present?
         # Set the AR record as the new default (Pay v11 accepts a Pay::PaymentMethod object)
-        current_user.payment_processor.default_payment_method = next_pm
+        begin
+          current_user.payment_processor.default_payment_method = next_pm
+          if defined?(Stripe)
+            Stripe::Customer.update(current_user.payment_processor.processor_id, invoice_settings: { default_payment_method: next_pm.processor_id })
+          end
+        rescue => e
+          Rails.logger.warn("[Billing#detach_payment_method] Failed to promote next default: #{e.class} #{e.message}")
+        end
       end
     end
+
+    # Reload processor so default? flags are up-to-date
+    current_user.payment_processor.reload if current_user.payment_processor.respond_to?(:reload)
 
     @payment_methods = current_user.payment_processor.payment_methods.order(created_at: :desc)
     @payment_methods_count = @payment_methods.size
@@ -196,7 +216,7 @@ class BillingController < ApplicationController
           turbo_stream.replace(
             "payment_methods_list",
             partial: "billing/payment_methods_list",
-            locals: { payment_methods: @payment_methods }
+            locals: { payment_methods: @payment_methods, current_default_id: current_user.payment_processor.default_payment_method&.id }
           ),
           turbo_stream.replace(
             "payment_methods_meta",
@@ -230,6 +250,73 @@ class BillingController < ApplicationController
 
   def subscriptions
     @subscriptions = current_user.payment_processor.subscriptions.order(created_at: :desc)
+  end
+
+  # Set a payment method as the default for the current user (Stripe)
+  # Turbo Streams: replaces payment_methods_list and payment_methods_meta, updates flash, and passes just_default_id for client-side highlight.
+  def set_default_payment_method
+    unless using_stripe?
+      @default_payment_method = current_user.payment_processor.default_payment_method
+      respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: "Card management is only available for Stripe accounts." }) }
+        format.html { redirect_to billing_payment_methods_path, alert: "Card management is only available for Stripe accounts." }
+      end
+      return
+    end
+
+    customer = current_user.payment_processor
+    payment_method = customer.payment_methods.find(params[:id])
+
+    # Set as default using Pay API (accepts AR record) and ensure Stripe invoice_settings is updated
+    begin
+      customer.default_payment_method = payment_method
+      if defined?(Stripe)
+        Stripe::Customer.update(customer.processor_id, invoice_settings: { default_payment_method: payment_method.processor_id })
+      end
+    rescue => e
+      Rails.logger.warn("[Billing#set_default_payment_method] Failed to set default: #{e.class} #{e.message}")
+    end
+
+    # Reload to ensure pm.default? reflects latest state
+    customer.reload if customer.respond_to?(:reload)
+
+    @payment_methods = customer.payment_methods.order(created_at: :desc)
+    @payment_methods_count = @payment_methods.size
+    @app_max_payment_methods = app_max_payment_methods
+    @at_payment_method_cap = @payment_methods_count >= @app_max_payment_methods
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: [
+          turbo_stream.replace(
+            "payment_methods_list",
+            partial: "billing/payment_methods_list",
+            locals: { payment_methods: @payment_methods, just_default_id: payment_method.id, current_default_id: customer.default_payment_method&.id }
+          ),
+          turbo_stream.replace(
+            "payment_methods_meta",
+            partial: "billing/payment_methods_meta",
+            locals: { payment_methods_count: @payment_methods_count, app_max_payment_methods: @app_max_payment_methods, at_payment_method_cap: @at_payment_method_cap }
+          ),
+          turbo_stream.update(
+            "flash",
+            partial: "shared/flash_messages",
+            locals: { notice: "Default payment method updated." }
+          )
+        ]
+      end
+      format.html { redirect_to billing_payment_methods_path, notice: "Default payment method updated." }
+    end
+  rescue ActiveRecord::RecordNotFound
+    respond_to do |format|
+      format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: "Payment method not found." }) }
+      format.html { redirect_to billing_payment_methods_path, alert: "Payment method not found." }
+    end
+  rescue => e
+    respond_to do |format|
+      format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: e.message }) }
+      format.html { redirect_to billing_payment_methods_path, alert: e.message }
+    end
   end
 
   # Download receipt PDF for a charge

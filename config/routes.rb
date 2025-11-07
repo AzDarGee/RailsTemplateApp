@@ -34,6 +34,7 @@ Rails.application.routes.draw do
     get   "billing/payment_methods",     to: "billing#payment_methods",  as: :billing_payment_methods
     post  "billing/setup_intent",        to: "billing#create_setup_intent", as: :billing_setup_intent
     post  "billing/attach_payment_method", to: "billing#attach_payment_method", as: :billing_attach_payment_method
+    post  "billing/payment_methods/:id/default", to: "billing#set_default_payment_method", as: :billing_set_default_payment_method
     delete "billing/payment_methods/:id", to: "billing#detach_payment_method", as: :billing_detach_payment_method
 
     get   "billing/charges",             to: "billing#charges",          as: :billing_charges

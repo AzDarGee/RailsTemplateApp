@@ -8,7 +8,7 @@
         </div>
         <div class="card-body">
           <div id="payment_methods_list">
-            <%= render partial: "billing/payment_methods_list", locals: { payment_methods: @payment_methods } %>
+            <%= render partial: "billing/payment_methods_list", locals: { payment_methods: @payment_methods, current_default_id: @customer&.default_payment_method&.id } %>
           </div>
         </div>
       </div>
@@ -227,6 +227,52 @@
                   document.addEventListener('turbo:before-cache', stopObserver);
                 })();
               </script>
+
+              <script>
+                (function() {
+                  let pmListObserver, highlightTimer;
+                  function highlightNewDefault() {
+                    const list = document.getElementById('payment_methods_list');
+                    if (!list) return;
+                    const el = list.querySelector('li[data-defaulted="1"]');
+                    if (!el) return;
+                    el.classList.add('flash-highlight');
+                    el.setAttribute('aria-live', 'polite');
+                    try { el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (_) {}
+                    // prevent retrigger on subsequent DOM mutations
+                    el.setAttribute('data-defaulted', '0');
+                    if (highlightTimer) clearTimeout(highlightTimer);
+                    highlightTimer = setTimeout(function() {
+                      el.classList.remove('flash-highlight');
+                      el.removeAttribute('aria-live');
+                    }, 2000);
+                  }
+                  function startPmListObserver() {
+                    const container = document.getElementById('payment_methods_list');
+                    if (!container) return;
+                    // run once immediately in case stream already rendered
+                    highlightNewDefault();
+                    pmListObserver = new MutationObserver(function() { highlightNewDefault(); });
+                    pmListObserver.observe(container, { childList: true, subtree: true });
+                  }
+                  function stopPmListObserver() {
+                    if (pmListObserver) { pmListObserver.disconnect(); pmListObserver = null; }
+                    if (highlightTimer) { clearTimeout(highlightTimer); highlightTimer = null; }
+                  }
+                  document.addEventListener('turbo:load', startPmListObserver);
+                  document.addEventListener('turbo:before-cache', stopPmListObserver);
+                })();
+              </script>
+              <style>
+                .flash-highlight {
+                  animation: flashBg 2s ease-in-out;
+                  box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.25);
+                }
+                @keyframes flashBg {
+                  0% { background-color: #fffbe6; }
+                  100% { background-color: transparent; }
+                }
+              </style>
             <% else %>
               <div class="alert alert-warning">Stripe publishable key is not configured.</div>
             <% end %>
