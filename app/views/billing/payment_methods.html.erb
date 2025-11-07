@@ -8,7 +8,7 @@
         </div>
         <div class="card-body">
           <div id="payment_methods_list">
-            <%= render partial: "billing/payment_methods_list", locals: { payment_methods: @payment_methods, current_default_id: @customer&.default_payment_method&.id } %>
+            <%= render partial: "billing/payment_methods_list", locals: { payment_methods: @payment_methods, current_default_id: @current_default_id } %>
           </div>
         </div>
       </div>

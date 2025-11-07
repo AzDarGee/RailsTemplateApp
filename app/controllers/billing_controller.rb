@@ -23,6 +23,22 @@ class BillingController < ApplicationController
     @payment_methods_count = @payment_methods.size
     @app_max_payment_methods = app_max_payment_methods
     @at_payment_method_cap = @payment_methods_count >= @app_max_payment_methods
+
+    # Determine the current default payment method id for deterministic badge rendering
+    @current_default_id = @customer&.default_payment_method&.id
+    if using_stripe?
+      begin
+        sc = Stripe::Customer.retrieve(@customer.processor_id)
+        processor_default_pm = sc&.invoice_settings&.default_payment_method
+        if processor_default_pm.present?
+          pm = @payment_methods.find { |m| m.processor_id == processor_default_pm }
+          @current_default_id = pm.id if pm
+        end
+      rescue => e
+        Rails.logger.warn("[Billing#payment_methods] Unable to fetch Stripe default payment method: #{e.class} #{e.message}")
+      end
+    end
+
     @stripe_public_key = Rails.application.credentials.dig(:stripe, :test, :public_key)
 
     # Detect potential key mode mismatches that can cause 400 errors on confirmation
