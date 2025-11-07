@@ -106,6 +106,9 @@ class BillingController < ApplicationController
     customer.default_payment_method = pm_record
 
     @payment_methods = customer.payment_methods.order(created_at: :desc)
+    @payment_methods_count = @payment_methods.size
+    @app_max_payment_methods = app_max_payment_methods
+    @at_payment_method_cap = @payment_methods_count >= @app_max_payment_methods
 
     respond_to do |format|
       format.turbo_stream do
@@ -114,6 +117,11 @@ class BillingController < ApplicationController
             "payment_methods_list",
             partial: "billing/payment_methods_list",
             locals: { payment_methods: @payment_methods }
+          ),
+          turbo_stream.replace(
+            "payment_methods_meta",
+            partial: "billing/payment_methods_meta",
+            locals: { payment_methods_count: @payment_methods_count, app_max_payment_methods: @app_max_payment_methods, at_payment_method_cap: @at_payment_method_cap }
           ),
           turbo_stream.update(
             "flash",
@@ -156,6 +164,7 @@ class BillingController < ApplicationController
 
     payment_method = current_user.payment_processor.payment_methods.find(params[:id])
     was_default = payment_method.respond_to?(:default?) ? payment_method.default? : payment_method.default
+    modal_id = "delete-pm-#{payment_method.id}-modal"
 
     # 1) Detach from Stripe (remote)
     payment_method.detach
@@ -177,6 +186,9 @@ class BillingController < ApplicationController
     end
 
     @payment_methods = current_user.payment_processor.payment_methods.order(created_at: :desc)
+    @payment_methods_count = @payment_methods.size
+    @app_max_payment_methods = app_max_payment_methods
+    @at_payment_method_cap = @payment_methods_count >= @app_max_payment_methods
 
     respond_to do |format|
       format.turbo_stream do
@@ -185,6 +197,11 @@ class BillingController < ApplicationController
             "payment_methods_list",
             partial: "billing/payment_methods_list",
             locals: { payment_methods: @payment_methods }
+          ),
+          turbo_stream.replace(
+            "payment_methods_meta",
+            partial: "billing/payment_methods_meta",
+            locals: { payment_methods_count: @payment_methods_count, app_max_payment_methods: @app_max_payment_methods, at_payment_method_cap: @at_payment_method_cap }
           ),
           turbo_stream.update(
             "flash",

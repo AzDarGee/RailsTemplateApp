@@ -1,3 +1,4 @@
+
 <div class="container py-4">
   <div class="row g-3">
     <div class="col-12 col-lg-6">
@@ -25,15 +26,9 @@
                 <div class="alert alert-warning small">Your Stripe publishable key and secret key appear to be from different modes (<%= @stripe_key_mode %> vs <%= @secret_key_mode %>). This can cause 400 errors when confirming cards. Update your credentials to match.</div>
               <% end %>
 
-              <div class="d-flex justify-content-between align-items-center mb-2 small text-muted">
-                <span>Saved cards: <%= @payment_methods_count %> / <%= @app_max_payment_methods %></span>
+              <div id="payment_methods_meta">
+                <%= render partial: "billing/payment_methods_meta", locals: { payment_methods_count: @payment_methods_count, app_max_payment_methods: @app_max_payment_methods, at_payment_method_cap: @at_payment_method_cap } %>
               </div>
-
-              <% if @at_payment_method_cap %>
-                <div class="alert alert-info small mb-2">
-                  You have reached the maximum number of saved cards allowed in this app. Please remove an existing card before adding a new one.
-                </div>
-              <% end %>
 
               <div id="card-errors" class="text-danger small mb-2" role="alert"></div>
               <form id="add-card-form" action="<%= billing_attach_payment_method_path %>" method="post" data-at-cap="<%= @at_payment_method_cap ? '1' : '0' %>">
@@ -191,6 +186,45 @@
 
                   document.addEventListener('turbo:load', initStripeCardForm);
                   document.addEventListener('turbo:before-cache', teardownStripeCardForm);
+                })();
+              </script>
+
+              <script>
+                (function() {
+                  let metaObserver;
+                  function updateAddButtonFromMeta() {
+                    const meta = document.getElementById('payment_methods_meta_data');
+                    const form = document.getElementById('add-card-form');
+                    const btn = document.getElementById('add-card-button');
+                    if (!meta || !form || !btn) return;
+                    const atCap = meta.getAttribute('data-at-cap') === '1';
+                    form.setAttribute('data-at-cap', atCap ? '1' : '0');
+                    const originalBtnText = btn.getAttribute('data-original-text') || btn.textContent;
+                    if (!btn.getAttribute('data-original-text')) { btn.setAttribute('data-original-text', originalBtnText); }
+                    const loadingText = btn.getAttribute('data-loading-text') || 'Loading…';
+                    if (atCap) {
+                      btn.disabled = true;
+                      btn.textContent = originalBtnText;
+                    } else {
+                      // Enable button if not currently submitting; text stays original
+                      if (!document.getElementById('add-card-form')?.dataset.submitting) {
+                        btn.disabled = false;
+                        btn.textContent = originalBtnText;
+                      }
+                    }
+                  }
+                  function startObserver() {
+                    const metaContainer = document.getElementById('payment_methods_meta');
+                    if (!metaContainer) return;
+                    updateAddButtonFromMeta();
+                    metaObserver = new MutationObserver(updateAddButtonFromMeta);
+                    metaObserver.observe(metaContainer, { childList: true, subtree: true });
+                  }
+                  function stopObserver() {
+                    if (metaObserver) { metaObserver.disconnect(); metaObserver = null; }
+                  }
+                  document.addEventListener('turbo:load', startObserver);
+                  document.addEventListener('turbo:before-cache', stopObserver);
                 })();
               </script>
             <% else %>
