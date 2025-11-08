@@ -7,10 +7,16 @@ class BillingController < ApplicationController
     :attach_payment_method,
     :detach_payment_method,
     :charges,
-    :subscriptions
+    :subscriptions,
+    :subscribe,
+    :cancel_subscription,
+    :resume_subscription,
+    :swap_subscription,
+    :checkout
   ]
 
   helper_method :billing_stream_name
+  helper_method :billing_broadcast_updates
 
   def dashboard
     @customer = current_user.payment_processor
@@ -133,6 +139,28 @@ class BillingController < ApplicationController
 
     # Reload customer/payment methods so pm.default? reflects the latest default
     customer.reload if customer.respond_to?(:reload)
+
+    # Auto-subscribe to intended plan if present in session
+    if session[:intended_plan].present?
+      plan_key = session.delete(:intended_plan)
+      plan_cfg = BillingPlans.find(plan_key)
+      price_id = BillingPlans.stripe_price_id_for(plan_key)
+      if plan_cfg && price_id.present?
+        begin
+          existing = customer.subscriptions.where(name: "default").order(created_at: :desc).first
+          if existing.blank? || !existing.active?
+            args = { name: "default", plan: price_id, quantity: 1 }
+            td = BillingPlans.trial_days
+            args[:trial_period_days] = td if td && td > 0
+            customer.subscribe(**args)
+            @auto_subscribed_plan_name = plan_cfg.name
+          end
+        rescue => e
+          Rails.logger.warn("[Billing#attach_payment_method] Auto-subscribe failed: #{e.class} #{e.message}")
+        end
+      end
+    end
+
     @payment_methods = customer.payment_methods.order(created_at: :desc)
     @payment_methods_count = @payment_methods.size
     @app_max_payment_methods = app_max_payment_methods
@@ -141,8 +169,10 @@ class BillingController < ApplicationController
     # Resolve deterministic current default id (Stripe source of truth)
     default_id = resolve_current_default_id(customer, @payment_methods)
 
-    # Broadcast Dashboard card update
-    broadcast_default_payment_method_card(customer)
+    # Broadcast Dashboard updates (default card, subscriptions list, recent charges)
+    billing_broadcast_updates(customer)
+
+    notice_msg = @auto_subscribed_plan_name.present? ? "Card added and set as default. Subscribed to #{@auto_subscribed_plan_name}." : "Card added and set as default."
 
     respond_to do |format|
       format.turbo_stream do
@@ -160,11 +190,11 @@ class BillingController < ApplicationController
           turbo_stream.update(
             "flash",
             partial: "shared/flash_messages",
-            locals: { notice: "Card added and set as default." }
+            locals: { notice: notice_msg }
           )
         ]
       end
-      format.html { redirect_to billing_payment_methods_path, notice: "Card added and set as default." }
+      format.html { redirect_to billing_payment_methods_path, notice: notice_msg }
     end
   rescue => e
     # Provide a friendlier message when Stripe's hard cap on payment methods is reached
@@ -294,6 +324,330 @@ class BillingController < ApplicationController
     @subscriptions = current_user.payment_processor.subscriptions.order(created_at: :desc)
   end
 
+  # Create a subscription for the current user to a given plan (Stripe via Pay)
+  def subscribe
+    unless using_stripe?
+      return respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: "Subscriptions are only available for Stripe accounts." }) }
+        format.html { redirect_to billing_dashboard_path, alert: "Subscriptions are only available for Stripe accounts." }
+      end
+    end
+
+    plan_key = params[:plan].to_s.presence
+    plan_cfg = BillingPlans.find(plan_key)
+    price_id = BillingPlans.stripe_price_id_for(plan_key)
+
+    unless plan_cfg && price_id.present?
+      return respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: "Selected plan is not available. Please try again later." }) }
+        format.html { redirect_to pages_pricing_path, alert: "Selected plan is not available. Please try again later." }
+      end
+    end
+
+    customer = current_user.payment_processor
+
+    # Ensure a default payment method exists
+    if resolve_default_payment_method(customer).blank?
+      # Remember intended plan and redirect to add a card
+      session[:intended_plan] = plan_key
+      return respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: "Add a default payment method to continue your subscription." }) }
+        format.html { redirect_to billing_payment_methods_path, alert: "Add a default payment method to continue your subscription." }
+      end
+    end
+
+    # Prevent duplicate active subscription with the same name
+    sub_name = "default"
+    existing = customer.subscriptions.where(name: sub_name).order(created_at: :desc).first
+    if existing&.active?
+      return respond_to do |format|
+        format.html { redirect_to billing_dashboard_path, notice: "You already have an active subscription." }
+        format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { notice: "You already have an active subscription." }) }
+      end
+    end
+
+    args = { name: sub_name, plan: price_id, quantity: 1 }
+    td = BillingPlans.trial_days
+    args[:trial_period_days] = td if td && td > 0
+
+    subscription = customer.subscribe(**args)
+
+    # Recompute for views and broadcasts
+    @subscriptions = customer.subscriptions.order(created_at: :desc)
+    @charges = customer.charges.order(created_at: :desc).limit(5)
+
+    # Broadcast Dashboard updates
+    broadcast_subscriptions_list(customer)
+    broadcast_recent_charges(customer)
+
+    respond_to do |format|
+      format.html { redirect_to billing_dashboard_path, notice: "Subscribed to #{plan_cfg.name}." }
+      format.turbo_stream do
+        render turbo_stream: [
+          turbo_stream.update("flash", partial: "shared/flash_messages", locals: { notice: "Subscribed to #{plan_cfg.name}." })
+        ]
+      end
+    end
+  rescue => e
+    Rails.logger.warn("[Billing#subscribe] Failed: #{e.class} #{e.message}")
+    respond_to do |format|
+      format.html { redirect_to pages_pricing_path, alert: e.message }
+      format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: e.message }) }
+    end
+  end
+
+  def cancel_subscription
+    sub = current_user.payment_processor.subscriptions.find(params[:id])
+    sub.cancel
+
+    customer = current_user.payment_processor
+    @subscriptions = customer.subscriptions.order(created_at: :desc)
+    @charges = customer.charges.order(created_at: :desc).limit(5)
+
+    broadcast_subscriptions_list(customer)
+    broadcast_recent_charges(customer)
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: [
+          turbo_stream.update(
+            "billing_subscriptions_table",
+            partial: "billing/subscriptions_table",
+            locals: { subscriptions: @subscriptions }
+          ),
+          turbo_stream.update(
+            "flash",
+            partial: "shared/flash_messages",
+            locals: { notice: "Subscription will cancel at period end." }
+          )
+        ]
+      end
+      format.html { redirect_to billing_subscriptions_path, notice: "Subscription will cancel at period end." }
+    end
+  rescue ActiveRecord::RecordNotFound
+    respond_to do |format|
+      format.html { redirect_to billing_subscriptions_path, alert: "Subscription not found." }
+      format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: "Subscription not found." }) }
+    end
+  rescue => e
+    respond_to do |format|
+      format.html { redirect_to billing_subscriptions_path, alert: e.message }
+      format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: e.message }) }
+    end
+  end
+
+  def resume_subscription
+    sub = current_user.payment_processor.subscriptions.find(params[:id])
+    if sub.respond_to?(:on_grace_period?) && sub.on_grace_period?
+      sub.resume
+      msg = "Subscription resumed."
+    else
+      msg = "Subscription cannot be resumed."
+    end
+
+    customer = current_user.payment_processor
+    @subscriptions = customer.subscriptions.order(created_at: :desc)
+    @charges = customer.charges.order(created_at: :desc).limit(5)
+
+    broadcast_subscriptions_list(customer)
+    broadcast_recent_charges(customer)
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: [
+          turbo_stream.update(
+            "billing_subscriptions_table",
+            partial: "billing/subscriptions_table",
+            locals: { subscriptions: @subscriptions }
+          ),
+          turbo_stream.update(
+            "flash",
+            partial: "shared/flash_messages",
+            locals: { notice: msg }
+          )
+        ]
+      end
+      format.html { redirect_to billing_subscriptions_path, notice: msg }
+    end
+  rescue ActiveRecord::RecordNotFound
+    respond_to do |format|
+      format.html { redirect_to billing_subscriptions_path, alert: "Subscription not found." }
+      format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: "Subscription not found." }) }
+    end
+  rescue => e
+    respond_to do |format|
+      format.html { redirect_to billing_subscriptions_path, alert: e.message }
+      format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: e.message }) }
+    end
+  end
+
+  # Stripe Checkout for Subscriptions
+  # Creates a Checkout Session and redirects the user to Stripe-hosted page.
+  def checkout
+    unless using_stripe?
+      return respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: "Stripe Checkout is only available for Stripe accounts." }) }
+        format.html { redirect_to pages_pricing_path, alert: "Stripe Checkout is only available for Stripe accounts." }
+      end
+    end
+
+    plan_key = params[:plan].to_s.presence
+    plan_cfg = BillingPlans.find(plan_key)
+    unless plan_cfg
+      return respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: "Selected plan is not available." }) }
+        format.html { redirect_to pages_pricing_path, alert: "Selected plan is not available." }
+      end
+    end
+
+    price_id = BillingPlans.stripe_price_id_for(plan_key)
+    customer = current_user.payment_processor
+
+    line_item = if price_id.present?
+      { price: price_id, quantity: 1 }
+    else
+      # Fallback to price_data so plans are available even if a Price isn't preconfigured
+      {
+        price_data: {
+          currency: "usd",
+          product_data: { name: plan_cfg.name },
+          unit_amount: plan_cfg.price_cents,
+          recurring: { interval: plan_cfg.interval.to_s }
+        },
+        quantity: 1
+      }
+    end
+
+    params_hash = {
+      mode: "subscription",
+      customer: customer.processor_id,
+      payment_method_types: ["card"],
+      line_items: [ line_item ],
+      allow_promotion_codes: true,
+      success_url: billing_checkout_success_url + "?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: billing_checkout_cancel_url
+    }
+
+    td = BillingPlans.trial_days
+    if td && td > 0
+      params_hash[:subscription_data] = { trial_period_days: td }
+    end
+
+    session = Stripe::Checkout::Session.create(params_hash)
+
+    # Store recent intent for UX if desired
+    session[:plan] = plan_key rescue nil
+
+    redirect_to session.url, allow_other_host: true, status: :see_other
+  rescue => e
+    Rails.logger.warn("[Billing#checkout] Failed: #{e.class} #{e.message}")
+    respond_to do |format|
+      format.html { redirect_to pages_pricing_path, alert: e.message }
+      format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: e.message }) }
+    end
+  end
+
+  # After successful Stripe Checkout
+  def checkout_success
+    # Best-effort refresh of subscriptions/charges
+    begin
+      if params[:session_id].present? && defined?(Stripe)
+        sess = Stripe::Checkout::Session.retrieve(params[:session_id])
+        # Optionally: you can use sess.subscription to fetch details
+      end
+    rescue => e
+      Rails.logger.warn("[Billing#checkout_success] Unable to retrieve session: #{e.class} #{e.message}")
+    end
+
+    customer = current_user.payment_processor
+    @subscriptions = customer.subscriptions.order(created_at: :desc)
+    @charges = customer.charges.order(created_at: :desc).limit(5)
+
+    billing_broadcast_updates(customer)
+
+    redirect_to billing_dashboard_path, notice: "Checkout complete. Your subscription is active or pending activation."
+  end
+
+  def checkout_cancel
+    redirect_to pages_pricing_path, alert: "Checkout was canceled. No changes were made."
+  end
+
+  # Upgrade/Downgrade (swap) subscription plan with proration
+  def swap_subscription
+    sub = current_user.payment_processor.subscriptions.find(params[:id])
+
+    plan_key = params[:plan].to_s.presence
+    plan_cfg = BillingPlans.find(plan_key)
+    price_id = BillingPlans.stripe_price_id_for(plan_key)
+
+    unless plan_cfg && price_id.present?
+      return respond_to do |format|
+        format.html { redirect_to billing_subscriptions_path, alert: "Selected plan is not available." }
+        format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: "Selected plan is not available." }) }
+      end
+    end
+
+    if sub.processor_plan.to_s == price_id.to_s
+      msg = "You are already on the #{plan_cfg.name} plan."
+    else
+      # Rely on Pay to update the Stripe subscription with proration
+      begin
+        if sub.respond_to?(:swap)
+          sub.swap(price_id)
+        else
+          # Fallback: direct Stripe update (best-effort)
+          Stripe::Subscription.update(sub.processor_id, {
+            items: [{ price: price_id }],
+            proration_behavior: "create_prorations"
+          })
+          sub.reload if sub.respond_to?(:reload)
+        end
+        msg = "Plan changed to #{plan_cfg.name}."
+      rescue => e
+        Rails.logger.warn("[Billing#swap_subscription] Swap failed: #{e.class} #{e.message}")
+        return respond_to do |format|
+          format.html { redirect_to billing_subscriptions_path, alert: e.message }
+          format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: e.message }) }
+        end
+      end
+    end
+
+    customer = current_user.payment_processor
+    @subscriptions = customer.subscriptions.order(created_at: :desc)
+    @charges = customer.charges.order(created_at: :desc).limit(5)
+
+    broadcast_subscriptions_list(customer)
+    broadcast_recent_charges(customer)
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: [
+          turbo_stream.update(
+            "billing_subscriptions_table",
+            partial: "billing/subscriptions_table",
+            locals: { subscriptions: @subscriptions }
+          ),
+          turbo_stream.update(
+            "flash",
+            partial: "shared/flash_messages",
+            locals: { notice: msg }
+          )
+        ]
+      end
+      format.html { redirect_to billing_subscriptions_path, notice: msg }
+    end
+  rescue ActiveRecord::RecordNotFound
+    respond_to do |format|
+      format.html { redirect_to billing_subscriptions_path, alert: "Subscription not found." }
+      format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: "Subscription not found." }) }
+    end
+  rescue => e
+    respond_to do |format|
+      format.html { redirect_to billing_subscriptions_path, alert: e.message }
+      format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: e.message }) }
+    end
+  end
+
   # Set a payment method as the default for the current user (Stripe)
   # Turbo Streams: replaces payment_methods_list and payment_methods_meta, updates flash, and passes just_default_id for client-side highlight.
   def set_default_payment_method
@@ -395,6 +749,14 @@ class BillingController < ApplicationController
     current_user.set_payment_processor(preferred)
   end
 
+  # Broadcast helper to update dashboard sections commonly affected by billing changes
+  def billing_broadcast_updates(customer)
+    broadcast_subscriptions_list(customer)
+    broadcast_recent_charges(customer)
+    # Keep default card panel in sync if needed
+    broadcast_default_payment_method_card(customer)
+  end
+
   def preferred_processor
     if Rails.application.credentials.dig(:stripe, :test, :private_key).present?
       :stripe
@@ -490,5 +852,29 @@ class BillingController < ApplicationController
       Rails.logger.warn("[Billing#resolve_default_payment_method] Unable to resolve default via Stripe: #{e.class} #{e.message}")
       local_pm
     end
+  end
+
+  # Broadcast: update dashboard subscriptions list
+  def broadcast_subscriptions_list(customer)
+    Turbo::StreamsChannel.broadcast_update_later_to(
+      billing_stream_name,
+      target: "subscriptions_list",
+      partial: "billing/subscriptions_list",
+      locals: { subscriptions: customer.subscriptions.order(created_at: :desc).first(5) }
+    )
+  rescue => e
+    Rails.logger.warn("[Billing#broadcast_subscriptions_list] Broadcast failed: #{e.class} #{e.message}")
+  end
+
+  # Broadcast: update dashboard recent charges
+  def broadcast_recent_charges(customer)
+    Turbo::StreamsChannel.broadcast_update_later_to(
+      billing_stream_name,
+      target: "recent_charges",
+      partial: "billing/recent_charges",
+      locals: { charges: customer.charges.order(created_at: :desc).limit(5) }
+    )
+  rescue => e
+    Rails.logger.warn("[Billing#broadcast_recent_charges] Broadcast failed: #{e.class} #{e.message}")
   end
 end

@@ -41,6 +41,15 @@ Rails.application.routes.draw do
     get   "billing/charges/:id/receipt", to: "billing#receipt",          as: :billing_receipt
 
     get   "billing/subscriptions",       to: "billing#subscriptions",    as: :billing_subscriptions
+    post  "billing/subscribe",           to: "billing#subscribe",        as: :billing_subscribe
+    post  "billing/subscriptions/:id/cancel", to: "billing#cancel_subscription", as: :billing_cancel_subscription
+    post  "billing/subscriptions/:id/resume", to: "billing#resume_subscription", as: :billing_resume_subscription
+    post  "billing/subscriptions/:id/swap",   to: "billing#swap_subscription",    as: :billing_swap_subscription
+
+    # Stripe Checkout for subscriptions
+    post  "billing/checkout",            to: "billing#checkout",          as: :billing_checkout
+    get   "billing/checkout/success",   to: "billing#checkout_success",  as: :billing_checkout_success
+    get   "billing/checkout/cancel",    to: "billing#checkout_cancel",   as: :billing_checkout_cancel
   end
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

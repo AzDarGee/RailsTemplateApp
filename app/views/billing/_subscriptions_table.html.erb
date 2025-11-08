@@ -1,0 +1,74 @@
+<% if subscriptions.present? %>
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Status</th>
+          <th>Current Period</th>
+          <th>Quantity</th>
+          <th>Plan</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% subscriptions.each do |sub| %>
+          <tr id="subscription_<%= sub.id %>">
+            <td><%= sub.name %></td>
+            <td>
+              <% status = sub.status.to_s %>
+              <% badge_class = case status
+                 when 'active' then 'bg-success'
+                 when 'trialing' then 'bg-info'
+                 when 'past_due' then 'bg-warning'
+                 when 'canceled', 'unpaid', 'incomplete_expired' then 'bg-secondary'
+                 else 'bg-secondary'
+               end %>
+              <span class="badge <%= badge_class %>" aria-label="Subscription status: <%= status %>"><%= status %></span>
+              <% if sub.respond_to?(:on_grace_period?) && sub.on_grace_period? %>
+                <span class="badge bg-warning ms-1">grace</span>
+              <% end %>
+            </td>
+            <td>
+              <% if sub.respond_to?(:on_trial?) && sub.on_trial? && sub.respond_to?(:trial_ends_at) && sub.trial_ends_at.present? %>
+                Trial ends: <%= l(sub.trial_ends_at, format: :long) %>
+              <% elsif sub.respond_to?(:current_period_start) && sub.current_period_start && sub.current_period_end %>
+                <%= l(sub.current_period_start, format: :short) %> — <%= l(sub.current_period_end, format: :short) %>
+              <% elsif sub.respond_to?(:ends_at) && sub.ends_at.present? %>
+                Ends: <%= l(sub.ends_at, format: :long) %>
+              <% else %>
+                <span class="text-muted">—</span>
+              <% end %>
+            </td>
+            <td><%= sub.quantity %></td>
+            <td><code><%= sub.processor_plan %></code></td>
+            <td class="text-end">
+              <div class="btn-group">
+                <% if sub.respond_to?(:on_grace_period?) && sub.on_grace_period? %>
+                  <%= button_to "Resume", billing_resume_subscription_path(sub), method: :post, form: { data: { turbo: true } }, class: "btn btn-sm btn-outline-primary" %>
+                <% elsif sub.active? || (sub.respond_to?(:trialing?) && sub.trialing?) || sub.status.to_s.in?(["active","trialing"]) %>
+                  <%= button_to "Cancel", billing_cancel_subscription_path(sub), method: :post, form: { data: { turbo: true } }, class: "btn btn-sm btn-outline-danger" %>
+                <% else %>
+                  <button class="btn btn-sm btn-outline-secondary" disabled aria-disabled="true">No actions</button>
+                <% end %>
+              </div>
+              <%# Plan swap (upgrade/downgrade) %>
+              <% current_price_id = sub.processor_plan.to_s %>
+              <% current_plan = BillingPlans.plan_for_price_id(current_price_id) %>
+              <div class="btn-group ms-2">
+                <% if BillingPlans.enabled?(:pro_monthly) && (current_plan.nil? || current_plan.key != :pro_monthly) %>
+                  <%= button_to "Change to Pro", billing_swap_subscription_path(sub, plan: 'pro_monthly'), method: :post, form: { data: { turbo: true } }, class: "btn btn-sm btn-outline-secondary" %>
+                <% end %>
+                <% if BillingPlans.enabled?(:enterprise_monthly) && (current_plan.nil? || current_plan.key != :enterprise_monthly) %>
+                  <%= button_to "Change to Enterprise", billing_swap_subscription_path(sub, plan: 'enterprise_monthly'), method: :post, form: { data: { turbo: true } }, class: "btn btn-sm btn-outline-secondary" %>
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p class="text-muted mb-0">You don't have any subscriptions yet.</p>
+<% end %>

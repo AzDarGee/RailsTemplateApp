@@ -17,7 +17,7 @@ end %>
         <i class="<%= icon_class %> me-1"></i>
         <span class="text-uppercase"><%= role.presence || "Message" %></span>
       </div>
-      <div id="message_<%= message.id %>_content" class="message-content" style="white-space: pre-wrap;"><%= message.content %></div>
+      <div id="message_<%= message.id %>_content" class="message-content" style="white-space: pre-wrap;"><%= markdown(message.content) %></div>
       <% if message.tool_call? %>
         <div class="mt-2">
           <%= render "messages/tool_calls", message: message %>

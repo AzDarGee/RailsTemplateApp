@@ -7,41 +7,13 @@
           <%= link_to "Billing Dashboard", billing_dashboard_path, class: "btn btn-sm btn-outline-secondary" %>
         </div>
         <div class="card-body">
-          <% if @subscriptions.present? %>
-            <div class="table-responsive">
-              <table class="table align-middle">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Status</th>
-                    <th>Current Period</th>
-                    <th>Quantity</th>
-                    <th>Plan</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% @subscriptions.each do |sub| %>
-                    <tr>
-                      <td><%= sub.name %></td>
-                      <td>
-                        <span class="badge <%= sub.active? ? 'bg-success' : 'bg-secondary' %>"><%= sub.status %></span>
-                      </td>
-                      <td>
-                        <% if sub.current_period_start && sub.current_period_end %>
-                          <%= l(sub.current_period_start, format: :short) %> — <%= l(sub.current_period_end, format: :short) %>
-                        <% else %>
-                          <span class="text-muted">N/A</span>
-                        <% end %>
-                      </td>
-                      <td><%= sub.quantity %></td>
-                      <td><code><%= sub.processor_plan %></code></td>
-                    </tr>
-                  <% end %>
-                </tbody>
-              </table>
+          <div id="billing_subscriptions_table">
+            <%= render partial: "billing/subscriptions_table", locals: { subscriptions: @subscriptions } %>
+          </div>
+          <% if @subscriptions.blank? %>
+            <div class="mt-3">
+              <%= link_to "Browse plans", pages_pricing_path, class: "btn btn-outline-primary" %>
             </div>
-          <% else %>
-            <p class="text-muted mb-0">You don't have any subscriptions yet.</p>
           <% end %>
         </div>
       </div>

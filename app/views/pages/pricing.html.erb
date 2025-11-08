@@ -46,8 +46,7 @@
                 </div>
                 <div class="card-body">
                   <div class="text-center mb-4">
-                    <span class="display-4 fw-bold">$29</span>
-                    <span class="text-muted">/mo</span>
+                    <span class="display-4 fw-bold"><%= plan_display_price(:pro_monthly, BillingPlans.find(:pro_monthly)&.price_cents) %></span>
                   </div>
                   <ul class="list-unstyled">
                     <li class="mb-3">
@@ -64,7 +63,11 @@
                     </li>
                   </ul>
                   <div class="d-grid">
-                    <%= link_to "Get started", "#", class: "btn btn-primary" %>
+                    <% if user_signed_in? %>
+                      <%= button_to "Subscribe to Pro", billing_checkout_path(plan: 'pro_monthly'), method: :post, form: { data: { turbo: false } }, class: "btn btn-primary" %>
+                    <% else %>
+                      <%= link_to "Sign in to subscribe", new_user_session_path, class: "btn btn-primary" %>
+                    <% end %>
                   </div>
                 </div>
               </div>
@@ -78,8 +81,7 @@
                 </div>
                 <div class="card-body">
                   <div class="text-center mb-4">
-                    <span class="display-4 fw-bold">$99</span>
-                    <span class="text-muted">/mo</span>
+                    <span class="display-4 fw-bold"><%= plan_display_price(:enterprise_monthly, BillingPlans.find(:enterprise_monthly)&.price_cents) %></span>
                   </div>
                   <ul class="list-unstyled">
                     <li class="mb-3">
@@ -96,7 +98,11 @@
                     </li>
                   </ul>
                   <div class="d-grid">
-                    <%= link_to "Contact sales", "#", class: "btn btn-outline-primary" %>
+                    <% if user_signed_in? %>
+                      <%= button_to "Subscribe to Enterprise", billing_checkout_path(plan: 'enterprise_monthly'), method: :post, form: { data: { turbo: false } }, class: "btn btn-outline-primary" %>
+                    <% else %>
+                      <%= link_to "Sign in to subscribe", new_user_session_path, class: "btn btn-outline-primary" %>
+                    <% end %>
                   </div>
                 </div>
               </div>
