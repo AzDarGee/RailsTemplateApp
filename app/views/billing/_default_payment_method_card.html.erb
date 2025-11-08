@@ -1,0 +1,7 @@
+<% if default_payment_method.present? %>
+  <% pm = default_payment_method %>
+  <p class="mb-1"><strong>Type:</strong> <%= pm.brand&.upcase || pm.payment_method_type %></p>
+  <p class="mb-0"><strong>Last4:</strong> **** **** **** <%= pm.last4 %></p>
+<% else %>
+  <p class="text-muted mb-0">No default payment method set.</p>
+<% end %>

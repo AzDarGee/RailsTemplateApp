@@ -10,6 +10,8 @@ class BillingController < ApplicationController
     :subscriptions
   ]
 
+  helper_method :billing_stream_name
+
   def dashboard
     @customer = current_user.payment_processor
     @default_payment_method = current_user.payment_processor&.default_payment_method
@@ -136,13 +138,19 @@ class BillingController < ApplicationController
     @app_max_payment_methods = app_max_payment_methods
     @at_payment_method_cap = @payment_methods_count >= @app_max_payment_methods
 
+    # Resolve deterministic current default id (Stripe source of truth)
+    default_id = resolve_current_default_id(customer, @payment_methods)
+
+    # Broadcast Dashboard card update
+    broadcast_default_payment_method_card(customer)
+
     respond_to do |format|
       format.turbo_stream do
         render turbo_stream: [
           turbo_stream.update(
             "payment_methods_list",
             partial: "billing/payment_methods_list",
-            locals: { payment_methods: @payment_methods, just_default_id: pm_record.id, current_default_id: customer.default_payment_method&.id }
+            locals: { payment_methods: @payment_methods, just_default_id: pm_record.id, current_default_id: default_id }
           ),
           turbo_stream.update(
             "payment_methods_meta",
@@ -238,13 +246,19 @@ class BillingController < ApplicationController
     @app_max_payment_methods = app_max_payment_methods
     @at_payment_method_cap = @payment_methods_count >= @app_max_payment_methods
 
+    # Resolve deterministic current default id (Stripe source of truth)
+    default_id = resolve_current_default_id(current_user.payment_processor, @payment_methods)
+
+    # Broadcast Dashboard card update
+    broadcast_default_payment_method_card(current_user.payment_processor)
+
     respond_to do |format|
       format.turbo_stream do
         render turbo_stream: [
           turbo_stream.update(
             "payment_methods_list",
             partial: "billing/payment_methods_list",
-            locals: { payment_methods: @payment_methods, current_default_id: current_user.payment_processor.default_payment_method&.id, just_default_id: promoted_id }
+            locals: { payment_methods: @payment_methods, current_default_id: default_id, just_default_id: promoted_id }
           ),
           turbo_stream.update(
             "payment_methods_meta",
@@ -313,13 +327,19 @@ class BillingController < ApplicationController
     @app_max_payment_methods = app_max_payment_methods
     @at_payment_method_cap = @payment_methods_count >= @app_max_payment_methods
 
+    # Resolve deterministic current default id (Stripe source of truth)
+    default_id = resolve_current_default_id(customer, @payment_methods)
+
+    # Broadcast Dashboard card update
+    broadcast_default_payment_method_card(customer)
+
     respond_to do |format|
       format.turbo_stream do
         render turbo_stream: [
           turbo_stream.update(
             "payment_methods_list",
             partial: "billing/payment_methods_list",
-            locals: { payment_methods: @payment_methods, just_default_id: payment_method.id, current_default_id: customer.default_payment_method&.id }
+            locals: { payment_methods: @payment_methods, just_default_id: payment_method.id, current_default_id: default_id }
           ),
           turbo_stream.update(
             "payment_methods_meta",
@@ -394,5 +414,46 @@ class BillingController < ApplicationController
 
   def using_stripe?
     current_user.payment_processor.processor.to_s == "stripe"
+  end
+
+  # Stream name for per-user billing updates
+  def billing_stream_name
+    "billing_user_#{current_user.id}"
+  end
+
+  # Determine current default payment method id, preferring Stripe's invoice_settings.default_payment_method
+  def resolve_current_default_id(customer, payment_methods)
+    return nil unless customer && payment_methods
+
+    default_id = customer.default_payment_method&.id
+
+    if using_stripe?
+      begin
+        sc = Stripe::Customer.retrieve(customer.processor_id)
+        processor_default_pm = sc&.invoice_settings&.default_payment_method
+        if processor_default_pm.present?
+          mapped = payment_methods.find { |m| m.processor_id == processor_default_pm }
+          default_id = mapped.id if mapped
+        end
+      rescue => e
+        Rails.logger.warn("[Billing#resolve_current_default_id] Unable to fetch Stripe default payment method: #{e.class} #{e.message}")
+      end
+    end
+
+    default_id
+  end
+
+  # Broadcast Dashboard default payment method card update to the current user
+  def broadcast_default_payment_method_card(customer)
+    begin
+      Turbo::StreamsChannel.broadcast_replace_later_to(
+        billing_stream_name,
+        target: "default_payment_method_card",
+        partial: "billing/default_payment_method_card",
+        locals: { default_payment_method: customer&.default_payment_method }
+      )
+    rescue => e
+      Rails.logger.warn("[Billing#broadcast_default_payment_method_card] Broadcast failed: #{e.class} #{e.message}")
+    end
   end
 end

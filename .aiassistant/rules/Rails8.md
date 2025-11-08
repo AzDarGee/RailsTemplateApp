@@ -12,6 +12,7 @@ Code Style and Structure
 - Prefer iteration and modularization over code duplication.
 - Use descriptive variable and method names (e.g., user_signed_in?, calculate_total).
 - Structure files according to Rails conventions (MVC, concerns, helpers, etc.).
+- Any styling should be done in the assets stylesheets folder. 
 
 Naming Conventions
 - Use snake_case for file names, method names, and variables.

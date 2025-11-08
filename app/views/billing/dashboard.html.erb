@@ -1,4 +1,5 @@
 <div class="container py-4">
+  <%= turbo_stream_from billing_stream_name %>
   <div class="row g-3">
     <div class="col-12 col-lg-6">
       <div class="card shadow-sm h-100">
@@ -29,13 +30,9 @@
           <%= link_to "Manage", billing_payment_methods_path, class: "btn btn-sm btn-outline-primary" %>
         </div>
         <div class="card-body">
-          <% if @default_payment_method.present? %>
-            <% pm = @default_payment_method %>
-            <p class="mb-1"><strong>Type:</strong> <%= pm.brand&.upcase || pm.payment_method_type %></p>
-            <p class="mb-0"><strong>Last4:</strong> **** **** **** <%= pm.last4 %></p>
-          <% else %>
-            <p class="text-muted mb-0">No default payment method set.</p>
-          <% end %>
+          <div id="default_payment_method_card">
+            <%= render partial: "billing/default_payment_method_card", locals: { default_payment_method: @default_payment_method } %>
+          </div>
         </div>
       </div>
     </div>
