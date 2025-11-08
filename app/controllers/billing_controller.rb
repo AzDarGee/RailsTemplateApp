@@ -14,7 +14,7 @@ class BillingController < ApplicationController
 
   def dashboard
     @customer = current_user.payment_processor
-    @default_payment_method = current_user.payment_processor&.default_payment_method
+    @default_payment_method = resolve_default_payment_method(@customer)
     @subscriptions = current_user.payment_processor&.subscriptions&.order(created_at: :desc) || []
     @charges = current_user.payment_processor&.charges&.order(created_at: :desc)&.limit(5) || []
   end
@@ -451,10 +451,44 @@ class BillingController < ApplicationController
         billing_stream_name,
         target: "default_payment_method_card",
         partial: "billing/default_payment_method_card",
-        locals: { default_payment_method: customer&.default_payment_method }
+        locals: { default_payment_method: resolve_default_payment_method(customer) }
       )
     rescue => e
       Rails.logger.warn("[Billing#broadcast_default_payment_method_card] Broadcast failed: #{e.class} #{e.message}")
+    end
+  end
+
+  # Resolve the current default payment method object for display on the Dashboard.
+  # Prefers local Pay::PaymentMethod, but consults Stripe's invoice_settings.default_payment_method
+  # and falls back to a lightweight presenter when the local record is missing.
+  def resolve_default_payment_method(customer)
+    return nil unless customer.present?
+
+    local_pm = customer.default_payment_method
+
+    # If not using Stripe, rely on local state (e.g., Paddle not supported here)
+    return local_pm unless using_stripe?
+
+    begin
+      sc = Stripe::Customer.retrieve(customer.processor_id)
+      processor_default_pm = sc&.invoice_settings&.default_payment_method
+      return local_pm unless processor_default_pm.present?
+
+      # Try to map Stripe processor_id -> local Pay::PaymentMethod
+      mapped = customer.payment_methods.find_by(processor_id: processor_default_pm)
+      return mapped if mapped.present?
+
+      # Fallback: fetch from Stripe and build a lightweight presenter
+      require 'ostruct'
+      spm = Stripe::PaymentMethod.retrieve(processor_default_pm)
+      card = spm.respond_to?(:card) ? spm.card : nil
+      brand = card&.brand
+      last4 = card&.last4
+      pm_type = spm&.type || 'card'
+      OpenStruct.new(brand: brand, payment_method_type: pm_type, last4: last4)
+    rescue => e
+      Rails.logger.warn("[Billing#resolve_default_payment_method] Unable to resolve default via Stripe: #{e.class} #{e.message}")
+      local_pm
     end
   end
 end
