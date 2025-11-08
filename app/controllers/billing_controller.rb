@@ -139,12 +139,12 @@ class BillingController < ApplicationController
     respond_to do |format|
       format.turbo_stream do
         render turbo_stream: [
-          turbo_stream.replace(
+          turbo_stream.update(
             "payment_methods_list",
             partial: "billing/payment_methods_list",
             locals: { payment_methods: @payment_methods, just_default_id: pm_record.id, current_default_id: customer.default_payment_method&.id }
           ),
-          turbo_stream.replace(
+          turbo_stream.update(
             "payment_methods_meta",
             partial: "billing/payment_methods_meta",
             locals: { payment_methods_count: @payment_methods_count, app_max_payment_methods: @app_max_payment_methods, at_payment_method_cap: @at_payment_method_cap }
@@ -202,18 +202,30 @@ class BillingController < ApplicationController
       Rails.logger.warn("[Billing#detach_payment_method] Local destroy failed: #{e.class} #{e.message}")
     end
 
-    # 3) If the removed method was default, pick another one as default if available
+    # 3) If the removed method was default, pick another one as default if available; otherwise clear default on Stripe
+    promoted_id = nil
     if was_default
-      next_pm = current_user.payment_processor.payment_methods.order(created_at: :asc).first
+      # Prefer newest card (DESC) to align with display order
+      next_pm = current_user.payment_processor.payment_methods.order(created_at: :desc).first
       if next_pm.present?
         # Set the AR record as the new default (Pay v11 accepts a Pay::PaymentMethod object)
         begin
           current_user.payment_processor.default_payment_method = next_pm
+          promoted_id = next_pm.id
           if defined?(Stripe)
             Stripe::Customer.update(current_user.payment_processor.processor_id, invoice_settings: { default_payment_method: next_pm.processor_id })
           end
         rescue => e
           Rails.logger.warn("[Billing#detach_payment_method] Failed to promote next default: #{e.class} #{e.message}")
+        end
+      else
+        # Explicitly clear default on Stripe when none remain
+        begin
+          if defined?(Stripe)
+            Stripe::Customer.update(current_user.payment_processor.processor_id, invoice_settings: { default_payment_method: nil })
+          end
+        rescue => e
+          Rails.logger.warn("[Billing#detach_payment_method] Failed to clear default on Stripe: #{e.class} #{e.message}")
         end
       end
     end
@@ -229,12 +241,12 @@ class BillingController < ApplicationController
     respond_to do |format|
       format.turbo_stream do
         render turbo_stream: [
-          turbo_stream.replace(
+          turbo_stream.update(
             "payment_methods_list",
             partial: "billing/payment_methods_list",
-            locals: { payment_methods: @payment_methods, current_default_id: current_user.payment_processor.default_payment_method&.id }
+            locals: { payment_methods: @payment_methods, current_default_id: current_user.payment_processor.default_payment_method&.id, just_default_id: promoted_id }
           ),
-          turbo_stream.replace(
+          turbo_stream.update(
             "payment_methods_meta",
             partial: "billing/payment_methods_meta",
             locals: { payment_methods_count: @payment_methods_count, app_max_payment_methods: @app_max_payment_methods, at_payment_method_cap: @at_payment_method_cap }
@@ -304,12 +316,12 @@ class BillingController < ApplicationController
     respond_to do |format|
       format.turbo_stream do
         render turbo_stream: [
-          turbo_stream.replace(
+          turbo_stream.update(
             "payment_methods_list",
             partial: "billing/payment_methods_list",
             locals: { payment_methods: @payment_methods, just_default_id: payment_method.id, current_default_id: customer.default_payment_method&.id }
           ),
-          turbo_stream.replace(
+          turbo_stream.update(
             "payment_methods_meta",
             partial: "billing/payment_methods_meta",
             locals: { payment_methods_count: @payment_methods_count, app_max_payment_methods: @app_max_payment_methods, at_payment_method_cap: @at_payment_method_cap }

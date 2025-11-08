@@ -5,7 +5,7 @@
       <% last4 = pm.try(:last4) %>
       <% modal_id = "delete-pm-#{pm.id}-modal" %>
       <% is_default = (defined?(current_default_id) && current_default_id.present?) ? (pm.id == current_default_id) : pm.default? %>
-      <%# binding.remote_pry %>
+
       <li class="list-group-item d-flex justify-content-between align-items-center m-2" id="<%= dom_id(pm) %>" data-defaulted="<%= (defined?(just_default_id) && just_default_id.present? && pm.id == just_default_id) ? '1' : '0' %>">
         <div class="d-flex align-items-center">
           <div>
