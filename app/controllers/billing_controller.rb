@@ -444,9 +444,10 @@ class BillingController < ApplicationController
   end
 
   # Broadcast Dashboard default payment method card update to the current user
+  # Use `update` so the wrapper div#default_payment_method_card remains in the DOM for subsequent updates
   def broadcast_default_payment_method_card(customer)
     begin
-      Turbo::StreamsChannel.broadcast_replace_later_to(
+      Turbo::StreamsChannel.broadcast_update_later_to(
         billing_stream_name,
         target: "default_payment_method_card",
         partial: "billing/default_payment_method_card",
