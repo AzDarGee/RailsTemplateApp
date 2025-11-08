@@ -10,6 +10,7 @@ module BillingPlans
   Plan = Struct.new(:key, :name, :env_price_key, :interval, :price_cents, keyword_init: true)
 
   CATALOG = [
+    Plan.new(key: :starter_monthly,     name: "Starter",     env_price_key: "STRIPE_PRICE_STARTER_MONTHLY",     interval: :month, price_cents: 900),
     Plan.new(key: :pro_monthly,         name: "Pro",         env_price_key: "STRIPE_PRICE_PRO_MONTHLY",         interval: :month, price_cents: 2900),
     Plan.new(key: :enterprise_monthly,  name: "Enterprise",  env_price_key: "STRIPE_PRICE_ENTERPRISE_MONTHLY",  interval: :month, price_cents: 9900)
   ].freeze

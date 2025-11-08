@@ -17,6 +17,7 @@ class BillingController < ApplicationController
 
   helper_method :billing_stream_name
   helper_method :billing_broadcast_updates
+  helper PagesHelper
 
   def dashboard
     @customer = current_user.payment_processor
@@ -147,14 +148,30 @@ class BillingController < ApplicationController
       price_id = BillingPlans.stripe_price_id_for(plan_key)
       if plan_cfg && price_id.present?
         begin
-          existing = customer.subscriptions.where(name: "default").order(created_at: :desc).first
-          if existing.blank? || !existing.active?
-            args = { name: "default", plan: price_id, quantity: 1 }
+          existing_any = customer.subscriptions.order(created_at: :desc).detect { |s| (s.respond_to?(:active?) && s.active?) || s.status.to_s == 'trialing' }
+          if existing_any
+            # Swap existing active/trialing to intended plan to keep single active subscription
+            if existing_any.processor_plan.to_s != price_id.to_s
+              if existing_any.respond_to?(:swap)
+                existing_any.swap(price_id)
+              else
+                Stripe::Subscription.update(existing_any.processor_id, { items: [{ price: price_id }], proration_behavior: "create_prorations" })
+                existing_any.reload if existing_any.respond_to?(:reload)
+              end
+            end
+          else
+            args = { name: plan_cfg.name, plan: price_id, quantity: 1 }
             td = BillingPlans.trial_days
             args[:trial_period_days] = td if td && td > 0
             customer.subscribe(**args)
-            @auto_subscribed_plan_name = plan_cfg.name
           end
+          # Ensure name reflects the plan even when swapping an existing subscription
+          begin
+            existing_any.update(name: plan_cfg.name) if existing_any
+          rescue => e
+            Rails.logger.warn("[Billing#attach_payment_method] Failed to set subscription name: #{e.class} #{e.message}")
+          end
+          @auto_subscribed_plan_name = plan_cfg.name
         rescue => e
           Rails.logger.warn("[Billing#attach_payment_method] Auto-subscribe failed: #{e.class} #{e.message}")
         end
@@ -356,17 +373,51 @@ class BillingController < ApplicationController
       end
     end
 
-    # Prevent duplicate active subscription with the same name
-    sub_name = "default"
-    existing = customer.subscriptions.where(name: sub_name).order(created_at: :desc).first
-    if existing&.active?
-      return respond_to do |format|
-        format.html { redirect_to billing_dashboard_path, notice: "You already have an active subscription." }
-        format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { notice: "You already have an active subscription." }) }
+    # Enforce single active subscription: swap existing active/trialing if present, otherwise create new
+    existing_any = customer.subscriptions.order(created_at: :desc).detect { |s| s.respond_to?(:active?) && s.active? || s.status.to_s == 'trialing' }
+
+    if existing_any
+      if existing_any.processor_plan.to_s == price_id.to_s
+        return respond_to do |format|
+          format.html { redirect_to billing_dashboard_path, notice: "You are already on the #{plan_cfg.name} plan." }
+          format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { notice: "You are already on the #{plan_cfg.name} plan." }) }
+        end
+      else
+        begin
+          if existing_any.respond_to?(:swap)
+            existing_any.swap(price_id)
+          else
+            Stripe::Subscription.update(existing_any.processor_id, { items: [{ price: price_id }], proration_behavior: "create_prorations" })
+            existing_any.reload if existing_any.respond_to?(:reload)
+          end
+          # Ensure local name reflects the chosen plan
+          begin
+            existing_any.update(name: plan_cfg.name)
+          rescue => e
+            Rails.logger.warn("[Billing#subscribe] Failed to set subscription name: #{e.class} #{e.message}")
+          end
+        rescue => e
+          Rails.logger.warn("[Billing#subscribe] Swap existing failed: #{e.class} #{e.message}")
+          return respond_to do |format|
+            format.html { redirect_to billing_subscriptions_path, alert: e.message }
+            format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: e.message }) }
+          end
+        end
+
+        # Recompute for views and broadcasts
+        @subscriptions = customer.subscriptions.order(created_at: :desc)
+        @charges = customer.charges.order(created_at: :desc).limit(5)
+        broadcast_subscriptions_list(customer)
+        broadcast_recent_charges(customer)
+
+        return respond_to do |format|
+          format.html { redirect_to billing_subscriptions_path, notice: "Plan changed to #{plan_cfg.name}." }
+          format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { notice: "Plan changed to #{plan_cfg.name}." }) }
+        end
       end
     end
 
-    args = { name: sub_name, plan: price_id, quantity: 1 }
+    args = { name: plan_cfg.name, plan: price_id, quantity: 1 }
     td = BillingPlans.trial_days
     args[:trial_period_days] = td if td && td > 0
 
@@ -440,6 +491,8 @@ class BillingController < ApplicationController
     sub = current_user.payment_processor.subscriptions.find(params[:id])
     if sub.respond_to?(:on_grace_period?) && sub.on_grace_period?
       sub.resume
+      # Ensure single active after resume
+      enforce_single_active_subscription!(current_user.payment_processor, keep_processor_id: sub.processor_id)
       msg = "Subscription resumed."
     else
       msg = "Subscription cannot be resumed."
@@ -500,8 +553,19 @@ class BillingController < ApplicationController
       end
     end
 
-    price_id = BillingPlans.stripe_price_id_for(plan_key)
     customer = current_user.payment_processor
+
+    # Enforce single-active-subscription: if already active/trialing, redirect to manage
+    existing_any = customer.subscriptions.order(created_at: :desc).detect { |s| (s.respond_to?(:active?) && s.active?) || s.status.to_s == 'trialing' }
+    if existing_any
+      msg = "You already have an active subscription. Use 'Change plan' to switch."
+      return respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { notice: msg }) }
+        format.html { redirect_to billing_subscriptions_path, notice: msg }
+      end
+    end
+
+    price_id = BillingPlans.stripe_price_id_for(plan_key)
 
     line_item = if price_id.present?
       { price: price_id, quantity: 1 }
@@ -549,14 +613,51 @@ class BillingController < ApplicationController
 
   # After successful Stripe Checkout
   def checkout_success
-    # Best-effort refresh of subscriptions/charges
+    # After returning from Stripe Checkout, best-effort sync of local subscription so it appears in the UI
+    keep_processor_id = nil
     begin
       if params[:session_id].present? && defined?(Stripe)
         sess = Stripe::Checkout::Session.retrieve(params[:session_id])
-        # Optionally: you can use sess.subscription to fetch details
+
+        if sess.respond_to?(:subscription) && sess.subscription.present?
+          stripe_sub = Stripe::Subscription.retrieve(sess.subscription)
+          keep_processor_id = stripe_sub.id
+
+          customer = current_user.payment_processor
+          if stripe_sub.customer.to_s == customer.processor_id.to_s
+            # Map first subscription item for plan/quantity
+            item = (stripe_sub.items&.data || []).first
+            price_id = (item&.respond_to?(:price) && item.price) ? item.price.id : (item&.respond_to?(:plan) ? item.plan&.id : nil)
+            quantity = item&.quantity || 1
+            plan = BillingPlans.plan_for_price_id(price_id.to_s)
+
+            local = customer.subscriptions.find_by(processor_id: stripe_sub.id)
+            attrs = {
+              name: (plan&.name || price_id.to_s),
+              processor_plan: price_id.to_s,
+              quantity: quantity,
+              status: stripe_sub.status.to_s,
+              current_period_start: (Time.at(stripe_sub.current_period_start).to_datetime rescue nil),
+              current_period_end: (Time.at(stripe_sub.current_period_end).to_datetime rescue nil),
+              trial_ends_at: (stripe_sub.trial_end ? Time.at(stripe_sub.trial_end).to_datetime : nil),
+              ends_at: (stripe_sub.cancel_at ? Time.at(stripe_sub.cancel_at).to_datetime : nil)
+            }
+
+            if local
+              local.update(attrs)
+            else
+              customer.subscriptions.create!(attrs.merge(processor_id: stripe_sub.id))
+            end
+
+            # Enforce single active/trialing subscription by canceling others
+            enforce_single_active_subscription!(customer, keep_processor_id: keep_processor_id)
+          else
+            Rails.logger.warn("[Billing#checkout_success] Customer mismatch: session subscription customer #{stripe_sub.customer} != current #{customer.processor_id}")
+          end
+        end
       end
     rescue => e
-      Rails.logger.warn("[Billing#checkout_success] Unable to retrieve session: #{e.class} #{e.message}")
+      Rails.logger.warn("[Billing#checkout_success] Sync from Stripe failed: #{e.class} #{e.message}")
     end
 
     customer = current_user.payment_processor
@@ -741,6 +842,28 @@ class BillingController < ApplicationController
   end
 
   private
+
+  # Cancel all active/trialing subscriptions for this customer except the one with processor_id == keep_processor_id
+  def enforce_single_active_subscription!(customer, keep_processor_id: nil)
+    return unless customer
+    begin
+      subs = customer.subscriptions.order(created_at: :desc)
+      subs.each do |s|
+        next if keep_processor_id.present? && s.processor_id.to_s == keep_processor_id.to_s
+        status = s.status.to_s
+        active_like = (s.respond_to?(:active?) && s.active?) || status == 'active' || status == 'trialing'
+        next unless active_like
+        begin
+          # Prefer cancel at period end to avoid surprising immediate termination
+          s.cancel
+        rescue => e
+          Rails.logger.warn("[Billing#enforce_single_active_subscription!] Failed to cancel subscription #{s.id}: #{e.class} #{e.message}")
+        end
+      end
+    rescue => e
+      Rails.logger.warn("[Billing#enforce_single_active_subscription!] Error: #{e.class} #{e.message}")
+    end
+  end
 
   def ensure_payment_processor!
     return if current_user.payment_processor.present?
