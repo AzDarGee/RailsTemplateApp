@@ -10,7 +10,10 @@
         <div class="card-body">
           <% if @subscriptions.present? %>
             <% @subscriptions.first(1).each do |sub| %>
-              <p class="mb-1"><strong>Name:</strong> <%= sub.name %></p>
+              <% plan = BillingPlans.plan_for_price_id(sub.processor_plan.to_s) %>
+              <p class="mb-1"><strong>Name:</strong> <%= (sub.name.to_s == 'default' ? 'Primary' : sub.name.to_s.titleize) %></p>
+              <p class="mb-1"><strong>Plan:</strong> <%= plan&.name || content_tag(:code, sub.processor_plan) %></p>
+              <p class="mb-1"><strong>Price:</strong> <%= plan ? plan_display_price(plan.key, plan.price_cents) : content_tag(:span, '—', class: 'text-muted') %></p>
               <p class="mb-1"><strong>Status:</strong> <span class="badge <%= sub.active? ? 'bg-success' : 'bg-secondary' %>"><%= sub.status %></span></p>
               <% if sub.current_period_end %>
                 <p class="mb-0"><strong>Renews:</strong> <%= l(sub.current_period_end, format: :long) %></p>

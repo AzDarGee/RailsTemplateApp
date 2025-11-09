@@ -4,16 +4,32 @@
       <thead>
         <tr>
           <th>Name</th>
+          <th>Plan</th>
+          <th>Price</th>
           <th>Status</th>
           <th>Current Period</th>
           <th>Quantity</th>
-          <th>Plan</th>
         </tr>
       </thead>
       <tbody>
         <% subscriptions.each do |sub| %>
+          <% plan = BillingPlans.plan_for_price_id(sub.processor_plan.to_s) %>
           <tr id="subscription_<%= sub.id %>">
-            <td><%= sub.name %></td>
+            <td><%= (sub.name.to_s == 'default' ? 'Primary' : sub.name.to_s.titleize) %></td>
+            <td>
+              <% if plan.present? %>
+                <%= plan.name %>
+              <% else %>
+                <code><%= sub.processor_plan %></code>
+              <% end %>
+            </td>
+            <td>
+              <% if plan.present? %>
+                <%= plan_display_price(plan.key, plan.price_cents) %>
+              <% else %>
+                <span class="text-muted">—</span>
+              <% end %>
+            </td>
             <td>
               <% status = sub.status.to_s %>
               <% badge_class = case status
@@ -37,7 +53,6 @@
               <% end %>
             </td>
             <td><%= sub.quantity %></td>
-            <td><code><%= sub.processor_plan %></code></td>
           </tr>
         <% end %>
       </tbody>
