@@ -26,7 +26,7 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/bundle" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/cache" />
     </content>
-    <orderEntry type="jdk" jdkName="Remote: ruby-3.4.7-p58" jdkType="RUBY_SDK" />
+    <orderEntry type="jdk" jdkName="rbenv: 3.4.7" jdkType="RUBY_SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="PROVIDED" name="action_text-trix (v2.1.15, rbenv: 3.4.7) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="actioncable (v8.1.1, rbenv: 3.4.7) [gem]" level="application" />
