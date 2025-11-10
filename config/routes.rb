@@ -1,13 +1,15 @@
 Rails.application.routes.draw do
+  root to: "pages#home"
+
   resources :chats do
     resources :messages, only: [:create]
   end
+
   resources :models, only: [:index, :show] do
     collection do
       post :refresh
     end
   end
-  root to: "pages#home"
 
   # If I need to customize devise controllers in the future
   devise_for :users, controllers: {

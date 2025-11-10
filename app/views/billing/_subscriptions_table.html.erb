@@ -74,14 +74,13 @@
               <% current_price_id = sub.processor_plan.to_s %>
               <% current_plan = BillingPlans.plan_for_price_id(current_price_id) %>
               <div class="btn-group ms-2">
-                <% if BillingPlans.enabled?(:starter_monthly) && (current_plan.nil? || current_plan.key != :starter_monthly) %>
-                  <%= button_to "Change to Starter", billing_swap_subscription_path(sub, plan: 'starter_monthly'), method: :post, form: { data: { turbo: true } }, class: "btn btn-sm btn-outline-secondary" %>
-                <% end %>
-                <% if BillingPlans.enabled?(:pro_monthly) && (current_plan.nil? || current_plan.key != :pro_monthly) %>
-                  <%= button_to "Change to Pro", billing_swap_subscription_path(sub, plan: 'pro_monthly'), method: :post, form: { data: { turbo: true } }, class: "btn btn-sm btn-outline-secondary" %>
-                <% end %>
-                <% if BillingPlans.enabled?(:enterprise_monthly) && (current_plan.nil? || current_plan.key != :enterprise_monthly) %>
-                  <%= button_to "Change to Enterprise", billing_swap_subscription_path(sub, plan: 'enterprise_monthly'), method: :post, form: { data: { turbo: true } }, class: "btn btn-sm btn-outline-secondary" %>
+                <% BillingPlans.all.each do |bp| %>
+                  <% next if current_plan && current_plan.key.to_s == bp.key.to_s %>
+                  <% if BillingPlans.enabled?(bp.key) %>
+                    <%= button_to "Change to #{bp.name}", billing_swap_subscription_path(sub, plan: bp.key), method: :post, form: { data: { turbo: true } }, class: "btn btn-sm btn-outline-secondary" %>
+                  <% else %>
+                    <%= button_to "Change to #{bp.name}", billing_checkout_path(plan: bp.key), method: :post, form: { data: { turbo: false } }, class: "btn btn-sm btn-outline-secondary" %>
+                  <% end %>
                 <% end %>
               </div>
             </td>

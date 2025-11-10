@@ -1,9 +1,21 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+# Seed essential application data (idempotent)
+
+begin
+  if ActiveRecord::Base.connection.table_exists?(:plans)
+    plans = [
+      { key: :starter_monthly,    name: "Starter",    env_price_key: "STRIPE_PRICE_STARTER_MONTHLY",    interval: "month", price_cents: 900,  active: true, position: 1 },
+      { key: :pro_monthly,        name: "Pro",        env_price_key: "STRIPE_PRICE_PRO_MONTHLY",        interval: "month", price_cents: 2900, active: true, position: 2 },
+      { key: :enterprise_monthly, name: "Enterprise", env_price_key: "STRIPE_PRICE_ENTERPRISE_MONTHLY", interval: "month", price_cents: 9900, active: true, position: 3 }
+    ]
+
+    plans.each do |attrs|
+      record = Plan.find_or_initialize_by(key: attrs[:key])
+      record.assign_attributes(attrs)
+      record.save! if record.changed?
+    end
+
+    puts "Seeded Plans (#{Plan.count})"
+  end
+rescue => e
+  puts "[seeds] Skipped plans seeding: #{e.class} #{e.message}"
+end

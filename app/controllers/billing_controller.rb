@@ -373,8 +373,13 @@ class BillingController < ApplicationController
       end
     end
 
-    # Enforce single active subscription: swap existing active/trialing if present, otherwise create new
-    existing_any = customer.subscriptions.order(created_at: :desc).detect { |s| s.respond_to?(:active?) && s.active? || s.status.to_s == 'trialing' }
+    # Enforce single active subscription: swap existing active/trialing (not on grace) if present, otherwise create new
+    existing_any = customer.subscriptions.order(created_at: :desc).detect do |s|
+      status = s.status.to_s
+      active_like = (s.respond_to?(:active?) && s.active?) || %w[active trialing].include?(status)
+      on_grace = (s.respond_to?(:on_grace_period?) && s.on_grace_period?)
+      active_like && !on_grace
+    end
 
     if existing_any
       if existing_any.processor_plan.to_s == price_id.to_s
@@ -555,8 +560,13 @@ class BillingController < ApplicationController
 
     customer = current_user.payment_processor
 
-    # Enforce single-active-subscription: if already active/trialing, redirect to manage
-    existing_any = customer.subscriptions.order(created_at: :desc).detect { |s| (s.respond_to?(:active?) && s.active?) || s.status.to_s == 'trialing' }
+    # Enforce single-active-subscription: if already active/trialing (and not on grace), redirect to manage
+    existing_any = customer.subscriptions.order(created_at: :desc).detect do |s|
+      status = s.status.to_s
+      active_like = (s.respond_to?(:active?) && s.active?) || %w[active trialing].include?(status)
+      on_grace = (s.respond_to?(:on_grace_period?) && s.on_grace_period?)
+      active_like && !on_grace
+    end
     if existing_any
       msg = "You already have an active subscription. Use 'Change plan' to switch."
       return respond_to do |format|

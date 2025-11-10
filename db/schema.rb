@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_06_205309) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_10_135200) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -227,6 +227,21 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_06_205309) do
     t.string "event_type"
     t.string "processor"
     t.datetime "updated_at", null: false
+  end
+
+  create_table "plans", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.string "env_price_key", null: false
+    t.string "interval", default: "month", null: false
+    t.string "key", null: false
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
+    t.integer "price_cents", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_plans_on_active"
+    t.index ["key"], name: "index_plans_on_key", unique: true
+    t.index ["position"], name: "index_plans_on_position"
   end
 
   create_table "solid_cable_messages", force: :cascade do |t|

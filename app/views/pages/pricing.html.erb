@@ -38,107 +38,35 @@
               </div>
             </div>
 
-            <!-- Starter Tier -->
-            <div class="col">
-              <div class="card h-100 shadow-sm">
-                <div class="card-header bg-white py-3">
-                  <h4 class="my-0 fw-bold text-center">Starter</h4>
-                </div>
-                <div class="card-body">
-                  <div class="text-center mb-4">
-                    <span class="display-4 fw-bold"><%= plan_display_price(:starter_monthly, BillingPlans.find(:starter_monthly)&.price_cents) %></span>
+            <% BillingPlans.all.each_with_index do |bp, idx| %>
+              <div class="col">
+                <div class="card h-100 shadow <%= idx == 1 ? 'border border-primary' : '' %>">
+                  <div class="card-header <%= idx == 1 ? 'bg-primary text-white' : 'bg-white' %> py-3">
+                    <h4 class="my-0 fw-bold text-center"><%= bp.name %></h4>
                   </div>
-                  <ul class="list-unstyled">
-                    <li class="mb-3">
-                      <i class="fas fa-check text-success me-2"></i>Everything in Free
-                    </li>
-                    <li class="mb-3">
-                      <i class="fas fa-check text-success me-2"></i>Up to 5 projects
-                    </li>
-                    <li class="mb-3">
-                      <i class="fas fa-check text-success me-2"></i>Email support
-                    </li>
-                  </ul>
-                  <div class="d-grid">
-                    <% if user_signed_in? %>
-                      <%= button_to "Subscribe to Starter", billing_checkout_path(plan: 'starter_monthly'), method: :post, form: { data: { turbo: false } }, class: "btn btn-outline-primary w-100" %>
-                    <% else %>
-                      <%= link_to "Sign in to subscribe", new_user_session_path, class: "btn btn-outline-primary" %>
-                    <% end %>
+                  <div class="card-body">
+                    <div class="text-center mb-4">
+                      <span class="display-4 fw-bold"><%= plan_display_price(bp.key, bp.price_cents) %></span>
+                    </div>
+                    <ul class="list-unstyled">
+                      <li class="mb-3">
+                        <i class="fas fa-check text-success me-2"></i><%= bp.interval.to_s.titleize %> billing
+                      </li>
+                      <li class="mb-3">
+                        <i class="fas fa-check text-success me-2"></i>Includes core features
+                      </li>
+                    </ul>
+                    <div class="d-grid">
+                      <% if user_signed_in? %>
+                        <%= button_to "Subscribe to #{bp.name}", billing_checkout_path(plan: bp.key), method: :post, form: { data: { turbo: false } }, class: "btn #{idx == 1 ? 'btn-primary' : 'btn-outline-primary'} w-100" %>
+                      <% else %>
+                        <%= link_to "Sign in to subscribe", new_user_session_path, class: "btn #{idx == 1 ? 'btn-primary' : 'btn-outline-primary'}" %>
+                      <% end %>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-
-            <!-- Pro Tier -->
-            <div class="col">
-              <div class="card h-100 shadow border border-primary">
-                <div class="card-header bg-primary text-white py-3">
-                  <h4 class="my-0 fw-bold text-center">Pro</h4>
-                </div>
-                <div class="card-body">
-                  <div class="text-center mb-4">
-                    <span class="display-4 fw-bold"><%= plan_display_price(:pro_monthly, BillingPlans.find(:pro_monthly)&.price_cents) %></span>
-                  </div>
-                  <ul class="list-unstyled">
-                    <li class="mb-3">
-                      <i class="fas fa-check text-success me-2"></i>All Free features
-                    </li>
-                    <li class="mb-3">
-                      <i class="fas fa-check text-success me-2"></i>Unlimited projects
-                    </li>
-                    <li class="mb-3">
-                      <i class="fas fa-check text-success me-2"></i>Priority support
-                    </li>
-                    <li class="mb-3">
-                      <i class="fas fa-check text-success me-2"></i>Advanced analytics
-                    </li>
-                  </ul>
-                  <div class="d-grid">
-                    <% if user_signed_in? %>
-                      <%= button_to "Subscribe to Pro", billing_checkout_path(plan: 'pro_monthly'), method: :post, form: { data: { turbo: false } }, class: "btn btn-primary w-100" %>
-                    <% else %>
-                      <%= link_to "Sign in to subscribe", new_user_session_path, class: "btn btn-primary" %>
-                    <% end %>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Enterprise Tier -->
-            <div class="col">
-              <div class="card h-100 shadow-sm">
-                <div class="card-header bg-white py-3">
-                  <h4 class="my-0 fw-bold text-center">Enterprise</h4>
-                </div>
-                <div class="card-body">
-                  <div class="text-center mb-4">
-                    <span class="display-4 fw-bold"><%= plan_display_price(:enterprise_monthly, BillingPlans.find(:enterprise_monthly)&.price_cents) %></span>
-                  </div>
-                  <ul class="list-unstyled">
-                    <li class="mb-3">
-                      <i class="fas fa-check text-success me-2"></i>All Pro features
-                    </li>
-                    <li class="mb-3">
-                      <i class="fas fa-check text-success me-2"></i>24/7 phone support
-                    </li>
-                    <li class="mb-3">
-                      <i class="fas fa-check text-success me-2"></i>Custom integrations
-                    </li>
-                    <li class="mb-3">
-                      <i class="fas fa-check text-success me-2"></i>Dedicated account manager
-                    </li>
-                  </ul>
-                  <div class="d-grid">
-                    <% if user_signed_in? %>
-                      <%= button_to "Subscribe to Enterprise", billing_checkout_path(plan: 'enterprise_monthly'), method: :post, form: { data: { turbo: false } }, class: "btn btn-outline-primary w-100" %>
-                    <% else %>
-                      <%= link_to "Sign in to subscribe", new_user_session_path, class: "btn btn-outline-primary" %>
-                    <% end %>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <% end %>
           </div>
 
           <!-- FAQ Section -->
