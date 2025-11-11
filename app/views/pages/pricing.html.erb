@@ -8,38 +8,20 @@
         </div>
 
         <div class="card-body p-4">
-          <div class="row row-cols-1 row-cols-md-3 g-4">
-            <!-- Free Tier -->
-            <div class="col">
-              <div class="card h-100 shadow-sm">
-                <div class="card-header bg-white py-3">
-                  <h4 class="my-0 fw-bold text-center">Free</h4>
-                </div>
-                <div class="card-body">
-                  <div class="text-center mb-4">
-                    <span class="display-4 fw-bold">$0</span>
-                    <span class="text-muted">/mo</span>
-                  </div>
-                  <ul class="list-unstyled">
-                    <li class="mb-3">
-                      <i class="fas fa-check text-success me-2"></i>Basic features
-                    </li>
-                    <li class="mb-3">
-                      <i class="fas fa-check text-success me-2"></i>1 project
-                    </li>
-                    <li class="mb-3">
-                      <i class="fas fa-check text-success me-2"></i>Community support
-                    </li>
-                  </ul>
-                  <div class="d-grid">
-                    <%= link_to "Get started", "#", class: "btn btn-outline-primary" %>
-                  </div>
-                </div>
-              </div>
+          <div class="d-flex justify-content-center mb-4">
+            <div class="btn-group" role="group" aria-label="Billing interval toggle">
+              <button type="button" class="btn btn-secondary active" data-interval-toggle="month" aria-pressed="true">
+                <i class="fas fa-calendar-alt me-1"></i> Monthly
+              </button>
+              <button type="button" class="btn btn-outline-secondary" data-interval-toggle="year" aria-pressed="false">
+                <i class="fas fa-calendar-check me-1"></i> Yearly
+              </button>
             </div>
+          </div>
 
+          <div id="plansGrid" class="row row-cols-1 row-cols-md-3 g-4">
             <% BillingPlans.all.each_with_index do |bp, idx| %>
-              <div class="col">
+              <div class="col plan-card" data-interval="<%= bp.interval.to_s %>">
                 <div class="card h-100 shadow <%= idx == 1 ? 'border border-primary' : '' %>">
                   <div class="card-header <%= idx == 1 ? 'bg-primary text-white' : 'bg-white' %> py-3">
                     <h4 class="my-0 fw-bold text-center"><%= bp.name %></h4>
@@ -67,6 +49,44 @@
                 </div>
               </div>
             <% end %>
+
+            <script>
+              function pricingToggleInit() {
+                const grid = document.getElementById("plansGrid");
+                const buttons = document.querySelectorAll('[data-interval-toggle]');
+                if (!grid || buttons.length === 0) return;
+
+                const show = (interval) => {
+                  document.querySelectorAll('.plan-card').forEach(card => {
+                    const isVisible = card.dataset.interval === interval;
+                    card.style.display = isVisible ? '' : 'none';
+                  });
+                };
+
+                // Determine default interval by active button
+                let defaultInterval = 'month';
+                const activeBtn = Array.from(buttons).find(b => b.classList.contains('active'));
+                if (activeBtn) defaultInterval = activeBtn.getAttribute('data-interval-toggle') || defaultInterval;
+
+                show(defaultInterval);
+
+                buttons.forEach(btn => {
+                  btn.addEventListener('click', () => {
+                    const chosen = btn.getAttribute('data-interval-toggle');
+                    buttons.forEach(b => {
+                      const isActive = b === btn;
+                      b.classList.toggle('active', isActive);
+                      b.classList.toggle('btn-secondary', isActive);
+                      b.classList.toggle('btn-outline-secondary', !isActive);
+                      b.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+                    });
+                    show(chosen);
+                  });
+                });
+              }
+              document.addEventListener("turbo:load", pricingToggleInit);
+              document.addEventListener("DOMContentLoaded", pricingToggleInit);
+            </script>
           </div>
 
           <!-- FAQ Section -->
