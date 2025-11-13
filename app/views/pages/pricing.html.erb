@@ -39,7 +39,11 @@
                       </li>
                     </ul>
                     <div class="d-grid">
-                      <%= button_to "Subscribe to #{bp.name}", billing_checkout_path(plan: bp.key), method: :post, form: { data: { turbo: false } }, class: "btn #{idx == 1 ? 'btn-primary' : 'btn-outline-primary'} w-100" %>
+                      <% if current_user.payment_processor.present? %>
+                        <%= button_to "Subscribe to #{bp.name}", billing_checkout_path(plan: bp.key), method: :post, form: { data: { turbo: false } }, class: "btn #{idx == 1 ? 'btn-primary' : 'btn-outline-primary'} w-100" %>
+                      <% else %>
+                        <%= button_to "Add Payment Method", billing_payment_methods_path, method: :get, class: "btn btn-outline-primary w-100" %>
+                      <% end %>
                     </div>
                   </div>
                 </div>

@@ -13,6 +13,7 @@ Code Style and Structure
 - Use descriptive variable and method names (e.g., user_signed_in?, calculate_total).
 - Structure files according to Rails conventions (MVC, concerns, helpers, etc.).
 - Any styling should be done in the assets/stylesheets folder.
+- Don't put any controller logic in the views.
 
 Documentation for reference
 - Bootstrap 5.3 Docs (https://getbootstrap.com/docs/5.3/getting-started/introduction/)
