@@ -10,6 +10,11 @@
 module BillingPlans
   module_function
 
+  # Simple validation for a Stripe Price ID. Accepts strings starting with "price_".
+  def valid_stripe_price_id?(price_id)
+    price_id.to_s.start_with?("price_")
+  end
+
   # Returns a list-like collection of active plans ordered for presentation.
   # Safe when DB/table is unavailable (e.g., before migrations): returns [].
   def all

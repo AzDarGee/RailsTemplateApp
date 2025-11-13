@@ -3,7 +3,7 @@
     <div class="col-lg-10">
       <div class="card shadow-sm">
         <div class="card-header bg-white py-4">
-          <h1 class="display-4 fw-bold text-center mb-2">Pricing Plans</h1>
+          <h1 class="display-4 fw-bold text-center mb-2">Pricing</h1>
           <p class="lead text-muted text-center mb-0">Choose the perfect plan for your needs</p>
         </div>
 
@@ -39,11 +39,7 @@
                       </li>
                     </ul>
                     <div class="d-grid">
-                      <% if user_signed_in? %>
-                        <%= button_to "Subscribe to #{bp.name}", billing_checkout_path(plan: bp.key), method: :post, form: { data: { turbo: false } }, class: "btn #{idx == 1 ? 'btn-primary' : 'btn-outline-primary'} w-100" %>
-                      <% else %>
-                        <%= link_to "Sign in to subscribe", new_user_session_path, class: "btn #{idx == 1 ? 'btn-primary' : 'btn-outline-primary'}" %>
-                      <% end %>
+                      <%= button_to "Subscribe to #{bp.name}", billing_checkout_path(plan: bp.key), method: :post, form: { data: { turbo: false } }, class: "btn #{idx == 1 ? 'btn-primary' : 'btn-outline-primary'} w-100" %>
                     </div>
                   </div>
                 </div>

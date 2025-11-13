@@ -12,7 +12,15 @@ Code Style and Structure
 - Prefer iteration and modularization over code duplication.
 - Use descriptive variable and method names (e.g., user_signed_in?, calculate_total).
 - Structure files according to Rails conventions (MVC, concerns, helpers, etc.).
-- Any styling should be done in the assets stylesheets folder. 
+- Any styling should be done in the assets/stylesheets folder.
+
+Documentation for reference
+- Bootstrap 5.3 Docs (https://getbootstrap.com/docs/5.3/getting-started/introduction/)
+- FontAwesome 6 Docs (https://docs.fontawesome.com/v6/web)
+- Turbo Handbook (https://turbo.hotwired.dev/handbook/introduction)
+- TurboStreams (https://turbo.hotwired.dev/reference/streams)
+- StimulusJS Handbook (https://stimulus.hotwired.dev/handbook/introduction)
+- StimulusJS Reference (https://stimulus.hotwired.dev/reference/controllers)
 
 Naming Conventions
 - Use snake_case for file names, method names, and variables.

@@ -23,6 +23,7 @@ class BillingController < ApplicationController
     @customer = current_user.payment_processor
     @default_payment_method = resolve_default_payment_method(@customer)
     @subscriptions = current_user.payment_processor&.subscriptions&.order(created_at: :desc) || []
+    # binding.pry_remote
     @charges = current_user.payment_processor&.charges&.order(created_at: :desc)&.limit(5) || []
   end
 
@@ -146,32 +147,44 @@ class BillingController < ApplicationController
       plan_key = session.delete(:intended_plan)
       plan_cfg = BillingPlans.find(plan_key)
       price_id = BillingPlans.stripe_price_id_for(plan_key)
-      if plan_cfg && price_id.present?
+      price_valid = BillingPlans.valid_stripe_price_id?(price_id)
+      if plan_cfg
         begin
-          existing_any = customer.subscriptions.order(created_at: :desc).detect { |s| (s.respond_to?(:active?) && s.active?) || s.status.to_s == 'trialing' }
+          existing_any = customer.subscriptions.order(created_at: :desc).detect { |s| (s.respond_to?(:active?) && s.active?) || %w[active trialing].include?(s.status.to_s) }
           if existing_any
-            # Swap existing active/trialing to intended plan to keep single active subscription
-            if existing_any.processor_plan.to_s != price_id.to_s
-              if existing_any.respond_to?(:swap)
-                existing_any.swap(price_id)
-              else
-                Stripe::Subscription.update(existing_any.processor_id, { items: [{ price: price_id }], proration_behavior: "create_prorations" })
-                existing_any.reload if existing_any.respond_to?(:reload)
+            if price_valid
+              # Swap existing active/trialing to intended plan to keep single active subscription
+              if existing_any.processor_plan.to_s != price_id.to_s
+                if existing_any.respond_to?(:swap)
+                  existing_any.swap(price_id)
+                else
+                  Stripe::Subscription.update(existing_any.processor_id, { items: [{ price: price_id }], proration_behavior: "create_prorations" })
+                  existing_any.reload if existing_any.respond_to?(:reload)
+                end
               end
+              # Ensure name reflects the plan even when swapping an existing subscription
+              begin
+                existing_any.update(name: plan_cfg.name)
+              rescue => e
+                Rails.logger.warn("[Billing#attach_payment_method] Failed to set subscription name: #{e.class} #{e.message}")
+              end
+              @auto_subscribed_plan_name = plan_cfg.name
+            else
+              # Can't swap without a valid Price ID
+              Rails.logger.info("[Billing#attach_payment_method] Intended plan has no valid Stripe Price ID; skipping swap.")
             end
           else
-            args = { name: plan_cfg.name, plan: price_id, quantity: 1 }
-            td = BillingPlans.trial_days
-            args[:trial_period_days] = td if td && td > 0
-            customer.subscribe(**args)
+            if price_valid
+              args = { name: plan_cfg.name, plan: price_id, quantity: 1 }
+              td = BillingPlans.trial_days
+              args[:trial_period_days] = td if td && td > 0
+              customer.subscribe(**args)
+              @auto_subscribed_plan_name = plan_cfg.name
+            else
+              # No existing subscription: use Stripe Checkout (with price_data fallback) to create subscription
+              return start_checkout_for_plan!(plan_key)
+            end
           end
-          # Ensure name reflects the plan even when swapping an existing subscription
-          begin
-            existing_any.update(name: plan_cfg.name) if existing_any
-          rescue => e
-            Rails.logger.warn("[Billing#attach_payment_method] Failed to set subscription name: #{e.class} #{e.message}")
-          end
-          @auto_subscribed_plan_name = plan_cfg.name
         rescue => e
           Rails.logger.warn("[Billing#attach_payment_method] Auto-subscribe failed: #{e.class} #{e.message}")
         end
@@ -353,8 +366,9 @@ class BillingController < ApplicationController
     plan_key = params[:plan].to_s.presence
     plan_cfg = BillingPlans.find(plan_key)
     price_id = BillingPlans.stripe_price_id_for(plan_key)
+    price_valid = BillingPlans.valid_stripe_price_id?(price_id)
 
-    unless plan_cfg && price_id.present?
+    unless plan_cfg
       return respond_to do |format|
         format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: "Selected plan is not available. Please try again later." }) }
         format.html { redirect_to pages_pricing_path, alert: "Selected plan is not available. Please try again later." }
@@ -363,8 +377,8 @@ class BillingController < ApplicationController
 
     customer = current_user.payment_processor
 
-    # Ensure a default payment method exists
-    if resolve_default_payment_method(customer).blank?
+    # For direct subscription (without Checkout), ensure a default payment method exists.
+    if price_valid && resolve_default_payment_method(customer).blank?
       # Remember intended plan and redirect to add a card
       session[:intended_plan] = plan_key
       return respond_to do |format|
@@ -379,6 +393,20 @@ class BillingController < ApplicationController
       active_like = (s.respond_to?(:active?) && s.active?) || %w[active trialing].include?(status)
       on_grace = (s.respond_to?(:on_grace_period?) && s.on_grace_period?)
       active_like && !on_grace
+    end
+
+    # If there is no valid Stripe Price ID configured, fallback:
+    unless price_valid
+      if existing_any
+        return respond_to do |format|
+          msg = "Selected plan isn't fully configured yet for direct changes. Please cancel your current subscription, then subscribe via Checkout from the Pricing page."
+          format.html { redirect_to billing_subscriptions_path, alert: msg }
+          format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: msg }) }
+        end
+      else
+        # No existing subscription: use Stripe Checkout (with price_data fallback) to create
+        return start_checkout_for_plan!(plan_key)
+      end
     end
 
     if existing_any
@@ -542,83 +570,8 @@ class BillingController < ApplicationController
   # Stripe Checkout for Subscriptions
   # Creates a Checkout Session and redirects the user to Stripe-hosted page.
   def checkout
-    unless using_stripe?
-      return respond_to do |format|
-        format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: "Stripe Checkout is only available for Stripe accounts." }) }
-        format.html { redirect_to pages_pricing_path, alert: "Stripe Checkout is only available for Stripe accounts." }
-      end
-    end
-
     plan_key = params[:plan].to_s.presence
-    plan_cfg = BillingPlans.find(plan_key)
-    unless plan_cfg
-      return respond_to do |format|
-        format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: "Selected plan is not available." }) }
-        format.html { redirect_to pages_pricing_path, alert: "Selected plan is not available." }
-      end
-    end
-
-    customer = current_user.payment_processor
-
-    # Enforce single-active-subscription: if already active/trialing (and not on grace), redirect to manage
-    existing_any = customer.subscriptions.order(created_at: :desc).detect do |s|
-      status = s.status.to_s
-      active_like = (s.respond_to?(:active?) && s.active?) || %w[active trialing].include?(status)
-      on_grace = (s.respond_to?(:on_grace_period?) && s.on_grace_period?)
-      active_like && !on_grace
-    end
-    if existing_any
-      msg = "You already have an active subscription. Use 'Change plan' to switch."
-      return respond_to do |format|
-        format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { notice: msg }) }
-        format.html { redirect_to billing_subscriptions_path, notice: msg }
-      end
-    end
-
-    price_id = BillingPlans.stripe_price_id_for(plan_key)
-
-    line_item = if price_id.present?
-      { price: price_id, quantity: 1 }
-    else
-      # Fallback to price_data so plans are available even if a Price isn't preconfigured
-      {
-        price_data: {
-          currency: "usd",
-          product_data: { name: plan_cfg.name },
-          unit_amount: plan_cfg.price_cents,
-          recurring: { interval: plan_cfg.interval.to_s }
-        },
-        quantity: 1
-      }
-    end
-
-    params_hash = {
-      mode: "subscription",
-      customer: customer.processor_id,
-      payment_method_types: ["card"],
-      line_items: [ line_item ],
-      allow_promotion_codes: true,
-      success_url: billing_checkout_success_url + "?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: billing_checkout_cancel_url
-    }
-
-    td = BillingPlans.trial_days
-    if td && td > 0
-      params_hash[:subscription_data] = { trial_period_days: td }
-    end
-
-    session = Stripe::Checkout::Session.create(params_hash)
-
-    # Store recent intent for UX if desired
-    session[:plan] = plan_key rescue nil
-
-    redirect_to session.url, allow_other_host: true, status: :see_other
-  rescue => e
-    Rails.logger.warn("[Billing#checkout] Failed: #{e.class} #{e.message}")
-    respond_to do |format|
-      format.html { redirect_to pages_pricing_path, alert: e.message }
-      format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: e.message }) }
-    end
+    return start_checkout_for_plan!(plan_key)
   end
 
   # After successful Stripe Checkout
@@ -690,11 +643,20 @@ class BillingController < ApplicationController
     plan_key = params[:plan].to_s.presence
     plan_cfg = BillingPlans.find(plan_key)
     price_id = BillingPlans.stripe_price_id_for(plan_key)
+    price_valid = BillingPlans.valid_stripe_price_id?(price_id)
 
-    unless plan_cfg && price_id.present?
+    unless plan_cfg
       return respond_to do |format|
         format.html { redirect_to billing_subscriptions_path, alert: "Selected plan is not available." }
         format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: "Selected plan is not available." }) }
+      end
+    end
+
+    unless price_valid
+      msg = "Selected plan isn't fully configured for direct plan changes. Please cancel your current subscription, then subscribe to #{plan_cfg.name} via Checkout from the Pricing page."
+      return respond_to do |format|
+        format.html { redirect_to billing_subscriptions_path, alert: msg }
+        format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: msg }) }
       end
     end
 
@@ -984,6 +946,90 @@ class BillingController < ApplicationController
     rescue => e
       Rails.logger.warn("[Billing#resolve_default_payment_method] Unable to resolve default via Stripe: #{e.class} #{e.message}")
       local_pm
+    end
+  end
+
+  # Start Stripe Checkout for the given plan key, using a configured Stripe Price ID when valid,
+  # or falling back to price_data (currency/unit_amount/interval) when no valid price is configured.
+  # Performs the redirect to Stripe-hosted Checkout and returns.
+  def start_checkout_for_plan!(plan_key)
+    unless using_stripe?
+      return respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: "Stripe Checkout is only available for Stripe accounts." }) }
+        format.html { redirect_to pages_pricing_path, alert: "Stripe Checkout is only available for Stripe accounts." }
+      end
+    end
+
+    plan_cfg = BillingPlans.find(plan_key)
+    unless plan_cfg
+      return respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: "Selected plan is not available." }) }
+        format.html { redirect_to pages_pricing_path, alert: "Selected plan is not available." }
+      end
+    end
+
+    customer = current_user.payment_processor
+
+    # Prevent creating a second concurrent subscription via Checkout
+    existing_any = customer.subscriptions.order(created_at: :desc).detect do |s|
+      status = s.status.to_s
+      active_like = (s.respond_to?(:active?) && s.active?) || %w[active trialing].include?(status)
+      on_grace = (s.respond_to?(:on_grace_period?) && s.on_grace_period?)
+      active_like && !on_grace
+    end
+    if existing_any
+      msg = "You already have an active subscription. Use 'Change plan' to switch."
+      return respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { notice: msg }) }
+        format.html { redirect_to billing_subscriptions_path, notice: msg }
+      end
+    end
+
+    price_id = BillingPlans.stripe_price_id_for(plan_key)
+
+    line_item = if BillingPlans.valid_stripe_price_id?(price_id)
+      { price: price_id, quantity: 1 }
+    else
+      {
+        price_data: {
+          currency: "usd",
+          product_data: { name: plan_cfg.name },
+          unit_amount: plan_cfg.price_cents,
+          recurring: { interval: plan_cfg.interval.to_s }
+        },
+        quantity: 1
+      }
+    end
+
+    params_hash = {
+      mode: "subscription",
+      customer: customer.processor_id,
+      payment_method_types: ["card"],
+      line_items: [ line_item ],
+      allow_promotion_codes: true,
+      success_url: billing_checkout_success_url + "?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: billing_checkout_cancel_url
+    }
+
+    td = BillingPlans.trial_days
+    if td && td > 0
+      params_hash[:subscription_data] = { trial_period_days: td }
+    end
+
+    sess = Stripe::Checkout::Session.create(params_hash)
+
+    # Store recent intent for UX if desired
+    begin
+      session[:plan] = plan_key
+    rescue => _e
+    end
+
+    redirect_to sess.url, allow_other_host: true, status: :see_other
+  rescue => e
+    Rails.logger.warn("[Billing#start_checkout_for_plan!] Failed: #{e.class} #{e.message}")
+    respond_to do |format|
+      format.html { redirect_to pages_pricing_path, alert: e.message }
+      format.turbo_stream { render turbo_stream: turbo_stream.update("flash", partial: "shared/flash_messages", locals: { alert: e.message }) }
     end
   end
 
