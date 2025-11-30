@@ -13,12 +13,16 @@ Rails.application.configure do
   # fallback to encrypted credentials if present. This avoids boot failures when
   # a credentials master key isn't provided (e.g. in containerized deployments),
   # while still working for setups that keep secret_key_base in credentials.
-  config.require_master_key = true
+  config.require_master_key = false
   begin
-    sk_env  = ENV["SECRET_KEY_BASE"]
-    sk_creds = Rails.application.credentials.dig(:secret_key_base)
+    sk_env   = ENV["SECRET_KEY_BASE"].to_s.strip
+    sk_creds = Rails.application.credentials.dig(:secret_key_base).to_s.strip
     sk = sk_env || sk_creds
-    config.secret_key_base = sk if sk
+    if sk
+      config.secret_key_base = sk
+    else
+      warn "Warning: SECRET_KEY_BASE is not set. Set ENV SECRET_KEY_BASE or add secret_key_base to credentials."
+    end
   rescue => e
     # If credentials access fails, ignore here; Rails will raise a clearer error later if truly missing
     warn "Warning: Unable to resolve SECRET_KEY_BASE from ENV or credentials (#{e.class})."
