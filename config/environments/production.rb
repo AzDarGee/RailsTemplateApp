@@ -15,8 +15,8 @@ Rails.application.configure do
   # while still working for setups that keep secret_key_base in credentials.
   config.require_master_key = true
   begin
-    sk_env  = ENV["SECRET_KEY_BASE"].presence
-    sk_creds = Rails.application.credentials.dig(:secret_key_base).presence
+    sk_env  = ENV["SECRET_KEY_BASE"]
+    sk_creds = Rails.application.credentials.dig(:secret_key_base)
     sk = sk_env || sk_creds
     config.secret_key_base = sk if sk
   rescue => e
