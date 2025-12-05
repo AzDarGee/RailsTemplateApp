@@ -35,18 +35,8 @@
               <% end %>
             </td>
             <td>
-              <% status = sub.status.to_s %>
-              <% badge_class = case status
-                 when 'active' then 'bg-success'
-                 when 'trialing' then 'bg-info'
-                 when 'past_due' then 'bg-warning'
-                 when 'canceled', 'unpaid', 'incomplete_expired' then 'bg-secondary'
-                 else 'bg-secondary'
-               end %>
-              <span class="badge <%= badge_class %>" aria-label="Subscription status: <%= status %>"><%= status %></span>
-              <% if sub.respond_to?(:on_grace_period?) && sub.on_grace_period? %>
-                <span class="badge bg-warning ms-1">grace</span>
-              <% end %>
+              <% status_text, badge_class = subscription_status_and_badge(sub) %>
+              <span class="badge <%= badge_class %>" aria-label="Subscription status: <%= status_text %>"><%= status_text %></span>
             </td>
             <td>
               <% if sub.respond_to?(:on_trial?) && sub.on_trial? && sub.respond_to?(:trial_ends_at) && sub.trial_ends_at.present? %>

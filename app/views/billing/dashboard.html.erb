@@ -8,17 +8,20 @@
           <%= link_to "Manage", billing_subscriptions_path, class: "btn btn-sm btn-outline-primary" %>
         </div>
         <div class="card-body">
-          <% if @subscriptions.present? %>
-            <% @subscriptions.first(1).each do |sub| %>
-              <% plan = BillingPlans.plan_for_price_id(sub.processor_plan.to_s) %>
-              <p class="mb-1"><strong>Name:</strong> <%= (sub.name.to_s == 'default' ? 'Primary' : sub.name.to_s.titleize) %></p>
-              <p class="mb-1"><strong>Plan:</strong> <%= plan&.name || content_tag(:code, sub.processor_plan) %></p>
+          <% if @active_subscription.present? %>
+
+              <% plan = BillingPlans.plan_for_price_id(@active_subscription.processor_plan.to_s) %>
+              <p class="mb-1"><strong>Name:</strong> <%= (@active_subscription.name.to_s == 'default' ? 'Primary' : @active_subscription.name.to_s.titleize) %></p>
+              <p class="mb-1"><strong>Plan:</strong> <%= plan&.name || content_tag(:code, @active_subscription.processor_plan) %></p>
               <p class="mb-1"><strong>Price:</strong> <%= plan ? plan_display_price(plan.key, plan.price_cents) : content_tag(:span, '—', class: 'text-muted') %></p>
-              <p class="mb-1"><strong>Status:</strong> <span class="badge <%= sub.active? ? 'bg-success' : 'bg-secondary' %>"><%= sub.status %></span></p>
-              <% if sub.current_period_end %>
-                <p class="mb-0"><strong>Renews:</strong> <%= l(sub.current_period_end, format: :long) %></p>
+              <%# Status with grace-period awareness and consistent badges via helper %>
+              <% status_text, badge_class = subscription_status_and_badge(@active_subscription) %>
+              <p class="mb-1"><strong>Status:</strong> <span class="badge <%= badge_class %>" aria-label="Subscription status: <%= status_text %>"><%= status_text %></span></p>
+              <% if @active_subscription.current_period_end %>
+                <% label = (@active_subscription.respond_to?(:on_grace_period?) && @active_subscription.on_grace_period?) ? 'Ends' : 'Renews' %>
+                <p class="mb-0"><strong><%= label %>:</strong> <%= l(@active_subscription.current_period_end, format: :long) %></p>
               <% end %>
-            <% end %>
+
           <% else %>
             <p class="text-muted mb-0">No active subscriptions.</p>
           <% end %>

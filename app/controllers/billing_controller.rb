@@ -23,6 +23,9 @@ class BillingController < ApplicationController
     @customer = current_user.payment_processor
     @default_payment_method = resolve_default_payment_method(@customer)
     @subscriptions = current_user.payment_processor&.subscriptions&.order(created_at: :desc) || []
+    @active_subscription = @subscriptions.detect { |s| s.status === "active" }
+
+    
     # binding.pry_remote
     @charges = current_user.payment_processor&.charges&.order(created_at: :desc)&.limit(5) || []
   end

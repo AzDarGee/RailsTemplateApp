@@ -38,4 +38,27 @@ module PagesHelper
 
     "#{number_to_currency(amount / 100.0)} #{suffix}"
   end
+
+  # Unified subscription status presentation for views.
+  # Returns [status_text, badge_class]
+  # - If the subscription is set to cancel at period end (grace period),
+  #   show "canceling" with a warning badge.
+  # - Otherwise, map known statuses to consistent badge colors.
+  def subscription_status_and_badge(sub)
+    raw_status = sub.respond_to?(:status) ? sub.status.to_s : ""
+
+    if sub.respond_to?(:on_grace_period?) && sub.on_grace_period?
+      return ["canceling", "bg-warning"]
+    end
+
+    badge_class = case raw_status
+                  when "active" then "bg-success"
+                  when "trialing" then "bg-info"
+                  when "past_due" then "bg-warning"
+                  when "canceled", "unpaid", "incomplete_expired" then "bg-secondary"
+                  else "bg-secondary"
+                  end
+
+    [raw_status, badge_class]
+  end
 end
