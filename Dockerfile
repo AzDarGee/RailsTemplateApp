@@ -50,7 +50,7 @@ RUN bundle install && \
 # Copy application code
 COPY . .
 
-# RUN chmod -R 700 /rails
+RUN chmod -R 700 /rails
 RUN yarn install
 
 # Precompile bootsnap code for faster boot times
