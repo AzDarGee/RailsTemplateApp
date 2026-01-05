@@ -19,4 +19,7 @@ class PagesController < ApplicationController
 
   def refund_policy
   end
+
+  def components
+  end
 end

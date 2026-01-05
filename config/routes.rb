@@ -27,6 +27,7 @@ Rails.application.routes.draw do
   get "pages/terms"
   get "pages/privacy"
   get "pages/refund_policy"
+  get "pages/components", to: "pages#components"
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
