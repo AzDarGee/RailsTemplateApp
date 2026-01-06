@@ -2,7 +2,7 @@
   <div class="container">
     <!-- Logo -->
     <%= link_to root_path, class: "navbar-brand" do %>
-      Rails Template App
+      Genesis
     <% end %>
 
     <!-- Mobile Toggle Button -->
@@ -28,6 +28,9 @@
         </li>
         <li class="nav-item">
           <%= link_to "Contact", pages_contact_path, class: "nav-link #{current_page?(pages_contact_path) ? 'active' : ''}" %>
+        </li>
+        <li class="nav-item">
+          <%= link_to "Components", pages_components_path, class: "nav-link #{current_page?(pages_components_path) ? 'active' : ''}" %>
         </li>
       </ul>
 

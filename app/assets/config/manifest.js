@@ -6,3 +6,4 @@
 //= link application.css
 //= link application.js
 //= link hotwire_spark.js
+//= link_directory ../stylesheets .scss

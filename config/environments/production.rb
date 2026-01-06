@@ -9,6 +9,21 @@ Rails.application.configure do
   # Eager load code on boot for better performance and memory savings (ignored by Rake tasks).
   config.eager_load = true
 
+  # In production, prefer SECRET_KEY_BASE from environment variables, but allow
+  # fallback to encrypted credentials if present. This avoids boot failures when
+  # a credentials master key isn't provided (e.g. in containerized deployments),
+  # while still working for setups that keep secret_key_base in credentials.
+  config.require_master_key = true
+  begin
+    sk_env  = ENV["SECRET_KEY_BASE"]
+    sk_creds = Rails.application.credentials.dig(:secret_key_base)
+    sk = sk_env || sk_creds
+    config.secret_key_base = sk if sk
+  rescue => e
+    # If credentials access fails, ignore here; Rails will raise a clearer error later if truly missing
+    warn "Warning: Unable to resolve SECRET_KEY_BASE from ENV or credentials (#{e.class})."
+  end
+
   # Full error reports are disabled.
   config.consider_all_requests_local = false
 

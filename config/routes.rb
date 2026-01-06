@@ -29,6 +29,7 @@ Rails.application.routes.draw do
   get "pages/terms"
   get "pages/privacy"
   get "pages/refund_policy"
+  get "pages/components", to: "pages#components"
 
   # Billing portal (authenticated)
   authenticate :user do
