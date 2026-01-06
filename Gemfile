@@ -33,8 +33,14 @@ gem "redcarpet", "~> 3.6.1"
 gem "coderay", "~> 1.1.3"
 gem "resend", "~> 1.0.0"
 
+# Payment Processing
+gem "pay", "~> 11.3"
+gem "stripe", "~> 18"
+gem "receipts", "~> 2.4"
+
 gem "tzinfo-data", "~> 1.2025.1", platforms: %i[ windows jruby ]
 
+# SOLID TriFecta
 gem "solid_cache", "~> 1.0.7"
 gem "solid_queue", "~> 1.2.3"
 gem "solid_cable", "~> 3.0.11"
@@ -43,6 +49,7 @@ gem "bootsnap", "~> 1.18.6", require: false
 gem "kamal", "~> 2.8.2", require: false
 gem "thruster", "~> 0.1.14", require: false
 
+# Development & Test Gems
 group :development, :test do
   gem "debug", "~> 1.11.0", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "brakeman", "~> 7.1.1", require: false
