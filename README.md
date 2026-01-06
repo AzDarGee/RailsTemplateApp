@@ -24,11 +24,8 @@
     - SOLID Queue for background jobs (MissionControl Dashboard for jobs monitoring)
     - SOLID Cable for WebSockets / ActionCable 
     - SOLID Cache for caching
-- AI Integration (LangChainRB)
-    - Open AI
-    - Claude
-    - Google Gemini
-    - Openrouter
+- AI Integration (RubyLLM)
+    - OpenRouter (all current LLMs)
 - Admin Dashboard (Avo)
 - Search (ransack)
 - Tagging
