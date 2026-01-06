@@ -49,22 +49,6 @@
               <li>
                 <hr class="dropdown-divider">
               </li>
-              <li class="dropdown-header">Billing</li>
-              <li>
-                <%= link_to "Billing Dashboard", billing_dashboard_path, class: "dropdown-item" %>
-              </li>
-              <li>
-                <%= link_to "Payment Methods", billing_payment_methods_path, class: "dropdown-item" %>
-              </li>
-              <li>
-                <%= link_to "Payment History", billing_charges_path, class: "dropdown-item" %>
-              </li>
-              <li>
-                <%= link_to "Subscriptions", billing_subscriptions_path, class: "dropdown-item" %>
-              </li>
-              <li>
-                <hr class="dropdown-divider">
-              </li>
               <li>
                 <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "dropdown-item", form: { data: { turbo: true } } %>
               </li>
