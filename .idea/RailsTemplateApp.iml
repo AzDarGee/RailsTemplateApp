@@ -150,6 +150,7 @@
     <orderEntry type="library" scope="PROVIDED" name="pagy (v9.4.0, rbenv: 3.4.7) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="parallel (v1.27.0, rbenv: 3.4.7) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="parser (v3.3.10.0, rbenv: 3.4.7) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="pay (v11.4.3, rbenv: 3.4.7) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="pdf-core (v0.10.0, rbenv: 3.4.7) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="pg (v1.6.2, rbenv: 3.4.7) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="pp (v0.6.3, rbenv: 3.4.7) [gem]" level="application" />
@@ -210,7 +211,7 @@
     <orderEntry type="library" scope="PROVIDED" name="stimulus-rails (v1.3.4, rbenv: 3.4.7) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="streamio-ffmpeg (v3.0.2, rbenv: 3.4.7) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="stringio (v3.1.7, rbenv: 3.4.7) [gem]" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="stripe (v17.2.0, rbenv: 3.4.7) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="stripe (v18.1.0, rbenv: 3.4.7) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="thor (v1.4.0, rbenv: 3.4.7) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="thruster (v0.1.16, rbenv: 3.4.7) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="timeout (v0.4.4, rbenv: 3.4.7) [gem]" level="application" />
