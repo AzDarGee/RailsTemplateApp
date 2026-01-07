@@ -47,11 +47,11 @@ gem "solid_cable", "~> 3.0.11"
 
 gem "bootsnap", "~> 1.20.1", require: false
 gem "kamal", "~> 2.10.1", require: false
-gem "thruster", "~> 0.1.14", require: false
+gem "thruster", "~> 0.1.17", require: false
 
 # Development & Test Gems
 group :development, :test do
-  gem "debug", "~> 1.11.0", platforms: %i[ mri windows ], require: "debug/prelude"
+  gem "debug", "~> 1.11.1", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "brakeman", "~> 7.1.2", require: false
   gem "rubocop-rails-omakase", "~> 1.1.0", require: false
 end
