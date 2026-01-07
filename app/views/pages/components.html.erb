@@ -1,0 +1,304 @@
+<% content_for :title, "Design Components" %>
+
+<div class="py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h2 mb-0">Design Components</h1>
+    <span class="text-muted">Bootstrap 5 showcase</span>
+  </div>
+
+  <div class="row g-4 row-cols-1 row-cols-md-2 row-cols-xl-3">
+    <!-- Typography -->
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-header"><h5 class="mb-0">Typography</h5></div>
+        <div class="card-body">
+          <p class="lead">Lead paragraph – Stand out text for hero sections.</p>
+          <p>Regular paragraph text with <a href="#">links</a>, <strong>bold</strong>, and <em>italic</em>.</p>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <h1>H1 Heading</h1>
+              <h2>H2 Heading</h2>
+              <h3>H3 Heading</h3>
+            </div>
+            <div class="col-md-6">
+              <h4>H4 Heading</h4>
+              <h5>H5 Heading</h5>
+              <h6>H6 Heading</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Colors -->
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-header"><h5 class="mb-0">Color Palette</h5></div>
+        <div class="card-body">
+          <div class="row g-3 row-cols-2 row-cols-md-4">
+            <% %w[primary secondary success danger warning info light dark].each do |variant| %>
+              <div class="col">
+                <div class="rounded border overflow-hidden">
+                  <div class="p-3 text-white bg-<%= variant %>">
+                    .bg-<%= variant %>
+                  </div>
+                  <div class="p-3">.text-<%= variant %></div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-header"><h5 class="mb-0">Buttons</h5></div>
+        <div class="card-body">
+          <div class="mb-3">
+            <% %w[primary secondary success danger warning info dark link].each do |variant| %>
+              <button type="button" class="btn btn-<%= variant %> me-2 mb-2">
+                <i class="bi bi-stars me-1"></i><%= variant.capitalize %>
+              </button>
+            <% end %>
+            <button class="btn btn-outline-primary mb-2">Outline</button>
+            <button class="btn btn-primary btn-sm mb-2">Small</button>
+            <button class="btn btn-primary btn-lg mb-2">Large</button>
+            <button class="btn btn-primary mb-2" disabled>Disabled</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Forms -->
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-header"><h5 class="mb-0">Forms</h5></div>
+        <div class="card-body">
+          <form class="row g-3">
+            <div class="col-md-6">
+              <label for="inputEmail" class="form-label">Email</label>
+              <input type="email" class="form-control" id="inputEmail" placeholder="name@example.com">
+            </div>
+            <div class="col-md-6">
+              <label for="inputPassword" class="form-label">Password</label>
+              <input type="password" class="form-control" id="inputPassword" placeholder="••••••••">
+            </div>
+            <div class="col-md-6">
+              <label for="selectExample" class="form-label">Select</label>
+              <select id="selectExample" class="form-select">
+                <option>Option 1</option>
+                <option>Option 2</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="inputFile" class="form-label">File upload</label>
+              <input class="form-control" type="file" id="inputFile">
+            </div>
+            <div class="col-12">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="flexSwitchCheck">
+                <label class="form-check-label" for="flexSwitchCheck">Enable feature</label>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="input-group">
+                <span class="input-group-text" id="ig1">@</span>
+                <input type="text" class="form-control" placeholder="username" aria-label="username" aria-describedby="ig1">
+              </div>
+            </div>
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grid / Layout -->
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-header"><h5 class="mb-0">Grid & Layout</h5></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-12 col-md-4">
+              <div class="p-3 bg-light border rounded text-center">.col-md-4</div>
+            </div>
+            <div class="col-12 col-md-4">
+              <div class="p-3 bg-light border rounded text-center">.col-md-4</div>
+            </div>
+            <div class="col-12 col-md-4">
+              <div class="p-3 bg-light border rounded text-center">.col-md-4</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cards Demo -->
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-header"><h5 class="mb-0">Cards</h5></div>
+        <div class="card-body">
+          <div class="row g-3 row-cols-1 row-cols-md-3">
+            <% 3.times do |i| %>
+              <div class="col">
+                <div class="card h-100 shadow-sm">
+                  <div class="card-body">
+                    <h5 class="card-title">Card title <%= i + 1 %></h5>
+                    <p class="card-text">Quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a href="#" class="btn btn-primary">Go somewhere</a>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tables -->
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-header"><h5 class="mb-0">Tables</h5></div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-striped align-middle">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% [
+                  {id: 1, name: "Alpha", status: "Active"},
+                  {id: 2, name: "Beta", status: "Pending"},
+                  {id: 3, name: "Gamma", status: "Disabled"}
+                ].each do |row| %>
+                  <tr>
+                    <td><%= row[:id] %></td>
+                    <td><%= row[:name] %></td>
+                    <td>
+                      <% badge_class = {
+                        "Active" => "success", "Pending" => "warning", "Disabled" => "secondary"
+                      }[row[:status]] %>
+                      <span class="badge text-bg-<%= badge_class %>"><%= row[:status] %></span>
+                    </td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-primary">View</button>
+                      <button class="btn btn-sm btn-outline-secondary">Edit</button>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts & Badges -->
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-header"><h5 class="mb-0">Alerts & Badges</h5></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <% %w[primary secondary success danger warning info light dark].each do |variant| %>
+                <div class="alert alert-<%= variant %> mb-2" role="alert">
+                  This is a <strong><%= variant %></strong> alert—check it out!
+                </div>
+              <% end %>
+            </div>
+            <div class="col-md-6 d-flex align-items-center gap-2 flex-wrap">
+              <% %w[Primary Secondary Success Danger Warning Info Dark].each do |name| %>
+                <span class="badge text-bg-<%= name.downcase %>"><%= name %></span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-header"><h5 class="mb-0">Progress</h5></div>
+        <div class="card-body">
+          <div class="progress" role="progressbar" aria-label="Example" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar" style="width: 45%">45%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal (trigger) -->
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-header"><h5 class="mb-0">Modal</h5></div>
+        <div class="card-body">
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#demoModal">
+            Launch demo modal
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast example -->
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-header"><h5 class="mb-0">Toast</h5></div>
+        <div class="card-body">
+          <button type="button" class="btn btn-outline-secondary" id="showToastBtn">Show toast</button>
+          <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div id="demoToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+              <div class="toast-header">
+                <i class="bi bi-bell me-2"></i>
+                <strong class="me-auto">Notification</strong>
+                <small>just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+              </div>
+              <div class="toast-body">
+                Hello, world! This is a toast message.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Demo Modal markup -->
+  <div class="modal fade" id="demoModal" tabindex="-1" aria-labelledby="demoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="demoModalLabel">Demo Modal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          This is a basic modal using Bootstrap 5.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('turbo:load', () => {
+    const toastEl = document.getElementById('demoToast');
+    const btn = document.getElementById('showToastBtn');
+    if (toastEl && btn && window.bootstrap) {
+      const toast = new bootstrap.Toast(toastEl);
+      btn.addEventListener('click', () => toast.show());
+    }
+  });
+</script>
