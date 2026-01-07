@@ -578,7 +578,8 @@ GEM
     uri (1.1.1)
     useragent (0.16.11)
     version_gem (1.1.9)
-    view_component (4.1.0)
+    view_component (4.1.1)
+      actionview (>= 7.1.0, < 8.2)
       activesupport (>= 7.1.0, < 8.2)
       concurrent-ruby (~> 1)
     warden (1.2.9)
@@ -662,7 +663,7 @@ DEPENDENCIES
   thruster (~> 0.1.17)
   turbo-rails (~> 2.0.16)
   tzinfo-data (~> 1.2025.1)
-  view_component (~> 4.1.0)
+  view_component (~> 4.1.1)
   web-console (~> 4.2.1)
 
 BUNDLED WITH
