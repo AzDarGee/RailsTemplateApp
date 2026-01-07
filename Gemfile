@@ -26,7 +26,7 @@ gem "dry-initializer", "~> 3.2.0"
 gem "mission_control-jobs", "~> 1.1.0"
 gem "pagy", "~> 9.0"
 gem "avo", "~> 3.28.0"
-gem 'openssl', '~> 3.1'
+gem 'openssl', '~> 4.0'
 gem 'ruby_llm', '~> 1.9'
 gem "ransack", "~> 4.4.1"
 gem "redcarpet", "~> 3.6.1"
