@@ -15,7 +15,6 @@
     <%= form.select :model,
         options_for_select(
           Model.where('LOWER(provider) = ?', 'openrouter')
-               .limit(10)
                .pluck(:name, :model_id)
                .unshift(["Default (#{RubyLLM.config.default_model})", nil]),
           @selected_model

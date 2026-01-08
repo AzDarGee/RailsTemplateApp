@@ -1,7 +1,7 @@
-name: "rails_template_app"
+name: "genesis"
 
 services:
-  rails-template-app:
+  genesis:
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile
