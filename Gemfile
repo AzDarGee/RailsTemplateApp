@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem 'rails', '~> 8.1', '>= 8.1.1'
+gem 'rails', '~> 8.1'
 gem "propshaft", "~> 1.3.1"
 gem "pg", "~> 1.6.3"
 gem "puma", "~> 7.1.0"
