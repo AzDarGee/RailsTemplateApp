@@ -20,7 +20,7 @@ gem "streamio-ffmpeg", "~> 3.0.2"
 gem "jsbundling-rails", "~> 1.3.1"
 gem "cssbundling-rails", "~> 1.4.3"
 gem "mail", "~> 2.9.0"
-gem "view_component", "~> 4.1.1"
+gem "view_component", "~> 4.2.0"
 gem "aws-sdk-s3", "~> 1.210.1", require: false
 gem "dry-initializer", "~> 3.2.0"
 gem "mission_control-jobs", "~> 1.1.0"
