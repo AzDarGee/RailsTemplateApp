@@ -1,6 +1,6 @@
 class Avo::Resources::User < Avo::BaseResource
   self.title = -> {
-    [ record.id, record.email ].compact.join(" - ")
+    [ record.id, record.name, record.email ].compact.join(" - ")
   }
   
   # self.includes = []

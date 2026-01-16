@@ -9,4 +9,12 @@ class Message < ApplicationRecord
       partial: "messages/content",
       locals: { content: content }
   end
+
+  def self.ransackable_attributes(auth_object = nil)
+    [ "id", "content", "role", "model" ]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    # [ "agents", "conversations" ]
+  end
 end

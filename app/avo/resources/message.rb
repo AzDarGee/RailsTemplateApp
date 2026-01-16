@@ -5,6 +5,18 @@ class Avo::Resources::Message < Avo::BaseResource
   #   query: -> { query.ransack(id_eq: q, m: "or").result(distinct: false) }
   # }
 
+  self.search = {
+    query: -> {
+      query.ransack(
+        id_eq: params[:q],
+        content_cont: params[:q],
+        role_cont: params[:q],
+        model_cont: params[:q],
+        m: "or"
+      ).result(distinct: false)
+    }
+  }
+
   def fields
     field :id, as: :id
     field :chat_id, as: :number
