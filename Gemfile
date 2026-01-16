@@ -41,7 +41,7 @@ gem "receipts", "~> 2.4"
 gem "tzinfo-data", "~> 1.2025.1", platforms: %i[ windows jruby ]
 
 gem "solid_cache", "~> 1.0.10"
-gem "solid_queue", "~> 1.3.0"
+gem "solid_queue", "~> 1.3.1"
 gem "solid_cable", "~> 3.0.11"
 
 gem "bootsnap", "~> 1.21.1", require: false
