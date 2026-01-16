@@ -4,8 +4,7 @@ class User < ApplicationRecord
          :confirmable, :lockable, :timeoutable, :trackable,
          :omniauthable, omniauth_providers: [ :google_oauth2, :linkedin, :facebook, :twitter2 ]
 
-  pay_customer
-  include Pay::Billable
+  has_many :chats
 
   has_rich_text :bio
   has_one_attached :avatar do |attachable|

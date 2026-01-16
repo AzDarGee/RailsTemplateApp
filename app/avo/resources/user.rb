@@ -38,16 +38,8 @@ class Avo::Resources::User < Avo::BaseResource
     field :uid, as: :text, hide_on: :index
     field :name, as: :text
     field :image, as: :text
-    field :billing_name, as: :text, hide_on: :index
-    field :billing_email, as: :text, hide_on: :index
-    field :billing_address, as: :text, hide_on: :index
-    field :billing_city, as: :text, hide_on: :index
-    field :billing_state, as: :text, hide_on: :index
-    field :billing_zip, as: :text, hide_on: :index
-    field :billing_country, as: :text, hide_on: :index
     field :avatar, as: :file
-    field :agents, as: :has_many
-    field :conversations, as: :has_many
+    field :chats, as: :has_many
     field :bio, as: :trix
   end
 end
