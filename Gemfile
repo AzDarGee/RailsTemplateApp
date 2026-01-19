@@ -27,7 +27,7 @@ gem "mission_control-jobs", "~> 1.1.0"
 gem "pagy", "~> 9.0"
 gem "avo", "~> 3.28.0"
 gem 'openssl', '~> 4.0'
-gem 'ruby_llm', '~> 1.10'
+gem 'ruby_llm', '~> 1.11'
 gem "ransack", "~> 4.4.1"
 gem "redcarpet", "~> 3.6.1"
 gem "coderay", "~> 1.1.3"
