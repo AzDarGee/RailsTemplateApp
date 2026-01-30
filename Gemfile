@@ -51,7 +51,7 @@ gem "thruster", "~> 0.1.17", require: false
 # Development & Test Gems
 group :development, :test do
   gem "debug", "~> 1.11.1", platforms: %i[ mri windows ], require: "debug/prelude"
-  gem "brakeman", "~> 7.1.2", require: false
+  gem "brakeman", "~> 8.0.1", require: false
   gem "rubocop-rails-omakase", "~> 1.1.0", require: false
 end
 
