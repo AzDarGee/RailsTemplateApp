@@ -25,7 +25,7 @@ gem "aws-sdk-s3", "~> 1.211.0", require: false
 gem "dry-initializer", "~> 3.2.0"
 gem "mission_control-jobs", "~> 1.1.0"
 gem "pagy", "~> 9.0"
-gem "avo", "~> 3.28.0"
+gem "avo", "~> 3.29.0"
 gem 'openssl', '~> 4.0'
 gem 'ruby_llm', '~> 1.10'
 gem "ransack", "~> 4.4.1"
