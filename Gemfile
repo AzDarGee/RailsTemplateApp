@@ -4,7 +4,7 @@ gem 'rails', '~> 8.1'
 gem "propshaft", "~> 1.3.1"
 gem "pg", "~> 1.6.3"
 gem "puma", "~> 7.1.0"
-gem "turbo-rails", "~> 2.0.16"
+gem "turbo-rails", "~> 2.0.23"
 gem "stimulus-rails", "~> 1.3.4"
 gem "jbuilder", "~> 2.14.1"
 gem "devise", "~> 5.0.2"
