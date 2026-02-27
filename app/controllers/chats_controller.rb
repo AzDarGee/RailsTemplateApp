@@ -13,7 +13,7 @@ class ChatsController < ApplicationController
   def create
     return unless prompt.present?
 
-    @chat = Chat.create!(model: model)
+    @chat = current_user.chats.create!(model: model)
     ChatResponseJob.perform_later(@chat.id, prompt)
 
     redirect_to @chat, notice: 'Chat was successfully created.'

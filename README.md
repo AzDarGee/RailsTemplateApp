@@ -468,7 +468,7 @@ git branch -D <branch_name>
 
 To delete a remote branch:
 ```
-git push -d <branch-name>
+git push origin --delete <branch-name>
 ```
 
 To fetch all branches from remote:

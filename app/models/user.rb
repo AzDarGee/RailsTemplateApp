@@ -4,13 +4,12 @@ class User < ApplicationRecord
          :confirmable, :lockable, :timeoutable, :trackable,
          :omniauthable, omniauth_providers: [ :google_oauth2, :linkedin, :facebook, :twitter2 ]
 
-  pay_customer
-  include Pay::Billable
-
   has_rich_text :bio
   has_one_attached :avatar do |attachable|
     attachable.variant :thumb, resize_to_limit: [ 400, 400 ], preprocessed: true
   end
+
+  has_many :chats, dependent: :destroy
 
   def self.from_omniauth(auth)
     where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
