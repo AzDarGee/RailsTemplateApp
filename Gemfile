@@ -56,7 +56,7 @@ group :development, :test do
 end
 
 group :development do
-  gem "web-console", "~> 4.2.1"
+  gem "web-console", "~> 4.3.0"
   gem "hotwire-spark", "~> 0.1.13"
   gem "letter_opener", "~> 1.10.0"
   gem "letter_opener_web", "~> 3.0.0"
