@@ -63,7 +63,7 @@ group :development do
   gem "pry", "~> 0.16.0"
   gem "pry-remote", "~> 0.1.8"
   gem "better_errors", "~> 2.10.1"
-  gem "binding_of_caller", "~> 1.0.1"
+  gem "binding_of_caller", "~> 2.0.0"
 end
 
 group :test do
