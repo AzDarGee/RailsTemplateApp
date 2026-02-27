@@ -46,7 +46,7 @@ gem "solid_cable", "~> 3.0.11"
 
 gem "bootsnap", "~> 1.21.1", require: false
 gem "kamal", "~> 2.10.1", require: false
-gem "thruster", "~> 0.1.17", require: false
+gem "thruster", "~> 0.1.18", require: false
 
 # Development & Test Gems
 group :development, :test do
