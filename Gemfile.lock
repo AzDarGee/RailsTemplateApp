@@ -200,7 +200,7 @@ GEM
       listen
       rails (>= 7.0.0)
       zeitwerk
-    httparty (0.23.2)
+    httparty (0.24.2)
       csv
       mini_mime (>= 1.0.0)
       multi_xml (>= 0.5.2)
@@ -467,7 +467,7 @@ GEM
     regexp_parser (2.11.3)
     reline (0.6.3)
       io-console (~> 0.5)
-    resend (1.0.0)
+    resend (1.0.1)
       httparty (>= 0.21.0)
     responders (3.2.0)
       actionpack (>= 7.0)
@@ -651,7 +651,7 @@ DEPENDENCIES
   ransack (~> 4.4.1)
   receipts (~> 2.4)
   redcarpet (~> 3.6.1)
-  resend (~> 1.0.0)
+  resend (~> 1.0.1)
   rubocop-rails-omakase (~> 1.1.0)
   ruby_llm (~> 1.12)
   selenium-webdriver (~> 4.41.0)
