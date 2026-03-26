@@ -35,7 +35,7 @@ gem "resend", "~> 1.0.0"
 
 # Payment Processing
 gem "pay", "~> 11.3"
-gem "stripe", "~> 18"
+gem "stripe", "~> 19"
 gem "receipts", "~> 2.4"
 
 gem "tzinfo-data", "~> 1.2025.1", platforms: %i[ windows jruby ]
