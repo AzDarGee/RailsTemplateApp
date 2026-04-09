@@ -34,7 +34,7 @@ gem "coderay", "~> 1.1.3"
 gem "resend", "~> 1.0.0"
 
 # Payment Processing
-gem "pay", "~> 11.3"
+gem "pay", "~> 11.6"
 gem "stripe", "~> 18"
 gem "receipts", "~> 2.4"
 
