@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 gem 'rails', '~> 8.1'
-gem "propshaft", "~> 1.3.1"
+gem "propshaft", "~> 1.3.2"
 gem "pg", "~> 1.6.3"
 gem "puma", "~> 7.2.0"
 gem "turbo-rails", "~> 2.0.23"
