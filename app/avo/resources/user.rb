@@ -2,21 +2,21 @@ class Avo::Resources::User < Avo::BaseResource
   self.title = -> {
     [ record.id, record.name, record.email ].compact.join(" - ")
   }
-  
+
   # self.includes = []
   # self.attachments = []
   self.search = {
-    query: -> { 
+    query: -> {
       query.ransack(
-        id_eq: params[:q], 
-        name_cont: params[:q], 
+        id_eq: params[:q],
+        name_cont: params[:q],
         email_cont: params[:q],
         username_cont: params[:q],
         m: "or"
-      ).result(distinct: false) 
+      ).result(distinct: false)
     }
   }
-  
+
   def fields
     field :id, as: :id
     field :admin, as: :boolean
@@ -41,5 +41,6 @@ class Avo::Resources::User < Avo::BaseResource
     field :image, as: :text
     field :avatar, as: :file
     field :chats, as: :has_many
+    field :bio, as: :trix
   end
 end

@@ -75,7 +75,7 @@ Follow the official Ruby on Rails guides for best practices in routing, controll
 
 # Testing
 
-When generating RSpec tests, follow these best practices to ensure they are comprehensive, readable, and maintainable:
+When generating Unit tests, follow these best practices to ensure they are comprehensive, readable, and maintainable:
 
 ### Comprehensive Coverage:
 - Tests must cover both typical cases and edge cases, including invalid inputs and error conditions.
